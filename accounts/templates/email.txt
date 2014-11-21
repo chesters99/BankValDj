@@ -1,0 +1,7 @@
+Hello {{ user }}
+
+This is a useless email to annoy you
+
+{{ content }}
+
+Thanks

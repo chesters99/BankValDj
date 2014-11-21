@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Enter Rule{% endblock %}
+
+{% block content %}
+    <form action="" name="form" method="post"> {% csrf_token %}
+        <div class="form-group col-xs-12">
+            <ul class="list-unstyled">
+                {% for field in form %}
+                    <li class="col-xs-6" id="{{ field.auto_id }}_container">
+                        <span class="col-xs-4">{{ field.label_tag }}</span>
+                        <span class="col-xs-4" title="{{ field.help_text }}">{{ field }}</span>
+                        <span class="col-xs-4 text-danger"><small>{{ field.errors.as_text }}</small></span>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="col-xs-12">&nbsp;</div>
+            {% if form.non_field_errors %}
+                <ul class="list-unstyled col-xs-12 text-center">
+                    {% for error in form.non_field_errors %}
+                        <li class="error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="btn-toolbar">
+            <input class="btn btn-primary" type="submit" value="submit"/>
+            {% if object.id %}
+                <a class="btn btn-warning" href="{% url 'rules:detail' pk=object.id %}">cancel</a>
+            {% else %}
+                <a class="btn btn-warning" href="{% url 'rules:search' %}">cancel</a>
+            {% endif %}
+        </div>
+    </form>
+{% endblock %}
+

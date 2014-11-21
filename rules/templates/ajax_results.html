@@ -1,0 +1,20 @@
+<table class="table table-bordered table-condensed" style="width: auto;">
+    <tr>
+        <th>Id</th><th>Start Sort</th><th>End Sort</th><th>Rule</th>
+        <th>W 0</th><th>W 1</th><th>W 2</th><th>W 3</th><th>W 4</th><th>W 5</th><th>W 6</th><th>W 7</th><th>W 8</th>
+        <th>W 9</th><th>W 10</th><th>W 11</th><th>W 12</th><th>W 13</th><th>Ex</th><th></th><th></th><th></th>
+    </tr>
+    {% for rule in rules %}
+        <tr>
+            <td><a href="{%  url 'rules:detail' rule.id %}">{{ rule.id }}</a></td>
+            <td>{{ rule.start_sort }}</td><td>{{ rule.end_sort }}</td><td>{{ rule.mod_rule }}</td>
+            <td>{{ rule.weight0 }}</td><td>{{ rule.weight1 }}</td><td>{{ rule.weight2 }}</td><td>{{ rule.weight3 }}</td>
+            <td>{{ rule.weight4 }}</td><td>{{ rule.weight5 }}</td><td>{{ rule.weight6 }}</td><td>{{ rule.weight7 }}</td>
+            <td>{{ rule.weight8 }}</td><td>{{ rule.weight9 }}</td><td>{{ rule.weight10 }}</td><td>{{ rule.weight11 }}</td>
+            <td>{{ rule.weight12 }}</td><td>{{ rule.weight13 }}</td><td>{{ rule.mod_exception }}</td>
+            <td><a class="btn btn-xs btn-primary" href="{% url 'rules:detail' pk=rule.id %}">detail</a></td>
+            <td><a class="btn btn-xs btn-warning" href="{% url 'rules:update' pk=rule.id %}">edit</a></td>
+            <td><a class="btn btn-xs btn-danger" href="{% url 'rules:delete' pk=rule.id %}">delete</a></td>
+        </tr>
+    {% endfor %}
+</table>

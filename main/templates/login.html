@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Bank Validation Login{% endblock %}
+
+{% block content %}
+<form class="col-xs-12 form-horizontal" method="post" action="{% url 'main:loginuser' %}"> {% csrf_token %}
+    <div class="form-group col-xs-12">
+        <div class="col-xs-2">{{ form.username.label_tag }} </div>
+        <div class="col-xs-2">{{ form.username }} </div>
+    </div>
+    <div class="form-group col-xs-12">
+        <div class="col-xs-2">{{ form.password.label_tag }} </div>
+        <div class="col-xs-2">{{ form.password }} </div>
+    </div>
+
+    {% url 'admin_password_reset' as password_reset_url %}
+    {% if password_reset_url %}
+        <div class="password-reset-link">
+          <a href="{{ password_reset_url }}"><small><i>Forgotten your password or username?</i></small></a>
+          <div class="col-xs-12">&nbsp</div>
+        </div>
+    {% endif %}
+
+    <input class="btn btn-primary" type="submit" name="submit" value="login" />
+    <input type="hidden" name="next" value="{{ next }}" />
+</form>
+<div class="col-xs-12">&nbsp</div>
+{% if form.errors %}
+    <p class="col-xs-9 alert alert-danger">Incorrect username or password. Please try again.</p><br>
+{% endif %}
+
+{% endblock %}

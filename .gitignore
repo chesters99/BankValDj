@@ -1,0 +1,24 @@
+# Mac & IDE stuff
+.DS_Store
+.nbproject*
+Thumbs.db
+.idea
+
+# python/tech stuff
+__pycache__/
+*.py[cod]
+.cache
+.coverage
+static/less/bootstrap/
+static/less/*.css
+
+# project stuff
+static/root
+docs/build
+migrations/
+bootstrap/
+
+# secure stuff
+*.db
+*secret*
+*.log

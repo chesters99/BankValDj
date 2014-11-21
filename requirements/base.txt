@@ -1,0 +1,14 @@
+--allow-external mysql-connector-python
+--allow-unverified mysql-connector-python
+mysql-connector-python>=1.2.2   # mysql connector
+#psycopg2==2.5.3                  # postgresql connector. Must have postgresql installed and in PATH
+Django==1.7                     # latest Django is installed from tarball instead of pip
+httplib2==0.9                   # best lib for http requests
+PyMySql==0.6.2                  # use until mysql connector above is fixed for Django 1.7
+djangorestframework==2.4.2      # required for validation api
+celery==3.1.14                  # batch processing
+django-celery==3.1.10           # require for celerybeat use in admin
+eventlog==0.8.0                 # log changes to model data (eg audit trail)
+pytz==2014.7                    # full timezone support
+django-localflavor==1.0         # for UK counties, post code validation etc
+stripe==1.19.0                  # Credit/Debit card payments

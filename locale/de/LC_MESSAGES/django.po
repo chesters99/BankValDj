@@ -1,0 +1,215 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-09-17 09:47+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: accounts/forms.py:14
+msgid "Sort Code must be numeric"
+msgstr "schwein!1"
+
+#: accounts/forms.py:16
+msgid "Sort code must be 6 digits"
+msgstr "schwein!2"
+
+#: accounts/forms.py:22
+msgid "Account Number must be numeric"
+msgstr "schwein!3"
+
+#: accounts/forms.py:24
+msgid "Account Number must be between 6 and 11 digits"
+msgstr "schwein!4"
+
+#: accounts/forms.py:31
+msgid "Sort Code = Account Number. Is that right?!?"
+msgstr "schwein!5"
+
+#: main/forms.py:14
+msgid "Username must be more than 5 characters"
+msgstr "schwein!6"
+
+#: main/forms.py:20
+msgid "Password must be more than 5 characters"
+msgstr "schwein!7"
+
+#: main/forms.py:27
+msgid "Username cannot be the same as password"
+msgstr "schwein!8"
+
+#: main/templates/base.html:5
+msgid "Bank Validation Django"
+msgstr "Deutche Bank Validation"
+
+#: main/templates/base.html:23
+msgid "Bank Account Validation"
+msgstr "Deutche Bank Validation"
+
+#: main/templates/base.html:28
+msgid "Home"
+msgstr "Willkommen"
+
+#: main/templates/base.html:29
+msgid "Validate"
+msgstr "Bestätigen"
+
+#: main/templates/base.html:32
+msgid "Rules"
+msgstr "Regeln"
+
+#: main/templates/base.html:34
+msgid "Search Rules"
+msgstr "Suche Regeln"
+
+#: main/templates/base.html:35
+msgid "Load Rules File"
+msgstr "Lastregeldatei"
+
+#: main/templates/base.html:39
+msgid "Admin"
+msgstr "Verwalten"
+
+#: main/templates/base.html:41
+msgid "Bulk Test"
+msgstr "Groß-Test"
+
+#: main/templates/base.html:42
+msgid "Design Document"
+msgstr "Design-Dokument"
+
+#: main/templates/base.html:44
+msgid "Maintain Users"
+msgstr "Pflegen Benutzer"
+
+#: main/templates/base.html:45
+msgid "Graph Example"
+msgstr "Beispiel Graph"
+
+#: main/templates/base.html:46
+msgid "Django Admin"
+msgstr "Django verwalten"
+
+#: main/templates/base.html:49
+msgid "About"
+msgstr "Informationen"
+
+#: main/templates/base.html:53
+msgid "Login"
+msgstr "Login"
+
+#: main/templates/base.html:54
+msgid "Logout"
+msgstr "Abmelden"
+
+#: rules/forms.py:13
+msgid "Start Sort"
+msgstr ""
+
+#: rules/forms.py:14
+msgid "End Sort"
+msgstr ""
+
+#: rules/forms.py:15
+msgid "Mod Exception"
+msgstr ""
+
+#: rules/forms.py:16
+msgid "Weight 0"
+msgstr "Schwere 0"
+
+#: rules/forms.py:17
+msgid "Weight 1"
+msgstr "Schwere 1"
+
+#: rules/forms.py:18
+msgid "Weight 2"
+msgstr "Schwere 2"
+
+#: rules/forms.py:19
+msgid "Weight 3"
+msgstr ""
+
+#: rules/forms.py:20
+msgid "Weight 4"
+msgstr ""
+
+#: rules/forms.py:21
+msgid "Weight 5"
+msgstr ""
+
+#: rules/forms.py:22
+msgid "Weight 6"
+msgstr ""
+
+#: rules/forms.py:23
+msgid "Weight 7"
+msgstr ""
+
+#: rules/forms.py:24
+msgid "Weight 8"
+msgstr ""
+
+#: rules/forms.py:25
+msgid "Weight 9"
+msgstr ""
+
+#: rules/forms.py:26
+msgid "Weight 10"
+msgstr ""
+
+#: rules/forms.py:27
+msgid "Weight 11"
+msgstr ""
+
+#: rules/forms.py:28
+msgid "Weight 12"
+msgstr ""
+
+#: rules/forms.py:29
+msgid "Weight 13"
+msgstr ""
+
+#: rules/forms.py:30
+msgid "Active"
+msgstr ""
+
+#: rules/models.py:41
+msgid "from this sort code"
+msgstr "schwein!9"
+
+#: rules/models.py:42
+msgid "to this sort code"
+msgstr "schwein!10"
+
+#: rules/models.py:43
+#, fuzzy
+#| msgid "determine which calculation to apply"
+msgid "determine which algorithm to apply"
+msgstr "schwein!11"
+
+#: rules/models.py:44
+msgid "exception rule"
+msgstr "schwein!12"
+
+#, fuzzy
+#~| msgid "Sort code must be 6 digits"
+#~ msgid "Sort code must be digit or %"
+#~ msgstr "schwein!2"
+
+#, fuzzy
+#~| msgid "Sort Code must be numeric"
+#~ msgid "Sort Code must be entered"
+#~ msgstr "schwein!1"

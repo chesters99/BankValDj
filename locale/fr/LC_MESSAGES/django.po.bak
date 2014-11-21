@@ -1,0 +1,67 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-09-11 19:32+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: accounts/forms.py:14
+msgid "Sort Code must be numeric"
+msgstr "merde!5"
+
+#: accounts/forms.py:16
+msgid "Sort code must be 6 digits"
+msgstr "merde!4"
+
+#: accounts/forms.py:22
+msgid "Account Number must be numeric"
+msgstr "merde!3"
+
+#: accounts/forms.py:24
+msgid "Account Number must be between 6 and 11 digits"
+msgstr "merde!2"
+
+#: accounts/forms.py:31
+msgid "Sort Code = Account Number. Is that right?!?"
+msgstr "merde!1"
+
+#: main/forms.py:14
+msgid "Username must be more than 5 characters"
+msgstr "merde!6"
+
+#: main/forms.py:20
+msgid "Password must be more than 5 characters"
+msgstr "merde!7"
+
+#: main/forms.py:27
+msgid "Username cannot be the same as password"
+msgstr "merde!8"
+
+#: rules/models.py:40
+msgid "from this sort code"
+msgstr "stupide!1"
+
+#: rules/models.py:41
+msgid "to this sort code"
+msgstr "stupide!2"
+
+#: rules/models.py:42
+msgid "determine which calculation to apply"
+msgstr "stupide!3"
+
+#: rules/models.py:43
+msgid "exception rule"
+msgstr "stupide!4"

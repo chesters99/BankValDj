@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block content %}
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
+        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et
+        commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris.
+    </p><br>
+
+    <div class="col-xs-7">
+        <h4>Recent Updates <small>(by most recent)</small></h4>
+        {% for log in logs %}
+            <p class="small">{{ log.timestamp }} {{ log.action }} {{ log.extra }}</p>
+        {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+        <div class="col-xs-4 well">
+            <h4>Subscribe</h4>
+            <form class="col-xs-6" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                <input type="hidden" name="cmd" value="_s-xclick">
+                <input type="hidden" name="hosted_button_id" value="7P7FY846JN3T6">
+                <input type="hidden" name="on0" value="Duration">Duration
+                    <select class="form-control" name="os0">
+                        <option value="1 Week">1 Week £5.00 GBP</option>
+                        <option value="4 Weeks">4 Weeks £10.00 GBP</option>
+                        <option value="6 months">6 months £20.00 GBP</option>
+                        <option value="1 Year">1 Year £30.00 GBP</option>
+                    </select>
+                <br/>
+                <input type="hidden" name="currency_code" value="GBP">
+                <input class="btn btn-success" type="submit" name="submit" value="subscribe" alt="PayPal">
+            </form>
+        </div>
+    {% endif %}
+
+{% endblock %}
+

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Rule Detail{% endblock %}
+  style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 1.8;"
+{% block content %}
+<ul class="col-xs-12 list-unstyled">
+    <li class="col-xs-6"><span class="col-xs-4"><b>Start Sort:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.start_sort }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>End Sort:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.end_sort }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Mod Rule:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.mod_rule }}</span> </li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Mod Exception:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.mod_exception }}&nbsp</span> </li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 0:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight0 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 1:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight1 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 2:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight2 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 3:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight3 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 4:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight4 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 5:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight5 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 6:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight6 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 7:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight7 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 8:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight8 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 9:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight9 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 10:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight10 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 11:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight11 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 12:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight12 }}</span></li>
+    <li class="col-xs-6"><span class="col-xs-4"><b>Weight 13:</b></span><span class="col-xs-3"
+            style="border: 1px solid lightgrey; background-color: #f0f0f0; border-radius: 3px; line-height: 2.3;">{{ rule.weight13 }}</span></li>
+</ul>
+<hr style="margin: 5px 0 5px 0;" class="col-xs-12">
+<ul class="col-xs-12 list-unstyled">
+    <li style="margin-top: 5px" class="col-xs-6"><span class="col-xs-4"><b>Created by</b></span><span class="col-xs-6">{{ rule.created_by }}</span></li>
+    <li style="margin-top: 5px" class="col-xs-6"><span class="col-xs-4"><b>Created</b></span><span class="col-xs-6">{{ rule.created }}</span></li>
+    <li style="margin-top: 5px" class="col-xs-6"><span class="col-xs-4"><b>Updated by</b></span><span class="col-xs-6">{{ rule.updated_by }}</span></li>
+    <li style="margin-top: 5px" class="col-xs-6"><span class="col-xs-4"><b>Updated</b></span><span class="col-xs-6">{{ rule.updated }}</span></li>
+    <li style="margin-top: 5px" class="col-xs-6"><span class="col-xs-4"><b>Active</b></span><span class="col-xs-6">{{ rule.active | yesno }}</span></li>
+    <li style="margin-top: 5px" class="col-xs-6"><span class="col-xs-4"><b>Site</b></span><span class="col-xs-6">{{ rule.site }}</span></li>
+</ul>
+{% endblock %}
+
+{% block navigation %}
+<div style="margin-top: 10px" class="btn-toolbar col-xs-12">
+    <a class="btn btn-primary" href="{% url 'rules:search' %}">search rules</a>
+    <a class="btn btn-primary" href="{% url 'rules:create' %}">&nbsp&nbspadd rule&nbsp&nbsp</a>
+    <a class="btn btn-primary" href="{% url 'rules:update' pk=object.id %}">&nbsp edit rule &nbsp</a>
+    <a class="btn btn-warning"  href="{% url 'rules:delete' pk=object.id %}">delete rule</a>
+</div>
+{% endblock %}

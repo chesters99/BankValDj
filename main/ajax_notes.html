@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<!-- form with submit button goes here -->
+<div class="update_user">
+    <fieldset>
+        Update User State
+        <select name='state' class="left">
+            <option selected="selected" value="none">----</option>
+            <option value="onboarding">Onboarding Page</option>
+            <option value="introvideo">Intro Video</option>
+            <option value="quiz">Course Quiz</option>
+        </select>
+    </fieldset>
+    <input type="submit" value="Update">
+
+    <div class="result"></div>
+</div>
+</body>
+
+<!-- requires JQUERY here -->
+<script>
+    $('div.update_user input').on('click', function () {
+        $this = $(this);
+        var user = $this.data('id');
+        var state = $this.parent().find('select').val();
+
+        $.post(
+                "{{ url('update-user') }}",
+                {'user': user, 'state': state},
+                function (data) {
+                    $(".result").html(data);
+                });
+    });
+</script>
+</html>
+
+<!-- urls.py
+url(r'^update/$', staff_member_required(updateUser), name='update-use
+-->
+<!-- views.py
+def updateUser(request):
+    user_id = request.POST['user_id']
+    state = request.POST['state']
+    if request.method == 'POST':
+        user = User.objects.get(id=user_id)
+        user_page = UserPage.objects.get(user=user)
+-->

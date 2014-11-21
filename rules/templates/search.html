@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Rule Search{% endblock %}
+
+{% block content %}
+    <form class="row form-group col-xs-12" action="{% url 'rules:search' %}" method="get" name="form">
+        <div class="col-xs-2">
+            <input class="form-control" type="text" name="q" placeholder="sort code" maxlength="6" value="{{ view.request.GET.q }}"/>
+        </div>
+        <div class="col-xs-2">
+            <input class="btn btn-primary" type="submit" value="search"/>
+        </div>
+        <div class="col-xs-2">
+            <input id="search" class="form-control" type="text" placeholder="ajax filter" maxlength="6"/>
+        </div>
+        <a class="btn btn-warning pull-right" href="{% url 'rules:create' %}">add rule</a>
+    </form>
+
+    <div id="results">
+        {% if object_list %}
+            <table class="table table-bordered table-condensed" style="width: auto;">
+                <tr>
+                    <th>Id</th><th>Start Sort</th><th>End Sort</th><th>Rule</th>
+                    <th>W 0</th><th>W 1</th><th>W 2</th><th>W 3</th><th>W 4</th><th>W 5</th><th>W 6</th><th>W 7</th><th>W 8</th>
+                    <th>W 9</th><th>W 10</th><th>W 11</th><th>W 12</th><th>W 13</th><th>Ex</th><th></th><th></th><th></th>
+                </tr>
+                {% for rule in object_list %}
+                    <tr>
+                        <td><a href="{%  url 'rules:detail' rule.id %}">{{ rule.id }}</a></td>
+                        <td>{{ rule.start_sort }}</td><td>{{ rule.end_sort }}</td><td>{{ rule.mod_rule }}</td>
+                        <td>{{ rule.weight0 }}</td><td>{{ rule.weight1 }}</td><td>{{ rule.weight2 }}</td><td>{{ rule.weight3 }}</td>
+                        <td>{{ rule.weight4 }}</td><td>{{ rule.weight5 }}</td><td>{{ rule.weight6 }}</td><td>{{ rule.weight7 }}</td>
+                        <td>{{ rule.weight8 }}</td><td>{{ rule.weight9 }}</td><td>{{ rule.weight10 }}</td><td>{{ rule.weight11 }}</td>
+                        <td>{{ rule.weight12 }}</td><td>{{ rule.weight13 }}</td><td>{{ rule.mod_exception }}</td>
+                        <td><a class="btn btn-xs btn-primary" href="{% url 'rules:detail' pk=rule.id %}">detail</a></td>
+                        <td><a class="btn btn-xs btn-warning" href="{% url 'rules:update' pk=rule.id %}">edit</a></td>
+                        <td><a class="btn btn-xs btn-danger" href="{% url 'rules:delete' pk=rule.id %}">delete</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+    <ul class="pagination pagination-sm" style="margin: 0;">
+        {% if page_obj.has_previous %}
+            <li>
+                <a href="?q={{ view.request.GET.q }}&page={{ page_obj.previous_page_number }}">&laquo;</a>
+            </li>
+        {% endif %}
+        {%  if object_list %}
+            {% for pg in paginator.page_range %}
+                {%  if pg > page_obj.number|add:"-6" and  pg < page_obj.number|add:"6"%}
+                    {% if page_obj.number == pg %}
+                        <li class="active">
+                            <a href="?q={{ view.request.GET.q }}&page={{ pg }}">{{ pg }}</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="?q={{ view.request.GET.q }}&page={{ pg }}">{{ pg }}</a>
+                        </li>
+                    {% endif %}
+                {%  endif %}
+            {% endfor %}
+        {%  endif %}
+        {% if page_obj.has_next %}
+            <li>
+                <a href="?q={{ view.request.GET.q }}&page={{ page_obj.next_page_number }}">&raquo;</a>
+            </li>
+        {% endif %}
+        {% if paginator.num_pages > 12 %}
+            <li>&nbsp;&nbsp;({{ paginator.num_pages }} pages available)</li>
+        {% endif %}
+    </ul>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $(function() {
+            $('#search').keyup(function() {
+                $.ajax({
+                    type: "POST",
+                    url: "/en/rules/ajax_search",
+                    data: {
+                        'search_text': $('#search').val(),
+                        'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+                          },
+                    success: searchSuccess,
+                    dataType: 'html'
+                });
+            });
+        });
+
+        function searchSuccess(data, textStatus, jqXHR)
+        {
+            $('#results').html(data)
+        }
+    </script>
+{% endblock javascript %}

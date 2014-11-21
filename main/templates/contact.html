@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Information{% endblock %}
+
+{% block content %}
+<p>
+Contact Details.
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut 
+labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco 
+laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in 
+voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat 
+cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et 
+commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. 
+</p><br/>
+
+<h4>Contact Email</h4>
+<div class="row col-xs-10">
+    <button id ="text_email" class="col-xs-2 btn btn-primary" type="button">
+        <span class="glyphicon glyphicon-envelope"></span> Text Email
+    </button>
+    <span id="text_email_result"></span>
+</div>
+<div class="col-xs-10">&nbsp</div>
+
+<div class="row col-xs-10">
+    <button id ="html_email" class="col-xs-2 btn btn-primary" type="button">
+        <span class="glyphicon glyphicon-envelope"></span> HTML Email
+    </button>
+    <span id="html_email_result"></span>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $(function() {
+            $('#text_email').click(function() {
+                $.ajax({
+                    type: "POST",
+                    url: "/en/main/text_email/",
+                    data: { },
+                    success: sendTextEmail,
+                    dataType: 'html'
+                });
+            });
+        });
+        function sendTextEmail(data, textStatus, jqXHR)
+        {
+            $('#text_email_result').html(data).addClass('col-xs-2 alert alert-info').css('padding', '6px').css('margin', '0');
+        }
+
+        $(function() {
+            $('#html_email').click(function() {
+                $.ajax({
+                    type: "POST",
+                    url: "/en/main/html_email/",
+                    data: { },
+                    success: sendHTMLEmail,
+                    dataType: 'html'
+                });
+            });
+        });
+        function sendHTMLEmail(data, textStatus, jqXHR)
+        {
+            $('#html_email_result').html(data).addClass('col-xs-2 alert alert-info').css('padding', '6px').css('margin', '0');
+        }
+    </script>
+{% endblock javascript %}

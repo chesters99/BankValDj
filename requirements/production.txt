@@ -1,0 +1,4 @@
+# include the base requirements file
+-r base.txt 
+
+# no additional requirements beyond base.txt requirements 

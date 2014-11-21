@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Page not found{% endblock %}
+	
+{% block content %} 
+<p class="error">Sorry, but the requested page could not be found.</p>
+<br>
+<a class="btn btn-link" href="{% url 'index' %}">Click <b>here</b> to go back to the home page</a>
+<br>
+<button class="btn btn-link" onclick="window.history.back();">Or click <b>here</b> to go back a page</button>
+{% endblock %}

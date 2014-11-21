@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Load Rules{% endblock %}
+
+{% block content %}
+<p class=""><b>Suggested Files....</b></p>
+<p class="small"><b>Vocalink: </b> {{ form.initial.vocalink_filename }}</p>
+<p class="small"><b>Local file: </b> {{ form.initial.filename }}</p> 
+<div class="col-xs-12">&nbsp</div>
+<form class="col-xs-12 form-horizontal" name="form" action="" method ="post"> {% csrf_token %}
+    {% for field in form %}
+        <div class="form-group col-xs-12">
+            <div class="col-xs-2">{{ field.label_tag }}</div>
+            <div class="col-xs-6">{{ field }}</div>
+            <div class="col-xs-4" id="{{ form.auto_id }}_errors">{{ field.errors }}</div>
+        </div>
+    {% endfor %}
+    <div class="col-xs-12">&nbsp</div>
+    <input class="btn btn-primary" name="submit" type="submit" value="Load File"/>
+</form>
+{% endblock %}
+

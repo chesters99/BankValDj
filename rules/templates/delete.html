@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Rule Delete{% endblock %}
+
+{% block content %} 
+<form class="col-xs-9 form-horizontal" name="form" action="{% url 'rules:delete' pk=object.id %}" method ="post">
+    {% csrf_token %}
+    <span class="col-xs-6"><b>Are you sure you want to delete {{ object }} ?</b></span>
+    <div class="col-xs-6 btn-toolbar">
+        <input class="btn btn-primary" type="submit" value="Yes, Delete"/>
+        <a class="btn btn-warning" href="{% url 'rules:detail' pk=object.id %}">No, Cancel</a>
+    </div>
+</form>
+{% endblock%}
