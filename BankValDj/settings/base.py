@@ -1,6 +1,5 @@
 import os
 
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SITE_ID = 1
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # in case debug mode is turned off this is required
@@ -77,9 +76,26 @@ MEDIA_URL = '/media/'
 LOGIN_URL = '/main/loginuser/'
 LOGIN_REDIRECT_URL = '/'
 
-TEMPLATE_DIRS = ()
-for app in LOCAL_APPS:
-    TEMPLATE_DIRS += (os.path.join(BASE_DIR, app + '/templates'), )
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'debug': True,
+            'context_processors': [
+#                'djstripe.context_processors.djstripe_settings',
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static', 'source'), )
 STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'root')
@@ -135,19 +151,6 @@ LOGGING = {
         },
     }
 }
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.request',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.core.context_processors.media',
-    'django.contrib.messages.context_processors.messages',
-    # 'django.template.loaders.app_directories.Loader',
-    'djstripe.context_processors.djstripe_settings',
-)
 
 
 DJSTRIPE_PLANS = {

@@ -2,7 +2,6 @@ import json
 from .base import *
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 with open(os.path.join(BASE_DIR, 'BankValDj', 'settings', 'secret/local_secrets.json')) as f:
     secrets = json.loads(f.read())
@@ -24,8 +23,8 @@ MIDDLEWARE_CLASSES += (
 )
 
 # import pymysql # temporary fix for broken mysql connector in 1.7
-#pymysql.install_as_MySQLdb() # temporary fix for broken mysql connector in 1.7
-#DATABASES ={ 'ENGINE': 'mysql.connector.django', # temporary fix for broken mysql connector in 1.7
+# pymysql.install_as_MySQLdb() # temporary fix for broken mysql connector in 1.7
+# DATABASES ={ 'ENGINE': 'mysql.connector.django', # temporary fix for broken mysql connector in 1.7
 
 DATABASES = {
     #    'default': {

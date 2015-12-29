@@ -33,7 +33,7 @@ class BulkTest(FormView):
     initial = {'filename': 'vocalinkTests.txt'}
 
     def form_valid(self, form, **kwargs):
-        test_task.delay(5)  # test for batch process- runs an X seconds delay
+#        test_task.delay(8)  # test for batch process- runs an X seconds delay
         filename = form.cleaned_data['filename']
         tests = BulkTestModel(os.path.join(settings.MEDIA_ROOT, filename).replace('..', ''))
         if tests.message is None:

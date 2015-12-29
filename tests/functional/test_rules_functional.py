@@ -5,7 +5,7 @@ class RulesTests(FunctionalTest):
 
     def test_search_for_a_rule_found(self):
         self.load_rules('400000')
-        self.browser.get(self.my_server_url + '/en/rules/search/')
+        self.browser.get(self.my_server_url + '/rules/search/')
         form = self.browser.find_element_by_name('form')
         sortcode_field = self.browser.find_element_by_name('q')
         sortcode_field.send_keys('400000')
@@ -16,7 +16,7 @@ class RulesTests(FunctionalTest):
 
     def test_load_rules_file(self):
         self.login()
-        self.browser.get(self.my_server_url + '/en/rules/load/')
+        self.browser.get(self.my_server_url + '/rules/load/')
         if not self.production:
             button = self.browser.find_element_by_name('submit')
             button.click()

@@ -6,4 +6,4 @@ import time
 @shared_task
 def test_task(param):
     time.sleep(param)
-    return 'task completed sleeping for %i seconds!' % param
+    return 'yes!!! task completed sleeping for %i seconds!' % param

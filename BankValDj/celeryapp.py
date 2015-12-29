@@ -25,3 +25,4 @@ def debug_task(self):
 # startup for redis, celery on local
 # redis-server /usr/local/etc/redis.conf
 # celery -A BankValDj worker -B --loglevel=INFO --concurrency=4
+# redis-cli <cr> shutdown <cr> exit <cr>

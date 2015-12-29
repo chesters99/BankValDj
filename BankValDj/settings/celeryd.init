@@ -7,7 +7,9 @@
 # :Configuration file: /etc/default/celeryd
 #
 # See http://docs.celeryproject.org/en/latest/tutorials/daemonizing.html#generic-init-scripts
-
+# ************ startup for redis, celery on local ************
+# redis-server /usr/local/etc/redis.conf
+# celery -A BankValDj worker -B --loglevel=INFO --concurrency=4
 
 ### BEGIN INIT INFO
 # Provides:          celeryd

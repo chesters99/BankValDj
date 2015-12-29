@@ -31,7 +31,7 @@ class FunctionalTest(LiveServerTestCase):
         self.browser.quit()
 
     def login(self):
-        self.browser.get(self.my_server_url + '/en/main/loginuser/')
+        self.browser.get(self.my_server_url + '/main/loginuser/')
         body = self.browser.find_element_by_tag_name('body')
         self.assertIn('Username', body.text)
         username_field = self.browser.find_element_by_name('username')
@@ -63,7 +63,7 @@ class UnitTest(TestCase):
         pass
 
     def login_as_superuser(self, client):
-        response = client.post('/en/main/loginuser/', {'username': 'graham', 'password': 'testpass'})
+        response = client.post('/main/loginuser/', {'username': 'graham', 'password': 'testpass'})
         assert response.status_code == 302
 
     def load_rules(self, sort_code=None):

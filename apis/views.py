@@ -1,8 +1,7 @@
-from rest_framework import serializers, status, viewsets
+from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.routers import DefaultRouter
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListAPIView
 from accounts.utils.BankValidator import Validator
 from rules.models import Rule
 
@@ -33,10 +32,9 @@ class ValidateSerialiser(serializers.Serializer):
     sort_code = serializers.CharField(max_length=6)
     account_number = serializers.CharField(max_length=11)
 
-
 @api_view(['POST'])
 def validate(request):  # pseudo-RESTful API
-    serializer = ValidateSerialiser(data=request.DATA)
+    serializer = ValidateSerialiser(data=request.data)
     if serializer.is_valid():
         bv = Validator()
         if bv.validate(sort_code=serializer.data['sort_code'],
@@ -51,30 +49,32 @@ def validate(request):  # pseudo-RESTful API
 
 
 class RuleSerializer(serializers.ModelSerializer):
-    created_by = serializers.IntegerField(required=False)
-    updated_by = serializers.IntegerField(required=False)
-    site = serializers.IntegerField(required=False)
 
     class Meta:
         model = Rule
 
-    def get_validation_exclusions(self, *args, **kwargs):
-        exclusions = super(RuleSerializer, self).get_validation_exclusions()
-        return exclusions + ['created_by', 'updated_by', 'site']
 
-    def restore_object(self, attrs, instance=None):
-        instance = super().restore_object(attrs, instance)
-        request = self.context.get('request', None)
-        setattr(instance, 'updated_by', request.user)
-        if request.method == 'POST':
-            setattr(instance, 'created_by', request.user)
-        return instance
-
-
-class RuleViewSet(viewsets.ModelViewSet):
-    queryset = Rule.objects.all()
+class RuleView(ListAPIView):
+    model = Rule
     serializer_class = RuleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
 
-rules_router = DefaultRouter()
-rules_router.register(r'rules', RuleViewSet)
+    def get_queryset(self):
+        pk = self.request.query_params.get('pk', None)
+        if pk:
+            return Rule.objects.filter(pk=pk)
+        else:
+            start_sort = self.request.query_params.get('start_sort', None)
+            end_sort = self.request.query_params.get('end_sort', None)
+            if start_sort is not None and end_sort is not None:
+                return Rule.objects.filter(start_sort__gt=start_sort, end_sort__lt=end_sort)
+            else:
+                return Rule.objects.filter(start_sort='XXXXXX')
+
+
+class RuleChange(RetrieveUpdateDestroyAPIView):
+    model = Rule
+    serializer_class = RuleSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Rule.objects.filter(pk=pk)

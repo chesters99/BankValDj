@@ -1,8 +1,8 @@
-from django.conf.urls import patterns, url, include
-from apis.views import rules_router
+from django.conf.urls import url
+from apis.views import RuleView, RuleChange, validate
 
-
-urlpatterns = patterns('apis.views',
-    url(r'^validate/$', 'validate', name='validate'),
-    url(r'^', include(rules_router.urls)),
-)
+urlpatterns = [
+    url(r'^validate/$', validate, name='validate'),
+    url(r'^rules/$', RuleView.as_view(), name='ruleview'),
+    url(r'^rulechg/(?P<pk>\d+)/$', RuleChange.as_view(), name='rulechg'),
+]
