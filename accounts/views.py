@@ -4,7 +4,7 @@ from django.views.generic import FormView
 from .forms import ValidateAccountForm, BulkTestForm
 from .utils import Validator, BulkTestModel
 from django.conf import settings
-from .tasks import test_task
+# from .tasks import test_task
 
 
 class ValidateAccount(FormView):
@@ -33,7 +33,7 @@ class BulkTest(FormView):
     initial = {'filename': 'vocalinkTests.txt'}
 
     def form_valid(self, form, **kwargs):
-#        test_task.delay(8)  # test for batch process- runs an X seconds delay
+        # test_task.delay(8)  # test for batch process- runs an X seconds delay
         filename = form.cleaned_data['filename']
         tests = BulkTestModel(os.path.join(settings.MEDIA_ROOT, filename).replace('..', ''))
         if tests.message is None:
@@ -54,7 +54,7 @@ class BulkTest(FormView):
 #
 # method-based equivalents to the above shown as best-practice examples
 #
-#def ValidateFormView(request, template_name = 'templates/validate_form_view.html'):
+# def ValidateFormView(request, template_name = 'templates/validate_form_view.html'):
 #    form = ValidateAccountForm(request.POST if request.method == 'POST' else None)
 #    if form.is_valid(): == None:
 #        sort_code = form.cleaned_data['sort_code']
@@ -66,7 +66,7 @@ class BulkTest(FormView):
 #            messages.error(request, sort_code+' '+account_number+' is not Valid: ' + bv.message)
 #    return render(request, template_name, {'form': form)
 #
-#def bulktest(request, template_name = 'templates/bulktest.html'):
+# def bulktest(request, template_name = 'templates/bulktest.html'):
 #    filename = './static/static/vocalinkTests.txt' # set default for display on form
 #    form = ValidateAccountForm(request.POST if request.method == 'POST' else None)
 #    if form.is_valid():

@@ -47,7 +47,7 @@ class LoadRulesForm(forms.Form):
         attrs={'class': 'form-control', 'placeholder': 'local or http file'}))
 
 
-#class RuleSearchForm(forms.Form):
+# class RuleSearchForm(forms.Form):
 #     sort_code = forms.CharField(required=False, max_length=6, widget=forms.TextInput(
 #         attrs={'class': 'form-control', 'placeholder': 'wildcard is %'}))
 #

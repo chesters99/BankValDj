@@ -1,9 +1,9 @@
-import math
+from math import floor
 
 from rules.models import Rule
 
 
-class RuleModel():
+class RuleModel:
     """ The RuleModel class holds an array of the applicable templates for a sort
         code and a function to get these templates (__init__)"""
 
@@ -28,7 +28,7 @@ class RuleModel():
                                           rule.weight10, rule.weight11, rule.weight12, rule.weight13]
 
 
-class BulkTestModel():
+class BulkTestModel:
     """Class reads a list of test cases from a text file into a tuple called *test* """
 
     def __init__(self, filename):
@@ -40,8 +40,8 @@ class BulkTestModel():
             return
 
 
-class Validator():
-    """ Contains all the logic and data to templates UK Bank Accounts"""
+class Validator:
+    """ Contains all the logic and data to modulus check UK Bank Accounts"""
     EXCEPTION5_OVERRIDE1 = (0, 0, 1, 2, 5, 3, 6, 4, 8, 7, 10, 9, 3, 1)
     EXCEPTION5_OVERRIDE2 = (0, 0, 0, 0, 0, 0, 0, 0, 8, 7, 10, 9, 3, 1)
     EXCEPTION5_TABLE = {
@@ -57,7 +57,12 @@ class Validator():
         self.message = None
 
     def _standardise(self, sort_code, account_number):
-        """This function adjusts the sort code and account number formats"""
+        """This function adjusts the sort code and account number formats
+
+        :param sort_code: sort code
+        :param account_number: account number
+        :return: sort code and account number tuple
+        """
         account_number = account_number.replace('-', '')
         if not sort_code.isdigit():
             self.message = 'Sort Code must be numeric:' + sort_code
@@ -85,12 +90,18 @@ class Validator():
         return sort_code, account_number
 
     def _modulus_check(self, sort_code, account_number, rule):
-        """Calculates the modulus and returns the remainder (failed if > 0)"""
+        """Calculates the modulus and returns the remainder (failed if > 0)
+
+        :param sort_code: sort code
+        :param account_number: account number
+        :param rule: rule to be applied
+        :return: remainder
+        """
         total = 0
         for i in range(0, 14):
             temp = int((sort_code + account_number)[i]) * int(rule['weight'][i])
             if rule['mod_rule'] == Rule.DOUBLE_ALT:
-                total += temp % 10 + math.floor(temp / 10)
+                total += temp % 10 + floor(temp / 10)
             else:
                 total += temp
         if rule['mod_exception'] == '1':
@@ -122,33 +133,29 @@ class Validator():
                     remainder = 999
         else:
             remainder = -1  # invalid modulus rule - ie corrupt rule file
-
         return remainder
 
     def validate(self, sort_code, account_number):
-        """ 
-        Perform modulus-based UK Bank Account validations
-        Arguments: 
-            | Sort Code (*str*) : 6 characters
-            | Account Number (*str*) : 6-11 Characters
-        Returns:
-            | if account is valid then returns *True* and *self.message* = None (unless there is a warning)
-            | if account is not valid then returns *False* and description in *self.message*
-        """
+        """ Perform modulus-based UK Bank Account validations
 
+        :param sort_code: (*str*) : 6 characters
+        :param account_number: (*str*) : 6-11 Characters
+        :return: if account is valid then returns *True* and *self.message* = None (unless there is a warning).
+                 if account is not valid then returns *False* and description in *self.message*
+        """
         # Step 1 - Check sort code and account number are in correct format and adjust if possible
         self.message = None
         (sort_code, account_number) = self._standardise(sort_code, account_number)
         if self.message is not None:
             return False
 
-        #Step 2 - Get the first and second applicable modulus templates
+        # Step 2 - Get the first and second applicable modulus templates
         r_model = RuleModel(sort_code)
         if r_model.message is not None:
             self.message = r_model.message
             return True  # if cant templates then must assume Bank Account is valid
 
-        #Step 3 - Apply nasty exception handling overrides
+        # Step 3 - Apply nasty exception handling overrides
         if r_model.rule[0]['mod_exception'] in ('2', '9'):
             if account_number[0] != '0' and account_number[6] != '9':
                 r_model.rule[0]['weight'] = r_model.rule[1]['weight'] = self.EXCEPTION5_OVERRIDE1
