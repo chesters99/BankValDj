@@ -79,6 +79,7 @@ class CreateUser(FormView):
             context['users'] = User.objects.all()
         return self.render_to_response(context)
 
+
 @class_decorator(login_required)  # needs import from another app....
 class LogoutUser(RedirectView):
     permanent = False
@@ -116,8 +117,8 @@ def html_email(request):
 
 # method based equivalents shown here as a best-practice pattern 
 #
-#@login_required
-#def adduser(request, template_name='templates/adduser.html'):
+# @login_required
+# def adduser(request, template_name='templates/adduser.html'):
 #    """ add new use and display current users in table """
 #    title = 'Add New User'
 #    form = AddUserForm(request.POST if request.method == 'POST' or None)
