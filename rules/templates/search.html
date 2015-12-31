@@ -79,7 +79,7 @@
             $('#search').keyup(function() {
                 $.ajax({
                     type: "POST",
-                    url: "/en/rules/ajax_search",
+                    url: {% url 'ajax_search' %}, /* "/rules/ajax_search", */
                     data: {
                         'search_text': $('#search').val(),
                         'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()

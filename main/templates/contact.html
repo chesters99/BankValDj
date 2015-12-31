@@ -38,7 +38,7 @@ commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin ma
             $('#text_email').click(function() {
                 $.ajax({
                     type: "POST",
-                    url: "/en/main/text_email/",
+                    url: "/main/text_email/",
                     data: { },
                     success: sendTextEmail,
                     dataType: 'html'
@@ -54,7 +54,7 @@ commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin ma
             $('#html_email').click(function() {
                 $.ajax({
                     type: "POST",
-                    url: "/en/main/html_email/",
+                    url: "/main/html_email/",
                     data: { },
                     success: sendHTMLEmail,
                     dataType: 'html'
