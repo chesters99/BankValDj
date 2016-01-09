@@ -29,7 +29,6 @@ def latest_update(self, *args, **kwargs):
     return Rule.objects.all().latest("updated").updated
 
 
-@class_decorator(last_modified(latest_update))
 class Search(ListView):
     model = Rule
     paginate_by = 11
