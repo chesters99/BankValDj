@@ -8,6 +8,6 @@ urlpatterns = [
     url(r'^update/(?P<pk>\d+)/$', views.Update.as_view(), name='update'),
     url(r'^delete/(?P<pk>\d+)/$', views.Delete.as_view(), name='delete'),
     url(r'^load/$', views.Load.as_view(), name='load'),
-    url(r'^ajax_search', views.ajax_search, name='ajax_search'),
+    url(r'^ajax_search/$', views.ajax_search, name='ajax_search'),
     url(r'^rss/$', views.RssFeed()),
 ]
