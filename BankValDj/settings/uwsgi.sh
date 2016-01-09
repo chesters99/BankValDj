@@ -15,7 +15,7 @@ prog=$(basename $uwsgi)
 lockfile="/var/run/${prog}/${prog}.lock"
 pidfile="/var/run/${prog}/${prog}.pid"
 
-DAEMON_OPTS="--emperor /etc/uwsgi/vassals --uid <username> --gid nginx --pidfile $pidfile"
+DAEMON_OPTS="--emperor /etc/uwsgi/vassals --uid <username> --gid nginx --pidfile $pidfile --https2"
 
 start() {
     [ -x $uwsgi ] || exit 5

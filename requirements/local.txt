@@ -14,6 +14,7 @@ pytest-cov>=1.8.0               # coverage reporting for py.test
 selenium>=2.43.0		        # browser based testing package
 pytest>=2.6.2                   # python testing module
 pytest-django>=2.6.2		    # use py.test with Django
+pyOpenSSL>=0.15                 # required for runserver_plus on SSL
 
 # the following must be installed with pip2.6 to make Fabric deployment tool work
 # fabric
