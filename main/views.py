@@ -21,22 +21,18 @@ from .forms import CreateUserForm
 from main.decorators import class_decorator
 
 
-class EventLogMixin(object):
-    def get_context_data(self, **kwargs):
-        context = super(EventLogMixin, self).get_context_data(**kwargs)
-        # now = timezone.now()
-        # start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        context['logs'] = Log.objects.order_by('-timestamp')[:10]
-        return context
-
-
 @receiver(user_login_failed)
 def delay_next_login(sender, credentials, **kwargs):
     sleep(2)
 
 
-class IndexView(EventLogMixin, TemplateView):
+class IndexView(TemplateView):
     template_name = 'index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['logs'] = Log.objects.order_by('-timestamp')[:10]
+        return context
 
 
 class Graph(TemplateView):
