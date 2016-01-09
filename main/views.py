@@ -1,7 +1,10 @@
 """ views for application root """
+from time import sleep
 from django.contrib import auth
+from django.contrib.auth import user_login_failed
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
+from django.dispatch import receiver
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template import Context
@@ -25,6 +28,11 @@ class EventLogMixin(object):
         # start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
         context['logs'] = Log.objects.order_by('-timestamp')[:10]
         return context
+
+
+@receiver(user_login_failed)
+def delay_next_login(sender, credentials, **kwargs):
+    sleep(2)
 
 
 class IndexView(EventLogMixin, TemplateView):
