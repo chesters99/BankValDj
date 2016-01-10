@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 
@@ -14,6 +15,14 @@ class DeleteMessageMixin(object):
         if delete_message:
             messages.success(request, delete_message)
         return super(DeleteMessageMixin, self).delete(request, *args, **kwargs)
+
+
+class ActiveLoginRequiredMixin(LoginRequiredMixin):
+    """ CBV mixin which verifies that the current user is active AND authenticated. """
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_active:
+            return self.handle_no_permission()
+        return super(ActiveLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
 def class_decorator(decorator):  # applies a method decorator to a class

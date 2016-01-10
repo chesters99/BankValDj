@@ -1,19 +1,17 @@
 from django.db import transaction
 from django.views.decorators.cache import cache_control
-from django.contrib.auth.decorators import login_required
 from django.views.generic import FormView, TemplateView
 from django.core.urlresolvers import reverse_lazy
 from django.conf import settings
 from djstripe.models import Customer
 from main.countries import COUNTRIES
-from main.decorators import class_decorator
+from main.decorators import class_decorator, ActiveLoginRequiredMixin
 from main.models import UserProfile
 from .forms import StripeForm
 
 
 @class_decorator(cache_control(private=True))
-@class_decorator(login_required)
-class SubscribeView(FormView):
+class SubscribeView(ActiveLoginRequiredMixin, FormView):
     template_name = 'subscribe.html'
     form_class = StripeForm
     success_url = reverse_lazy('subs:thank_you')

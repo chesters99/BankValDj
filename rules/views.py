@@ -1,19 +1,18 @@
-from django.views.decorators.csrf import csrf_exempt
-import os
+from os import path
 from django.contrib.syndication.views import Feed
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, FormView
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.conf import settings
 from django.views.decorators.http import last_modified
 
 from .models import Rule, load_rules, get_rules
 from .forms import RuleForm, LoadRulesForm
-from main.decorators import DeleteMessageMixin, class_decorator
+from main.decorators import DeleteMessageMixin, class_decorator, ActiveLoginRequiredMixin
 
 
 @csrf_exempt
@@ -48,8 +47,7 @@ class Detail(DetailView):
     model = Rule
 
 
-@class_decorator(login_required)
-class Update(SuccessMessageMixin, UpdateView):
+class Update(ActiveLoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Rule
     form_class = RuleForm
     template_name = 'create_update.html'
@@ -59,16 +57,14 @@ class Update(SuccessMessageMixin, UpdateView):
         return reverse('rules:detail', kwargs={'pk': self.object.pk})
 
 
-@class_decorator(login_required)
-class Delete(DeleteMessageMixin, DeleteView):
+class Delete(ActiveLoginRequiredMixin, DeleteMessageMixin, DeleteView):
     model = Rule
     template_name = 'delete.html'
     delete_message = 'Rule Deleted (Inactivated) Successfully'
     success_url = reverse_lazy('rules:search')
 
 
-@class_decorator(login_required)
-class Create(SuccessMessageMixin, CreateView):  # Using Generic class-based View
+class Create(ActiveLoginRequiredMixin, SuccessMessageMixin, CreateView):  # Using Generic class-based View
     model = Rule
     form_class = RuleForm
     template_name = 'create_update.html'
@@ -78,8 +74,7 @@ class Create(SuccessMessageMixin, CreateView):  # Using Generic class-based View
         return reverse('rules:detail', kwargs={'pk': self.object.id})
 
 
-@class_decorator(login_required)
-class Load(FormView):
+class Load(ActiveLoginRequiredMixin, FormView):
     form_class = LoadRulesForm
     template_name = 'load.html'
     initial = {'filename': 'valacdos.txt', 'vocalink_filename': 'http://www.vocalink.com/media/307043/valacdos.txt'}
@@ -89,7 +84,7 @@ class Load(FormView):
         context['form'] = form
         filename = form.cleaned_data['filename']
         if not 'http' in filename:
-            filename = os.path.join(settings.MEDIA_ROOT, filename).replace('..', '')
+            filename = path.join(settings.MEDIA_ROOT, filename).replace('..', '')
         rows = get_rules(filename)
         if not rows:
             messages.error(self.request, 'Cant open file: ' + filename)

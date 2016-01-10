@@ -6,7 +6,6 @@ from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.dispatch import receiver
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
 from django.template import Context
 from django.template.loader import render_to_string, get_template
 from django.views.decorators.cache import never_cache
@@ -18,7 +17,7 @@ from django.db import IntegrityError, transaction
 from django.contrib import messages
 from eventlog.models import Log
 from .forms import CreateUserForm
-from main.decorators import class_decorator
+from main.decorators import class_decorator, ActiveLoginRequiredMixin
 
 
 @receiver(user_login_failed)
@@ -52,9 +51,8 @@ class Graph(TemplateView):
 
 
 @class_decorator(never_cache)
-@class_decorator(login_required)  # needs import from another app....
 @class_decorator(sensitive_post_parameters('password'))
-class CreateUser(FormView):
+class CreateUser(ActiveLoginRequiredMixin, FormView):
     form_class = CreateUserForm
     template_name = 'create_user.html'
 
@@ -84,8 +82,7 @@ class CreateUser(FormView):
         return self.render_to_response(context)
 
 
-@class_decorator(login_required)  # needs import from another app....
-class LogoutUser(RedirectView):
+class LogoutUser(ActiveLoginRequiredMixin, RedirectView):
     permanent = False
     query_string = True
 
