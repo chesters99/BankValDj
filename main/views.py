@@ -21,7 +21,7 @@ from main.decorators import class_decorator, ActiveLoginRequiredMixin
 
 
 @receiver(user_login_failed)
-def delay_next_login(sender, credentials, **kwargs):
+def delay_next_login(*args, **kwargs):
     sleep(2)
 
 
@@ -63,9 +63,7 @@ class CreateUser(ActiveLoginRequiredMixin, FormView):
             context['users'] = User.objects.all()
             try:
                 with transaction.atomic():  # needed to ensure User and UserProfile are in sync
-                    user = User.objects.create(username=form.cleaned_data['username'])
-                    user.set_password(form.cleaned_data['password'])
-                    user.save()
+                    User.objects.create_user(form.cleaned_data['username'], None, form.cleaned_data['password'], **kwargs)
                     messages.success(self.request, "User Created Successfully")
             except IntegrityError:
                 messages.error(self.request, "Cant create user %s. User already exists" % form.cleaned_data['username'])
