@@ -84,7 +84,7 @@ TEMPLATES = [
         'OPTIONS': {
             'debug': True,
             'context_processors': [
-#                'djstripe.context_processors.djstripe_settings',
+#               'djstripe.context_processors.djstripe_settings',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',

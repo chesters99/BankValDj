@@ -7,8 +7,12 @@ from pytz import all_timezones
 from .countries import COUNTRIES
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 
 TIME_ZONE_CHOICES = [(tz, tz) for tz in all_timezones]
+
+if settings.DEBUG and Site.objects.get(pk=settings.SITE_ID).domain == 'www.example.com':
+    Site.objects.filter(pk=settings.SITE_ID).update(domain='127.0.0.1:8000')
 
 
 @receiver(post_save, sender=User)
