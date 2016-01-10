@@ -3,6 +3,16 @@
 {% block title %}Bank Validation Login{% endblock %}
 
 {% block content %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+        <p class="col-xs-9 alert alert-warning">
+            Your account doesnt have access to this page. Please login with an account with access</p>
+    {% else %}
+        <p class="col-xs-9 alert alert-warning">Please Login to see this page</p>
+    {% endif %}
+{% endif %}
+
 <form class="col-xs-12 form-horizontal" method="post" action="{% url 'main:loginuser' %}"> {% csrf_token %}
     <div class="form-group col-xs-12">
         <div class="col-xs-2">{{ form.username.label_tag }} </div>
