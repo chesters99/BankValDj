@@ -32,5 +32,19 @@
             {% endif %}
         </div>
     </form>
+    {% if perms.rules %}
+        <p>You have permissions in rules app</p>
+        {% if perms.rules.change_rule %}
+            <p>You have permissions to change rules</p>
+            {% else %}
+            <p>You DONT have permissions to change rules</p>
+        {% endif %}
+        {% if perms.rules.add_rule %}
+            <p>You have permissions to add rules</p>
+            {% else %}
+              <p>You DONT have permissions to add rules</p>
+        {% endif %}
+    {% else %}
+        <p>You DONT have permissions in rules app</p>
+    {% endif %}
 {% endblock %}
-
