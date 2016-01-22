@@ -1,7 +1,7 @@
 """ views for application root """
 from time import sleep
 from django.contrib import auth
-from django.contrib.auth import user_login_failed
+from django.contrib.auth import user_login_failed, get_user_model
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.dispatch import receiver
@@ -60,10 +60,10 @@ class CreateUser(ActiveLoginRequiredMixin, FormView):
         context = self.get_context_data(**kwargs)
         context['form'] = form
         if self.request.user.is_superuser:
-            context['users'] = User.objects.all()
+            context['users'] = get_user_model().objects.all()
             try:
                 with transaction.atomic():  # needed to ensure User and UserProfile are in sync
-                    User.objects.create_user(form.cleaned_data['username'], None, form.cleaned_data['password'], **kwargs)
+                    get_user_model().objects.create_user(form.cleaned_data['username'], None, form.cleaned_data['password'], **kwargs)
                     messages.success(self.request, "User Created Successfully")
             except IntegrityError:
                 messages.error(self.request, "Cant create user %s. User already exists" % form.cleaned_data['username'])
@@ -76,7 +76,7 @@ class CreateUser(ActiveLoginRequiredMixin, FormView):
         context = self.get_context_data(**kwargs)
         context['form'] = form
         if self.request.user.is_superuser:
-            context['users'] = User.objects.all()
+            context['users'] = get_user_model().objects.all()
         return self.render_to_response(context)
 
 

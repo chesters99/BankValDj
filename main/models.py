@@ -15,7 +15,7 @@ if settings.DEBUG and Site.objects.get(pk=settings.SITE_ID).domain == 'www.examp
     Site.objects.filter(pk=settings.SITE_ID).update(domain='127.0.0.1:8000')
 
 
-@receiver(post_save, sender=User)
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.get_or_create(user=instance)

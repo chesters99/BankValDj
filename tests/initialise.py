@@ -1,9 +1,10 @@
 import os
+
+from django.contrib.auth import get_user_model
 from django.test import LiveServerTestCase, TestCase
 from selenium import webdriver
-from django.contrib.auth.models import User
 from django.conf import settings
-from rules.models import Rule, get_rules, load_rules
+from rules.models import get_rules, load_rules
 
 
 class FunctionalTest(LiveServerTestCase):
@@ -15,7 +16,7 @@ class FunctionalTest(LiveServerTestCase):
 
         self.username = 'graham'
         self.password = 'testpass'
-        self.user = User.objects.create(id=1, username=self.username, is_superuser=True, is_staff=True)
+        self.user = get_user_model().objects.create(id=1, username=self.username, is_superuser=True, is_staff=True)
         self.user.set_password(self.password)
         self.user.save()
 
@@ -55,7 +56,7 @@ class UnitTest(TestCase):
     def setUp(self):
         self.username = 'graham'
         self.password = 'testpass'
-        self.user = User.objects.create(username=self.username, is_superuser=True, is_staff=True)
+        self.user = get_user_model().objects.create(username=self.username, is_superuser=True, is_staff=True)
         self.user.set_password(self.password)
         self.user.save()
 
