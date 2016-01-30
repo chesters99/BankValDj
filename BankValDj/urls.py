@@ -26,7 +26,8 @@ urlpatterns = i18n_patterns(
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
         auth_views.password_reset_confirm, name='password_reset_confirm'),
     url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
-    url(r'^payments/', include('djstripe.urls', namespace='djstripe'), name='payments'),)
+    url(r'^payments/', include('djstripe.urls', namespace='djstripe'), name='payments'),
+)
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
@@ -36,11 +37,7 @@ for app in settings.LOCAL_APPS:
     ]
 
 if settings.DEBUG:
-    # enable local preview of error pages
     urlpatterns += [
-        url(r'^404/$', TemplateView.as_view(template_name="404.html")),
-        url(r'^500/$', TemplateView.as_view(template_name="500.html")),
-    ]
-
-# if settings.DEBUG:
+        url(r'^404/$', TemplateView.as_view(template_name="404.html")),     # enable local preview of error pages
+        url(r'^500/$', TemplateView.as_view(template_name="500.html")), ]
 #    urlpatterns += [url(r'^silk', include('silk.urls', namespace='silk'))]

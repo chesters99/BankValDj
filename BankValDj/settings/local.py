@@ -3,6 +3,7 @@ from .base import *
 
 DEBUG = True
 
+
 with open(os.path.join(BASE_DIR, 'BankValDj', 'settings', 'secret/local_secrets.json')) as f:
     secrets = json.loads(f.read())
 SECRET_KEY = secrets["SECRET_KEY"]
@@ -14,7 +15,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # log emails t
 INSTALLED_APPS += (
     'django_extensions',
     # 'debug_toolbar',
-    #    'template_timings_panel', # for debug toolbar
+    # 'template_timings_panel',  # for debug toolbar
     #    'silk',
 )
 
@@ -49,7 +50,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',  # using sqlite as is faster than mysql for testing
         'NAME': os.path.join(BASE_DIR, 'sqlite3.db'),
-        'TEST_NAME': os.path.join(BASE_DIR, 'sqlite3_test.db'),  # needed for selenium bug using sqlite in memory
+#        'TEST_NAME': os.path.join(BASE_DIR, 'sqlite3_test.db'),  # needed for selenium bug using sqlite in memory
         # 'ATOMIC_REQUESTS': True,  # use @atomic_transaction on requests which need transactions to avoid overhead
     }
 }
@@ -60,6 +61,7 @@ CACHES = {
     }
 }
 
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',
     'debug_toolbar.panels.timer.TimerPanel',
@@ -76,4 +78,3 @@ DEBUG_TOOLBAR_PANELS = [
     'template_timings_panel.panels.TemplateTimings.TemplateTimings',
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
-

@@ -38,7 +38,7 @@ INSTALLED_APPS = (
 
 
 MIDDLEWARE_CLASSES = (
-    # 'django.middleware.cache.UpdateCacheMiddleware',  # caching must be disabled on transaction processing sites
+    # 'django.middleware.cache.UpdateCacheMiddleware',  # use caching per page, not by whole site
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -49,7 +49,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sites.middleware.CurrentSiteMiddleware',  # set site object on every request
     'django.middleware.locale.LocaleMiddleware',
     'BankValDj.middleware.CurrentUserMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware', # caching must be disabled on transaction processing sites
+    # 'django.middleware.cache.FetchFromCacheMiddleware', # use caching per page, not by whole site
 )
 
 REST_FRAMEWORK = {
@@ -79,12 +79,12 @@ LOGIN_REDIRECT_URL = '/'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
+        # 'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'debug': True,
             'context_processors': [
-#               'djstripe.context_processors.djstripe_settings',
+                # 'djstripe.context_processors.djstripe_settings',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',

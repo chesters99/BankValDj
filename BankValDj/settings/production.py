@@ -12,6 +12,9 @@ STRIPE_PUBLIC_KEY = secrets["STRIPE_PUBLIC_KEY"]
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
 ALLOWED_HOSTS = ['gchester.com', 'www.gchester.com', '54.164.140.224']  # usually overridden later by fabric deployment
 

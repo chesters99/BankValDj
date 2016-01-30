@@ -26,7 +26,7 @@ class FunctionalTest(LiveServerTestCase):
             self.my_server_url = self.hostname
         else:
             self.my_server_url = self.live_server_url
-        print('\nServer=' + self.my_server_url + '  Production=' + str(self.production))
+#        print('\nServer=' + self.my_server_url + '  Production=' + str(self.production))
 
     def tearDown(self):
         self.browser.quit()

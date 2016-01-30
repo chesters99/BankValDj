@@ -8,11 +8,10 @@ from django.dispatch import receiver
 from django.http import HttpResponse
 from django.template import Context
 from django.template.loader import render_to_string, get_template
-from django.views.decorators.cache import never_cache
+from django.views.decorators.cache import never_cache, cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView, FormView, RedirectView
-from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
 from django.contrib import messages
 from eventlog.models import Log
@@ -34,6 +33,7 @@ class IndexView(TemplateView):
         return context
 
 
+@class_decorator(cache_page(60*15))
 class Graph(TemplateView):
     template_name = 'graph.html'
 
@@ -63,7 +63,8 @@ class CreateUser(ActiveLoginRequiredMixin, FormView):
             context['users'] = get_user_model().objects.all()
             try:
                 with transaction.atomic():  # needed to ensure User and UserProfile are in sync
-                    get_user_model().objects.create_user(form.cleaned_data['username'], None, form.cleaned_data['password'], **kwargs)
+                    get_user_model().objects.create_user(form.cleaned_data['username'], None,
+                                                         form.cleaned_data['password'], **kwargs)
                     messages.success(self.request, "User Created Successfully")
             except IntegrityError:
                 messages.error(self.request, "Cant create user %s. User already exists" % form.cleaned_data['username'])

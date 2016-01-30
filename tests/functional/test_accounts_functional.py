@@ -21,6 +21,6 @@ class ValidateTests(FunctionalTest):
         button = self.browser.find_element_by_name('submit')
         button.click()
         body = self.browser.find_element_by_tag_name('body')
-        print(body.text)
+#        print(body.text)
         assert 'Valid=True' in body.text, body.text
         assert 'Valid=False' in body.text, body.text

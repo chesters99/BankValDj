@@ -11,7 +11,7 @@ def validate_card_number(card_number):
     return (total % 10) == 0
 
 
-print(validate_card_number('49927398716'))
-print(validate_card_number('49927398717'))
-print(validate_card_number('1234567812345678'))
-print(validate_card_number('1234567812345670'))
+#print(validate_card_number('49927398716'))
+#print(validate_card_number('49927398717'))
+#print(validate_card_number('1234567812345678'))
+#print(validate_card_number('1234567812345670'))
