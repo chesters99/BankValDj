@@ -38,7 +38,8 @@ INSTALLED_APPS = (
 
 
 MIDDLEWARE_CLASSES = (
-    # 'django.middleware.cache.UpdateCacheMiddleware',  # use caching per page, not by whole site
+    'django.middleware.cache.UpdateCacheMiddleware',  # use caching per page, not by whole site
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -181,6 +182,8 @@ DJSTRIPE_PLANS = {
         'interval': 'month',
     },
 }
+
+CONN_MAX_AGE = 300  # database pooling
 
 # Celery and Celerybeat settings
 BROKER_URL = 'redis://localhost:6379/0'

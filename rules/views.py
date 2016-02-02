@@ -41,10 +41,9 @@ class Search(ListView):
         return queryset
 
 
-@class_decorator(last_modified(latest_update))
 class Detail(DetailView):
     template_name = 'detail.html'
-    model = Rule
+    queryset = Rule.objects.select_related('created_by').select_related('updated_by').select_related('site').all()
 
 
 class Update(ActiveLoginRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -83,7 +82,7 @@ class Load(ActiveLoginRequiredMixin, FormView):
         context = self.get_context_data(**kwargs)
         context['form'] = form
         filename = form.cleaned_data['filename']
-        if not 'http' in filename:
+        if 'http' not in filename:
             filename = path.join(settings.MEDIA_ROOT, filename).replace('..', '')
         rows = get_rules(filename)
         if not rows:
@@ -120,7 +119,7 @@ class RssFeed(Feed):
 
 
 # method-based equivalent to the above shown as best-practice example
-#def RuleCreate(request, template_name = 'templates/rule_form.html'): # using method-based view
+# def RuleCreate(request, template_name = 'templates/rule_form.html'): # using method-based view
 #    form = RuleForm(request.POST if request.method == 'POST' else None)
 #    if form.is_valid():
 #        new_rule = form.save()

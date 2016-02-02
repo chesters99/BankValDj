@@ -40,4 +40,8 @@ if settings.DEBUG:
     urlpatterns += [
         url(r'^404/$', TemplateView.as_view(template_name="404.html")),     # enable local preview of error pages
         url(r'^500/$', TemplateView.as_view(template_name="500.html")), ]
+    import debug_toolbar
+    urlpatterns += [
+        url(r'^__debug__/', include(debug_toolbar.urls)),]
+
 #    urlpatterns += [url(r'^silk', include('silk.urls', namespace='silk'))]
