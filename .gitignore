@@ -10,7 +10,7 @@ __pycache__/
 *.py[cod]
 .cache
 .coverage
-static/less/bootstrap/
+static/bootstrap/
 static/less/*.css
 
 # project stuff
@@ -19,6 +19,7 @@ docs/build
 migrations/
 bootstrap/
 rules.json
+.vagrant/
 
 # secure stuff
 *.db
