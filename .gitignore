@@ -1,3 +1,4 @@
+
 # Mac & IDE stuff
 .DS_Store
 .nbproject*
@@ -17,6 +18,7 @@ static/root
 docs/build
 migrations/
 bootstrap/
+rules.json
 
 # secure stuff
 *.db

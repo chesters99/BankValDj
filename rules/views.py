@@ -8,11 +8,10 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.conf import settings
-from django.views.decorators.http import last_modified
 
 from .models import Rule, load_rules, get_rules
 from .forms import RuleForm, LoadRulesForm
-from main.decorators import DeleteMessageMixin, class_decorator, ActiveLoginRequiredMixin
+from main.decorators import DeleteMessageMixin, ActiveLoginRequiredMixin
 
 
 @csrf_exempt

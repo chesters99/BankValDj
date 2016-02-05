@@ -3,22 +3,24 @@
 {% block title %}Subscription{% endblock %}
 
 {% block content %}
-    <div class="col-xs-12"><b>
-        <span class="col-xs-12" data-stripe="name">{{ name }}</span>
-        <span class="col-xs-12" data-stripe="address_line1">{{ address_line1 }}</span>
-        <span class="col-xs-12" data-stripe="address_line2">{{ address_line2 }}</span>
-        <span class="col-xs-2" data-stripe="address_city">{{ city }},</span>
-        <span class="col-xs-1" data-stripe="address_state">{{ state }} </span>
-        <span class="col-xs-12" data-stripe="address_zip">{{ post_code }}</span>
-        <span class="col-xs-12" data-stripe="address_country">{{ country }}</span>
-    </b></div>
+    <div class="col-xs-12">
+        <b><span class="col-xs-12" data-stripe="name">{{ user.username }} </span></b>
+        <span class="col-xs-12" data-stripe="address_line1">{{ user.profile.address_line1 }}</span>
+        <span class="col-xs-12" data-stripe="address_line2">{{ user.profile.address_line2 }}</span>
+        <span class="col-xs-2" data-stripe="address_city">{{ user.profile.city }},</span>
+        <span class="col-xs-1" data-stripe="address_state">{{ user.profile.state }} </span>
+        <span class="col-xs-12" data-stripe="address_zip">{{ user.profile.post_code }}</span>
+        <span class="col-xs-12" data-stripe="address_country">{{ user.profile.country }}</span>
+    </div>
     <div class="col-xs-12"><hr></div>
 
-    {% if user.customer.has_active_subscription %}
-        <h5 class="col-xs-12"><b> You already have an active subscription</b></h5>
-        <p class="col-xs-12"> Active: {{ user.customer.can_charge}} </p>
-        <p class="col-xs-12"> Card Type: {{ user.customer.card_kind }} </p>
-        <p class="col-xs-12"> Last 4 digits: {{ user.customer.card_last_4 }} </p>
+    {% if customer.current_subscription.status == 'active' %}
+        <div class="col-xs-12">
+            <h5 class="col-xs-12"><b> You already have an active subscription</b></h5>
+            <span class="col-xs-12"> Up To: {{ customer.current_subscription.current_period_end }} </span>
+            <span class="col-xs-12"> Card Type: {{ customer.card_kind }} </span>
+            <span class="col-xs-12"> Last 4 digits: {{ customer.card_last_4 }} </span>
+        </div>
     {% else %}
     <form method="post" action="" id="payment-form"> {% csrf_token %}
         <div class="col-xs-12">
