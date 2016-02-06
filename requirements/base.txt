@@ -1,5 +1,3 @@
---allow-external mysql-connector-python
---allow-unverified mysql-connector-python
 #mysql-connector-python>=1.2.2  # mysql connector
 #psycopg2==2.5.3                # postgresql connector. Must have postgresql installed and in PATH
 Django==1.9.1                   # latest Django is installed from tarball instead of pip
@@ -13,3 +11,4 @@ pytz==2015.7                    # full timezone support
 django-localflavor==1.2         # for UK counties, post code validation etc
 dj-stripe==0.7.0                # Credit/Debit card payments
 redis==2.10.5                   # redis required for celery scheduler
+

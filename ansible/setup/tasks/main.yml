@@ -1,0 +1,117 @@
+---
+#################### Install base linux packages
+
+- name: Ensure key linux packages are installed and the latest versions
+  become: yes
+  become_user: root
+  yum: name={{ item }} state=latest
+  with_items:
+    - bash
+    - openssl # required for python3, pip
+    - openssl-devel # required for python3, pip
+    - libffi-devel # required for pip installs (cryptography)
+    - ntp
+    - git
+#    zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel
+  tags: packages
+
+#################### Install Python and related tools
+
+- name: Create Python temp directory
+  file: path="{{ base_dir }}/Python3" state=directory
+- name: Get Python 3
+  get_url: url=https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tar.xz
+           dest="{{ base_dir }}/Python3/Python3.tar.xz" mode=0444
+- unarchive: src="{{ base_dir }}/Python3/Python3.tar.xz" dest="{{ base_dir }}/Python3"
+             owner=vagrant copy=no
+- command: ./configure --with-ensurepip=install
+  args:
+    chdir: "{{ base_dir }}/Python3/Python-3.5.0"
+    creates: "{{ base_dir }}/Python3/Python-3.5.0/Makefile"
+- command: make
+  args:
+    chdir: "{{ base_dir }}/Python3/Python-3.5.0"
+    creates: "{{ base_dir }}/Python3/Python-3.5.0/python"
+- command: make install
+  args:
+    chdir: "{{ base_dir }}/Python3/Python-3.5.0"
+    creates: /usr/local/bin/python3
+- file: src=/usr/local/bin/python3 dest=/usr/local/bin/python state=link
+
+- pip: name=pip state=latest
+- pip: name=virtualenv
+- pip: name=virtualenvwrapper
+
+# setup virtualenvwrapper, but only useful when ssh'ed to VM
+- lineinfile: dest={{ base_dir }}/.bash_profile state=present line="export WORKON_HOME=$HOME/.virtualenvs"
+- lineinfile: dest={{ base_dir }}/.bash_profile state=present line="export PROJECT_HOME=$HOME"
+- lineinfile: dest={{ base_dir }}/.bash_profile state=present line="source /usr/local/bin/virtualenvwrapper.sh"
+
+- name: Make a virtualenv for {{ project_name }}
+  become_user: vagrant
+  shell: . /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv {{ project_name }}
+  args:
+    executable: /bin/bash
+    creates: ".virtualenvs/{{ project_name }}"
+
+- name: Pull {{ project_name }} source from the repository.
+  become_user: vagrant
+  git: repo=https://chesters99:hudson-99@github.com/chesters99/{{ project_name }}.git
+       dest={{ base_dir }}/{{ project_name }} version=master update=no accept_hostkey=True
+#  notify:
+#      - restart web frontend
+
+- name: Setup {{ project_name }} virtualenv site packages
+  pip: virtualenv={{ virtualenv_path }}
+       requirements={{ base_dir }}/{{ project_name }}/requirements/local.txt
+
+
+
+######### nginx config, redis config, usgi, check fabfile for others
+######### THEN MOVE DEPLOYMENT AWAY FROM SETUP
+
+####################
+
+- name: Install PostgreSQL
+  become: yes
+  become_user: root
+  yum: name={{ item }} state=installed
+  with_items:
+    - postgresql-server
+    - postgresql-contrib
+    - python-psycopg2
+  tags: database
+
+- name: Initialise database
+  become: yes
+  become_user: root
+  command: service postgresql initdb
+           creates=/var/lib/pgsql/data/postgresql.conf
+  tags: database
+
+- name: Ensure the PostgreSQL service is running
+  become: yes
+  become_user: root
+  service: name=postgresql state=started enabled=yes
+  tags: database
+
+- name: Ensure database is created
+  become_user: postgres
+  postgresql_db: name={{ db_name }} state=present
+
+- name: Ensure user has access to the database
+  become_user: postgres
+  postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL state=present
+
+###################
+
+- name: install the nginx rpm from a remote repo
+  yum: name=http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm state=present
+  tags: nginx
+
+- name: Create the Nginx configuration file
+  template: src=nginx.conf
+            dest=/etc/nginx/sites-available/{{ project_name }}
+            backup=yes
+  notify: reload nginx
+  tags: nginx
