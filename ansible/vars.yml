@@ -3,10 +3,13 @@
 # Application settings.
 project_name: BankValDj
 base_dir: /home/vagrant
-virtualenv_path: "{{ base_dir }}.virtualenv/{{ project_name }}"
-project_path: "{{ base_dir }}/{{ project_name }}"
-application_log_dir: "{{ base_dir }}/logs"
-requirements_file: "{{ project_path }}/requirements/local.txt"
+virtualenv_path: "{{ base_dir }}/.virtualenvs/{{ project_name }}"
+project_path: "/vagrant"
+requirements_file: "{{ project_path }}/requirements/production.txt"
+project_repo : "https://chesters99:hudson-99@github.com/chesters99/{{ project_name }}.git"
+timezone: "Europe/London"
+username: vagrant
+domain_name: gchester.com
 
 # database settings
 db_name: "{{ project_name }}"

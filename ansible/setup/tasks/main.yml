@@ -1,9 +1,9 @@
 ---
+######### nginx config, redis config, usgi, check fabfile for others
+######### add hosts - development, staging, production and read about EC2
 #################### Install base linux packages
 
 - name: Ensure key linux packages are installed and the latest versions
-  become: yes
-  become_user: root
   yum: name={{ item }} state=latest
   with_items:
     - bash
@@ -12,69 +12,77 @@
     - libffi-devel # required for pip installs (cryptography)
     - ntp
     - git
-#    zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel
   tags: packages
+
+- name: Check current timezone
+  shell: ll /etc/localtime | rev| cut -f1 -d"/" | rev
+  register: current_zone
+  changed_when: False
+
+- name: Set Europe/London timezone
+  file: src=/usr/share/zoneinfo/{{ timezone }}  dest=/etc/localtime state=link force=yes
+  when: current_zone.stdout != '{{ timezone }}'
 
 #################### Install Python and related tools
 
-- name: Create Python temp directory
+- name: Install Python3 - Create Python temp directory
+  become_user: "{{ username }}"
   file: path="{{ base_dir }}/Python3" state=directory
-- name: Get Python 3
+- name: Install Python3 - Get Python 3
+  become_user: "{{ username }}"
   get_url: url=https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tar.xz
            dest="{{ base_dir }}/Python3/Python3.tar.xz" mode=0444
-- unarchive: src="{{ base_dir }}/Python3/Python3.tar.xz" dest="{{ base_dir }}/Python3"
-             owner=vagrant copy=no
-- command: ./configure --with-ensurepip=install
+- name: Install Python3 - Unarchive Python3 tarball
+  become_user: "{{ username }}"
+  unarchive: src="{{ base_dir }}/Python3/Python3.tar.xz" dest="{{ base_dir }}/Python3"
+             owner={{ username }} copy=no creates={{ base_dir }}/Python3/Python-3.5.0
+- name: Install Python3 - Configure
+  command: ./configure --with-ensurepip=install
   args:
     chdir: "{{ base_dir }}/Python3/Python-3.5.0"
     creates: "{{ base_dir }}/Python3/Python-3.5.0/Makefile"
-- command: make
+- name: Install Python3 - Make
+  command: make
   args:
     chdir: "{{ base_dir }}/Python3/Python-3.5.0"
     creates: "{{ base_dir }}/Python3/Python-3.5.0/python"
-- command: make install
+- name: Install Python3 - Make Install
+  command: make install
   args:
     chdir: "{{ base_dir }}/Python3/Python-3.5.0"
     creates: /usr/local/bin/python3
-- file: src=/usr/local/bin/python3 dest=/usr/local/bin/python state=link
-- file: src=/usr/local/bin/pip3 dest=/usr/local/bin/pip state=link
+- name: Install Python3 - link python to python3
+  file: src=/usr/local/bin/python3 dest=/usr/local/bin/python state=link
+- name: Install Python3 - link pip to pip3
+  file: src=/usr/local/bin/pip3 dest=/usr/local/bin/pip state=link force=yes
 
-- pip: name=pip state=latest
-- pip: name=virtualenv
-- pip: name=virtualenvwrapper
+- name: ensure pip is latest version
+  pip: name=pip state=latest
+- name: Install virtualenv
+  pip: name=virtualenv
+- name: Install virtualenvwrapper
+  pip: name=virtualenvwrapper
 
-# setup virtualenvwrapper, but only useful when ssh'ed to VM
-- lineinfile: dest={{ base_dir }}/.bash_profile state=present line="export WORKON_HOME=$HOME/.virtualenvs"
-- lineinfile: dest={{ base_dir }}/.bash_profile state=present line="export PROJECT_HOME=$HOME"
-- lineinfile: dest={{ base_dir }}/.bash_profile state=present line="source /usr/local/bin/virtualenvwrapper.sh"
-  7 # Django Shortcuts
-  8 alias m='./manage.py'
-  9 alias celw='celery -A BankValDj worker --loglevel=INFO'
+- name: Add exports/aliases to bash_profile
+  blockinfile:
+    dest: "{{ base_dir }}/.bash_profile"
+    block: |
+      export WORKON_HOME=$HOME/.virtualenvs
+      export PROJECT_HOME=$HOME
+      source /usr/local/bin/virtualenvwrapper.sh
+      alias m='./manage.py'
+      alias celw='celery -A BankValDj worker --loglevel=INFO'
 
-
-
-- name: Make a virtualenv for {{ project_name }}
-  become_user: vagrant
-  shell: . /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv {{ project_name }}
+- name: Make a virtualenv for {{ project_name }} and assign to project directory
+  become_user: "{{ username }}"
+  shell: . /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv {{ project_name }} -a /vagrant
   args:
     executable: /bin/bash
     creates: ".virtualenvs/{{ project_name }}"
 
-- name: Setup {{ project_name }} virtualenv site packages
-  pip: virtualenv={{ virtualenv_path }}
-       requirements={{ base_dir }}/{{ project_name }}/requirements/local.txt
-
-
-
-######### nginx config, redis config, usgi, check fabfile for others
-######### add hosts - development, staging, production and read about EC2
-######### THEN MOVE DEPLOYMENT AWAY FROM SETUP
-
 ####################
 
 - name: Install PostgreSQL
-  become: yes
-  become_user: root
   yum: name={{ item }} state=installed
   with_items:
     - postgresql-server
@@ -83,24 +91,62 @@
   tags: database
 
 - name: Initialise database
-  become: yes
-  become_user: root
   command: service postgresql initdb
            creates=/var/lib/pgsql/data/postgresql.conf
   tags: database
 
 - name: Ensure the PostgreSQL service is running
-  become: yes
-  become_user: root
   service: name=postgresql state=started enabled=yes
   tags: database
 
 - name: Ensure database is created
   become_user: postgres
   postgresql_db: name={{ db_name }} state=present
+  tags: database
 
 - name: Ensure user has access to the database
   become_user: postgres
   postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL state=present
+  tags: database
 
+###################
+
+- name: Install nginx repo
+  yum:
+    name: http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+- name: Install Nginx
+  yum: name=nginx state=installed
+- name: enable nginx
+  service: name=nginx enabled=yes
+
+- name: Allow port 80 through firewall
+  firewalld: port=80/tcp permanent=true state=enabled
+- name: Allow port 443 through firewall
+  firewalld: port=443/tcp permanent=true state=enabled
+- name: Restart firewalld to enable new rules
+  service: name=firewalld state=restarted
+
+
+###################
+
+- name: Install uwsgi
+  pip: name=uwsgi
+- name: Create the uwsgi startup service
+  template: src=deploy/templates/uwsgi.service.j2 dest=/etc/systemd/system/uwsgi.service backup=yes mode=0750
+- name: Create uwsgi config directory
+  file: path="/etc/uwsgi/vassals" state=directory owner={{ username }}
+- name: enable uwsgi
+  service: name=uwsgi.service enabled=yes
+
+###################
+
+#- name: install epel repo for redis REPLACE THIS WITH A DOWNLOAD OF LATEST VERSION FROM REDIS WEBSITE
+#  yum: name=epel-release state=installed
+#- name: Install redis
+#  yum: name=redis state=installed
+#- name: enable redis
+#  service: name=redis enabled=yes
+
+- name: Install celery for redis
+  pip: name=celery[redis]
 ###################

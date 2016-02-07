@@ -1,0 +1,65 @@
+# nginx config for django projects
+# nb: gzip not applied to https due to BREACH security breach
+#
+charset                 utf-8;
+client_max_body_size    20M;
+error_log               /var/log/nginx/error.log;
+access_log              /var/log/nginx/access.log; # off;
+error_page              400 500 502 503 504 /500.html;
+
+# performance parameters from lincoln loop performance django video
+#tcp_nopush              on;
+#tcp_nodelay             on;
+#types_hash_max_size     2048;
+#server_tokens           off;
+#server_names_hash_bucket_size 64;
+# end performance parameters
+
+upstream django {
+    ip_hash;
+    server                  unix:///tmp/{{ project_name }}.sock;
+}
+
+#server { # default (first) server rejects requests with unrecognised hosts
+#    listen 80;
+#    server_name _;
+#    return 404;
+#}
+
+server {
+    listen                  80 default_server;
+#    server_name             localhost, *.{{ domain_name }};
+#    return                  301 https://$server_name$request_uri;
+
+    location /media         { alias {{ project_path }}/static/media; }
+    location /static        { alias {{ project_path }}/static/root; expires 30d;}
+    location /robots.txt    { alias {{ project_path }}/static/root/robots.txt; expires 30d;}
+    location /favicon.ico   { alias {{ project_path }}/static/root/favicon.ico; expires 30d;}
+    location /              { uwsgi_pass django; include /etc/nginx/uwsgi_params; }
+    location /apis          { rewrite ^(.*) https://gchester.com$1 permanent; }  # all api access is via https
+    location = /500.html    { root {{ project_path }}/main/templates; }
+    gzip                    on;
+    gzip_min_length         1100;
+    gzip_buffers            4 32k;
+    gzip_types              text/plain text/xml text/css text/javascript application/x-javascript application/json application/xml application/xml+rss;
+    gzip_vary               on;
+}
+
+server {
+    listen                  443 ssl;
+    server_name             localhost, *.{{ domain_name }};
+    client_max_body_size    1M;
+    ssl                     on;
+    ssl_certificate         /etc/nginx/conf.d/ssl_secret.crt;
+    ssl_certificate_key     /etc/nginx/conf.d/ssl_secret.key;
+    ssl_session_timeout     5m;
+    ssl_protocols           SSLv2 SSLv3 TLSv1;
+    location /media         { alias {{ project_path }}/static/media; }
+    location /static        { alias {{ project_path }}/static/root; expires 30d;}
+    location /robots.txt    { alias {{ project_path }}/static/root/robots.txt; expires 30d;}
+    location /favicon.ico   { alias {{ project_path }}/static/root/favicon.ico; expires 30d;}
+    location /              { uwsgi_pass django; include /etc/nginx/uwsgi_params; }
+    location = /500.html    { root {{ project_path }}/main/templates; }
+
+    # note: no gzip under https due to security flaw
+}

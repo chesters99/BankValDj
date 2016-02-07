@@ -1,21 +1,44 @@
 ---
-#################### Install base linux packages
+####################
 
-
-- name: Pull {{ project_name }} source from the repository.
-  become_user: vagrant
-  git: repo=https://chesters99:hudson-99@github.com/chesters99/{{ project_name }}.git
-       dest={{ base_dir }}/{{ project_name }} version=master update=no accept_hostkey=True
-#  notify:
-#      - restart web frontend
+#- name: Pull {{ project_name }} source from the repository.
+#  become_user: "{{ username }}"
+#  git: repo={{ project_repo }}
+#       only_if: "$vm == 1"
+#       dest={{ project_path }} version=master update=no accept_hostkey=True
 
 - name: Setup {{ project_name }} virtualenv site packages
   pip: virtualenv={{ virtualenv_path }}
-       requirements={{ base_dir }}/{{ project_name }}/requirements/local.txt
+       requirements={{ requirements_file }}
+
+#################### setup nginx config and restart
 
 - name: Create the Nginx configuration file
-  template: src=nginx.conf
-            dest=/etc/nginx/sites-available/{{ project_name }}
-            backup=yes
-  notify: reload nginx
-  tags: nginx
+  template: src=nginx.conf.j2 dest=/etc/nginx/conf.d/nginx.conf backup=yes force=yes
+
+- name: Add vagrant group to nginx to enable read of proj source
+  lineinfile:
+    dest: /etc/nginx/nginx.conf
+    regexp: '^user  nginx'
+    line: "user  nginx vagrant;"
+
+- name: Copy ssl crt
+  copy: src="../{{ project_name }}/settings/secret/ssl_secret.crt"
+        dest=/etc/nginx/conf.d owner=nginx group=nginx
+- name: Copy ssl key
+  copy: src="../{{ project_name }}/settings/secret/ssl_secret.key"
+        dest=/etc/nginx/conf.d owner=nginx group=nginx
+
+- name: restart nginx
+  service: name=nginx state=restarted enabled=yes
+
+#################### setup uwsgi config and restart
+
+- name: Create the uwsgi configuration file
+  template: src=emperor.ini.j2 dest=/etc/uwsgi/emperor.ini backup=yes owner=nginx force=yes
+
+- name: enable uwsgi
+  service: name=uwsgi.service enabled=yes
+
+####################
+
