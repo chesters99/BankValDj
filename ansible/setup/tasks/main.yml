@@ -37,6 +37,7 @@
     chdir: "{{ base_dir }}/Python3/Python-3.5.0"
     creates: /usr/local/bin/python3
 - file: src=/usr/local/bin/python3 dest=/usr/local/bin/python state=link
+- file: src=/usr/local/bin/pip3 dest=/usr/local/bin/pip state=link
 
 - pip: name=pip state=latest
 - pip: name=virtualenv
@@ -46,6 +47,11 @@
 - lineinfile: dest={{ base_dir }}/.bash_profile state=present line="export WORKON_HOME=$HOME/.virtualenvs"
 - lineinfile: dest={{ base_dir }}/.bash_profile state=present line="export PROJECT_HOME=$HOME"
 - lineinfile: dest={{ base_dir }}/.bash_profile state=present line="source /usr/local/bin/virtualenvwrapper.sh"
+  7 # Django Shortcuts
+  8 alias m='./manage.py'
+  9 alias celw='celery -A BankValDj worker --loglevel=INFO'
+
+
 
 - name: Make a virtualenv for {{ project_name }}
   become_user: vagrant
@@ -54,13 +60,6 @@
     executable: /bin/bash
     creates: ".virtualenvs/{{ project_name }}"
 
-- name: Pull {{ project_name }} source from the repository.
-  become_user: vagrant
-  git: repo=https://chesters99:hudson-99@github.com/chesters99/{{ project_name }}.git
-       dest={{ base_dir }}/{{ project_name }} version=master update=no accept_hostkey=True
-#  notify:
-#      - restart web frontend
-
 - name: Setup {{ project_name }} virtualenv site packages
   pip: virtualenv={{ virtualenv_path }}
        requirements={{ base_dir }}/{{ project_name }}/requirements/local.txt
@@ -68,6 +67,7 @@
 
 
 ######### nginx config, redis config, usgi, check fabfile for others
+######### add hosts - development, staging, production and read about EC2
 ######### THEN MOVE DEPLOYMENT AWAY FROM SETUP
 
 ####################
@@ -104,14 +104,3 @@
   postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL state=present
 
 ###################
-
-- name: install the nginx rpm from a remote repo
-  yum: name=http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm state=present
-  tags: nginx
-
-- name: Create the Nginx configuration file
-  template: src=nginx.conf
-            dest=/etc/nginx/sites-available/{{ project_name }}
-            backup=yes
-  notify: reload nginx
-  tags: nginx

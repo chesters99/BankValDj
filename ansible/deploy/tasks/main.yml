@@ -1,0 +1,21 @@
+---
+#################### Install base linux packages
+
+
+- name: Pull {{ project_name }} source from the repository.
+  become_user: vagrant
+  git: repo=https://chesters99:hudson-99@github.com/chesters99/{{ project_name }}.git
+       dest={{ base_dir }}/{{ project_name }} version=master update=no accept_hostkey=True
+#  notify:
+#      - restart web frontend
+
+- name: Setup {{ project_name }} virtualenv site packages
+  pip: virtualenv={{ virtualenv_path }}
+       requirements={{ base_dir }}/{{ project_name }}/requirements/local.txt
+
+- name: Create the Nginx configuration file
+  template: src=nginx.conf
+            dest=/etc/nginx/sites-available/{{ project_name }}
+            backup=yes
+  notify: reload nginx
+  tags: nginx

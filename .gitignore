@@ -4,22 +4,18 @@
 .nbproject*
 Thumbs.db
 .idea
-
-# python/tech stuff
 __pycache__/
 *.py[cod]
 .cache
 .coverage
-static/bootstrap/
-static/less/*.css
+.vagrant
 
 # project stuff
 static/root
+static/bootstrap
 docs/build
 migrations/
-bootstrap/
 rules.json
-.vagrant/
 
 # secure stuff
 *.db
