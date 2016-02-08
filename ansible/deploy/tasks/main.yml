@@ -1,7 +1,72 @@
 ---
-######### FIX POSTGRESS NETOWRK ACCESS AND RE-TEST DJANGO CONSOLE
-######### install redis from website, get uwsgi working, setup remote python interpreter (check fabfile too)
-######### add hosts - development, staging, production and setup amazon EC2
+#################### setup nginx config and restart nginx
+
+- name: Create the Nginx configuration file
+  become: yes
+  become_user: root
+  template: src=nginx.conf.j2 dest=/etc/nginx/conf.d/nginx.conf
+            owner=nginx group=nginx backup=yes
+  tags: deploy
+
+- name: Copy ssl crt
+  become: yes
+  become_user: root
+  copy: src="../{{ project_name }}/settings/secret/ssl_secret.crt"
+        dest=/etc/nginx/conf.d owner=nginx group=nginx
+  tags: deploy
+- name: Copy ssl key
+  become: yes
+  become_user: root
+  copy: src="../{{ project_name }}/settings/secret/ssl_secret.key"
+        dest=/etc/nginx/conf.d owner=nginx group=nginx
+  tags: deploy
+
+- name: restart nginx
+  become: yes
+  become_user: root
+  service: name=nginx state=restarted enabled=yes
+  tags: deploy
+
+#################### setup uwsgi config and restart
+
+- name: Create the uwsgi configuration file
+  become: yes
+  become_user: root
+  template: src=uwsgi.ini.j2 dest=/etc/uwsgi/vassals/uwsgi.ini owner=nginx group=nginx
+  tags: deploy
+
+- name: restart uwsgi
+  become: yes
+  become_user: root
+  service: name=uwsgi.service state=restarted enabled=yes
+  tags: deploy
+
+####################
+
+- name: Setup {{ project_name }} virtualenv site packages in {{ base_dir }}/.virtualenvs/{{ project_name }}
+  become_user: "{{ username }}"
+  pip: virtualenv={{ base_dir }}/.virtualenvs/{{ project_name }}
+       requirements="{{ project_path }}/requirements/local.txt"
+  tags: deploy
+
+####################
+- name: Ensure directories are 0755
+  command: find {{ project_path }}/static/root -type d -exec chmod 0755 {} \;
+  tags: deploy1
+- name: Ensure files are 0644
+  command: find {{ project_path }}/static/root -type f -exec chmod 0644 {} \;
+  tags: deploy
+
+- name: Initialise Django - makemigrations and migrate
+  become_user: "{{ username }}"
+  shell: . /usr/local/bin/virtualenvwrapper.sh && workon BankValDj && ./manage.py makemigrations && ./manage.py migrate
+  args:
+    executable: /bin/bash
+    chdir: /{{ project_path }}
+  tags: deploy
+
+#- name: Initialise Django - create superuser must be done from command line
+#- name: Initialise Django - m runserver 0.0.0.0:8000
 
 ####################
 
@@ -10,55 +75,3 @@
 #  git: repo={{ project_repo }}
 #       only_if: "$vm == 1"
 #       dest=/{{ project_name }} version=master update=no accept_hostkey=True
-
-#################### setup nginx config and restart
-
-- name: Create the Nginx configuration file
-  template: src=nginx.conf.j2 dest=/etc/nginx/conf.d/nginx.conf backup=yes force=yes
-
-- name: Add vagrant group to nginx to enable read of proj source
-  lineinfile:
-    dest: /etc/nginx/nginx.conf
-    regexp: '^user  nginx'
-    line: "user  nginx vagrant;"
-
-- name: Copy ssl crt
-  copy: src="../{{ project_name }}/settings/secret/ssl_secret.crt"
-        dest=/etc/nginx/conf.d owner=nginx group=nginx
-- name: Copy ssl key
-  copy: src="../{{ project_name }}/settings/secret/ssl_secret.key"
-        dest=/etc/nginx/conf.d owner=nginx group=nginx
-
-- name: restart nginx
-  service: name=nginx state=restarted enabled=yes
-
-#################### setup uwsgi config and restart
-
-- name: Create the uwsgi configuration file
-  template: src=emperor.ini.j2 dest=/etc/uwsgi/emperor.ini backup=yes owner=nginx force=yes
-
-- name: enable uwsgi
-  service: name=uwsgi.service enabled=yes
-
-####################
-
-- name: Setup {{ project_name }} virtualenv site packages in {{ base_dir }}/.virtualenvs/{{ project_name }}
-  become_user: "{{ username }}"
-  pip: virtualenv={{ base_dir }}/.virtualenvs/{{ project_name }}
-       requirements="{{ project_path }}/requirements/local.txt"
-
-####################
-
-- name: Initialise Django - makemigrations
-  become_user: "{{ username }}"
-  shell: . /usr/local/bin/virtualenvwrapper.sh && workon BankValDj && ./manage.py makemigrations
-  args:
-    executable: /bin/bash
-    chdir: /{{ project_path }}
-
-#- name: Initialise Django - migrate
-#  command: m migrate
-
-#- name: Initialise Django - runserver
-#  command: m runserver 0.0.0.0:8000
-

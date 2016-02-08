@@ -1,0 +1,28 @@
+[uwsgi]
+chdir           = {{ project_path }}/{{ project_name }}
+module          = wsgi
+home            = {{ project_path }}
+
+master          = true
+processes       = 2
+enable-threads  = true
+thunder-lock    = true
+#socket          = /tmp/uwsgi_{{ project_name }}.sock
+socket          = :8001
+chmod-socket    = 770
+vacuum          = true
+harakiri        = 30
+max-requests    = 5000
+disable-logging = true
+memory-report   = true
+stats           = /tmp/uwsgistats.sock
+post-buffering  = 4096
+auto-procname   = true
+procname-prefix-spaced = BV
+#daemonize       = /var/log/nginx/{{ project_name }}_uwsgi.log
+pidfile         = /tmp/uwsgi.pid
+touch-reload    = /tmp/uwsgi.touch
+
+env = DJANGO_SETTINGS_MODULE={{ project_name }}.settings.local
+env = PYTHONPATH={{ project_path }}:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib/python3.5:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib/python3.5/site-packages:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib/python3.5/lib-dynload
+env = PYTHONHASHSEED=random

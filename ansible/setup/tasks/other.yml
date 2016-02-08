@@ -1,0 +1,14 @@
+---
+
+###################
+
+#- name: install epel repo for redis REPLACE THIS WITH A DOWNLOAD OF LATEST VERSION FROM REDIS WEBSITE
+#  yum: name=epel-release state=installed
+#- name: Install redis
+#  yum: name=redis state=installed
+#- name: enable redis
+#  service: name=redis enabled=yes
+
+- name: Install celery for redis
+  pip: name=celery[redis]
+###################

@@ -1,0 +1,80 @@
+---
+
+- name: Install nginx repo
+  become: yes
+  become_user: root
+  yum:
+    name: http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+  tags: webserver
+- name: Install Nginx
+  become: yes
+  become_user: root
+  yum: name=nginx state=installed
+  tags: webserver
+- name: enable nginx
+  become: yes
+  become_user: root
+  service: name=nginx enabled=yes
+  tags: webserver
+- name: Add vagrant group to nginx to enable nginx to read project source
+  become: yes
+  become_user: root
+  lineinfile:
+    dest: /etc/nginx/nginx.conf
+    regexp: '^user  nginx'
+    line: "user  nginx vagrant;"
+  tags: webserver
+
+- name: Allow port 80 through firewall
+  become: yes
+  become_user: root
+  firewalld: port=80/tcp permanent=true state=enabled
+  tags: webserver
+- name: Allow port 443 through firewall
+  become: yes
+  become_user: root
+  firewalld: port=443/tcp permanent=true state=enabled
+  tags: webserver
+- name: Allow port 8000 through firewall
+  become: yes
+  become_user: root
+  firewalld: port=8000/tcp permanent=true state=enabled
+  tags: webserver
+- name: Restart firewalld to enable new rules
+  become: yes
+  become_user: root
+  service: name=firewalld state=restarted
+  tags: webserver
+
+################### Install uswgi
+
+- name: Install uwsgi
+  become: yes
+  become_user: root
+  pip: name=uwsgi
+  tags: webserver
+
+- name: Create uwsgi config directory
+  become: yes
+  become_user: root
+  file: path="/etc/uwsgi/vassals" state=directory owner=nginx group=nginx
+  tags: webserver
+
+- name: change log directory permissions for uwsgi
+  become: yes
+  become_user: root
+  file: path=/var/log/nginx state=directory owner=nginx group=nginx mode=0775
+  tags: webserver1
+
+- name: Create the uwsgi startup service
+  become: yes
+  become_user: root
+  template: src=deploy/templates/uwsgi.service.j2 dest=/etc/systemd/system/uwsgi.service
+            backup=yes owner=nginx group=nginx mode=0750
+  tags: webserver
+
+- name: enable uwsgi
+  become: yes
+  become_user: root
+  service: name=uwsgi.service enabled=yes
+  tags: webserver

@@ -2,13 +2,9 @@
 
 - name: Create a {{ project_name }} virtual machine via vagrant
   hosts: all
-  become: yes
   become_method: sudo
-  become_user: root
   remote_user: vagrant
-  vars_files:
-    - vars.yml
 
   roles:
-    - { role: setup, tags: setup }
-    - { role: deploy, tags: deploy }
+    - { role: setup,  tags: fullsetup }
+    - { role: deploy, tags: fulldeploy }
