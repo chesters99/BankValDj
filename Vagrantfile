@@ -7,7 +7,8 @@ Vagrant.configure(2) do |config|
   config.vm.network "forwarded_port", guest: 443, host: 443
   config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.network "public_network", ip: "192.168.0.5", bridge: "en0: Wi-Fi (AirPort)"
-  config.vm.synced_folder "/Users/graham/Documents/Projects/BankValDj", "/vagrant", mount_options: ["dmode=550,fmode=440"]
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.vm.synced_folder "/Users/graham/Documents/Projects/BankValDj", "/home/vagrant/BankValDj"
   config.vm.provider "virtualbox" do |vb|
     vb.gui = false
     vb.memory = "1024"

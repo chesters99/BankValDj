@@ -24,41 +24,20 @@ MIDDLEWARE_CLASSES += (
     # 'silk.middleware.SilkyMiddleware',
 )
 
-# import pymysql # temporary fix for broken mysql connector in 1.7
-# pymysql.install_as_MySQLdb() # temporary fix for broken mysql connector in 1.7
-# DATABASES ={ 'ENGINE': 'mysql.connector.django', # temporary fix for broken mysql connector in 1.7
-
-DATABASES = {
-    #    'default': {
-    #        'ENGINE': secret["DATABASE_ENGINE"],
-    #        'NAME': secret["DATABASE_NAME"],
-    #        'USER': secret["DATABASE_USER"],
-    #        'PASSWORD': secret["DATABASE_PASSWORD"],
-    #        'HOST': secret["DATABASE_HOST"],
-    #        'PORT': secret["DATABASE_PORT"],
-    #        'OPTIONS': { 'autocommit': True, },
-    #    }
-
-    #    'postgresql': {
-    #        'ENGINE': secret["DATABASE_ENGINE"],
-    #        'NAME': secret["DATABASE_NAME"],
-    #        'USER': secret["DATABASE_USER"],
-    #        'PASSWORD': secret["DATABASE_PASSWORD"],
-    #        'HOST': secret["DATABASE_HOST"],
-    #        'PORT': secret["DATABASE_PORT"],
-    #    },
-    #
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # using sqlite as is faster than mysql for testing
-        'NAME': os.path.join(BASE_DIR, 'sqlite3.db'),
-#        'TEST_NAME': os.path.join(BASE_DIR, 'sqlite3_test.db'),  # needed for selenium bug using sqlite in memory
-        # 'ATOMIC_REQUESTS': True,  # use @atomic_transaction on requests which need transactions to avoid overhead
-    }
-}
-
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': secrets["DATABASE_NAME"],
+        'USER': secrets["DATABASE_USER"],
+        'PASSWORD': secrets["DATABASE_PASSWORD"],
+        'HOST': secrets["DATABASE_HOST"],  # Or an IP Address that your DB is hosted on
+        'PORT': secrets["DATABASE_PORT"],
     }
 }
 

@@ -3,9 +3,7 @@
 # Application settings.
 project_name: BankValDj
 base_dir: /home/vagrant
-virtualenv_path: "{{ base_dir }}/.virtualenvs/{{ project_name }}"
-project_path: "/vagrant"
-requirements_file: "{{ project_path }}/requirements/production.txt"
+project_path: "{{ base_dir }}/{{ project_name }}"
 project_repo : "https://chesters99:hudson-99@github.com/chesters99/{{ project_name }}.git"
 timezone: "Europe/London"
 username: vagrant
@@ -16,29 +14,24 @@ db_name: "{{ project_name }}"
 db_user: django
 db_password: django
 
-# uwsgi settings
-u_user: "{{ project_name }}"
-un_group: webapps
-
-
-# Nginx settings
-nginx_http_port: 80
-nginx_https_port: 443
-nginx_access_log_file: "{{ application_log_dir }}/nginx_access.log"
-nginx_error_log_file: "{{ application_log_dir }}/nginx_error.log"
-nginx_static_dir: "{{ virtualenv_path }}/static/"
-nginx_media_dir: "{{ virtualenv_path }}/media/"
-
-
-# Django Environment variables
-django_environment:
-  DJANGO_SETTINGS_MODULE: "{{ django_settings_file }}"
-  DJANGO_SECRET_KEY: "{{ django_secret_key }}"
-  MEDIA_ROOT: "{{ nginx_media_dir }}"
-  STATIC_ROOT: "{{ nginx_static_dir }}"
-  DATABASE_USER: "{{ db_user }}"
-  DATABASE_PASSWORD: "{{ db_password }}"
-  EMAIL_HOST: "{{ email_host|default(omit) }}"
-  EMAIL_HOST_USER: "{{ email_host_user|default(omit) }}"
-  EMAIL_HOST_PASSWORD: "{{ email_host_password|default(omit) }}"
-  BROKER_URL: "{{ broker_url|default(omit) }}"
+## Nginx settings
+#nginx_http_port: 80
+#nginx_https_port: 443
+#nginx_access_log_file: "{{ application_log_dir }}/nginx_access.log"
+#nginx_error_log_file: "{{ application_log_dir }}/nginx_error.log"
+#nginx_static_dir: "{{ virtualenv_path }}/static/"
+#nginx_media_dir: "{{ virtualenv_path }}/media/"
+#
+#
+## Django Environment variables
+#django_environment:
+#  DJANGO_SETTINGS_MODULE: "{{ django_settings_file }}"
+#  DJANGO_SECRET_KEY: "{{ django_secret_key }}"
+#  MEDIA_ROOT: "{{ nginx_media_dir }}"
+#  STATIC_ROOT: "{{ nginx_static_dir }}"
+#  DATABASE_USER: "{{ db_user }}"
+#  DATABASE_PASSWORD: "{{ db_password }}"
+#  EMAIL_HOST: "{{ email_host|default(omit) }}"
+#  EMAIL_HOST_USER: "{{ email_host_user|default(omit) }}"
+#  EMAIL_HOST_PASSWORD: "{{ email_host_password|default(omit) }}"
+#  BROKER_URL: "{{ broker_url|default(omit) }}"

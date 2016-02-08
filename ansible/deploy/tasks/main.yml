@@ -1,15 +1,15 @@
 ---
+######### FIX POSTGRESS NETOWRK ACCESS AND RE-TEST DJANGO CONSOLE
+######### install redis from website, get uwsgi working, setup remote python interpreter (check fabfile too)
+######### add hosts - development, staging, production and setup amazon EC2
+
 ####################
 
 #- name: Pull {{ project_name }} source from the repository.
 #  become_user: "{{ username }}"
 #  git: repo={{ project_repo }}
 #       only_if: "$vm == 1"
-#       dest={{ project_path }} version=master update=no accept_hostkey=True
-
-- name: Setup {{ project_name }} virtualenv site packages
-  pip: virtualenv={{ virtualenv_path }}
-       requirements={{ requirements_file }}
+#       dest=/{{ project_name }} version=master update=no accept_hostkey=True
 
 #################### setup nginx config and restart
 
@@ -41,4 +41,24 @@
   service: name=uwsgi.service enabled=yes
 
 ####################
+
+- name: Setup {{ project_name }} virtualenv site packages in {{ base_dir }}/.virtualenvs/{{ project_name }}
+  become_user: "{{ username }}"
+  pip: virtualenv={{ base_dir }}/.virtualenvs/{{ project_name }}
+       requirements="{{ project_path }}/requirements/local.txt"
+
+####################
+
+- name: Initialise Django - makemigrations
+  become_user: "{{ username }}"
+  shell: . /usr/local/bin/virtualenvwrapper.sh && workon BankValDj && ./manage.py makemigrations
+  args:
+    executable: /bin/bash
+    chdir: /{{ project_path }}
+
+#- name: Initialise Django - migrate
+#  command: m migrate
+
+#- name: Initialise Django - runserver
+#  command: m runserver 0.0.0.0:8000
 

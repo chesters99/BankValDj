@@ -21,22 +21,16 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_HSTS_SECONDS = 5
 X_FRAME_OPTIONS = 'DENY'
 
-ALLOWED_HOSTS = ['gchester.com', 'www.gchester.com', '54.164.140.224']  # usually overridden later by fabric deployment
-
-import pymysql  # temporary fix for broken mysql connector in 1.7
-pymysql.install_as_MySQLdb()  # temporary fix for broken mysql connector in 1.7
-# DATABASES ={ 'ENGINE': 'mysql.connector.django', # temporary fix for broken mysql connector in 1.7
+ALLOWED_HOSTS = ['gchester.com', 'www.gchester.com', '54.164.140.224']
 
 DATABASES = {
     'default': {
-        'ENGINE': secrets["DATABASE_ENGINE"],
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': secrets["DATABASE_NAME"],
         'USER': secrets["DATABASE_USER"],
         'PASSWORD': secrets["DATABASE_PASSWORD"],
         'HOST': secrets["DATABASE_HOST"],  # Or an IP Address that your DB is hosted on
         'PORT': secrets["DATABASE_PORT"],
-        'OPTIONS': {'autocommit': True, },
-        # 'ATOMIC_REQUESTS': True,  # use @atomic_transaction on requests which need transactions to avoid overhead
     }
 }
 

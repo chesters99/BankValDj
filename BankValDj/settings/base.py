@@ -80,7 +80,6 @@ LOGIN_REDIRECT_URL = '/'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # 'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'debug': True,
@@ -143,7 +142,7 @@ LOGGING = {
         'errorfile': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR + '/log/errors.log',
+            'filename': '/home/vagrant/django_errors.log',
             'formatter': 'verbose'
         },
         'mail_admins': {

@@ -2,7 +2,7 @@
 
 django-debug-toolbar==1.4       # debugging toolbar (use IP=127.0.0.1)
 django-debug-toolbar-template-timings>=0.6.4 # additional panel for debug toolbar
-django-extensions==1.6.1        # additional manage.py commands
+
 Werkzeug==0.11.3                # html debugger works with manage.py runserver_plus
 django-silk==0.5.6              # html performance analyser access from <host>/silk in browser
 Sphinx==1.3.3                   # documentation generator

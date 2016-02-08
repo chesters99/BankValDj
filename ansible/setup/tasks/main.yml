@@ -1,6 +1,7 @@
 ---
-######### nginx config, redis config, usgi, check fabfile for others
-######### add hosts - development, staging, production and read about EC2
+######### FIX POSTGRESS NETOWRK ACCESS AND RE-TEST DJANGO CONSOLE
+######### install redis from website, get uwsgi working, setup remote python interpreter (check fabfile too)
+######### add hosts - development, staging, production and setup amazon EC2
 #################### Install base linux packages
 
 - name: Ensure key linux packages are installed and the latest versions
@@ -73,12 +74,12 @@
       alias m='./manage.py'
       alias celw='celery -A BankValDj worker --loglevel=INFO'
 
-- name: Make a virtualenv for {{ project_name }} and assign to project directory
+- name: Make a virtualenv in {{ base_dir }}/.virtualenvs/{{ project_name }} and assign to project
   become_user: "{{ username }}"
-  shell: . /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv {{ project_name }} -a /vagrant
+  shell: . /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv {{ project_name }} -a {{ project_path }}
   args:
     executable: /bin/bash
-    creates: ".virtualenvs/{{ project_name }}"
+    creates: "{{ base_dir }}/.virtualenvs/{{ project_name }}"
 
 ####################
 
@@ -87,6 +88,7 @@
   with_items:
     - postgresql-server
     - postgresql-contrib
+    - postgresql-devel
     - python-psycopg2
   tags: database
 
@@ -101,13 +103,22 @@
 
 - name: Ensure database is created
   become_user: postgres
-  postgresql_db: name={{ db_name }} state=present
+  postgresql_db: name={{ db_name }} login_user={{db_user}} login_password={{db_password }} state=present
   tags: database
 
 - name: Ensure user has access to the database
   become_user: postgres
-  postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL state=present
+  postgresql_user: db={{ db_name }} name={{ db_user }} login_user={{db_user}}
+                   login_password={{ db_password }} priv=ALL state=present
   tags: database
+
+- name: update hba_conf with ability to ssh in to postgres
+  replace: dest=/var/lib/pgsql/data/pg_hba.conf regexp='ident' replace='md5' backup=yes
+
+- name: Allow port 5432 through firewall
+  firewalld: port=5432/tcp permanent=true state=enabled
+- name: Restart firewalld to enable new rules
+  service: name=firewalld state=restarted
 
 ###################
 
@@ -123,9 +134,10 @@
   firewalld: port=80/tcp permanent=true state=enabled
 - name: Allow port 443 through firewall
   firewalld: port=443/tcp permanent=true state=enabled
+- name: Allow port 8000 through firewall
+  firewalld: port=8000/tcp permanent=true state=enabled
 - name: Restart firewalld to enable new rules
   service: name=firewalld state=restarted
-
 
 ###################
 
