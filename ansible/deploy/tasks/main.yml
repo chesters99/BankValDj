@@ -50,10 +50,10 @@
   tags: deploy
 
 ####################
-- name: Ensure directories are 0755
+- name: Ensure static directories are 0755 for nginx
   command: find {{ project_path }}/static/root -type d -exec chmod 0755 {} \;
   tags: deploy1
-- name: Ensure files are 0644
+- name: Ensure static files are 0644 for nginx
   command: find {{ project_path }}/static/root -type f -exec chmod 0644 {} \;
   tags: deploy
 

@@ -14,21 +14,6 @@
     - git
   tags: linux
 
-- name: Check current timezone
-  become: yes
-  become_user: root
-  shell: ll /etc/localtime | rev| cut -f1 -d"/" | rev
-  register: current_zone
-  changed_when: False
-  tags: linux
-
-- name: Set Europe/London timezone
-  become: yes
-  become_user: root
-  file: src=/usr/share/zoneinfo/{{ timezone }}  dest=/etc/localtime state=link force=yes
-  when: current_zone.stdout != '{{ timezone }}'
-  tags: linux
-
 - name: Set {{ username }} directory to be group executable (for nginx access)
   file: path={{ base_dir }} state=directory mode="g=rx"
   tags: linux
@@ -47,3 +32,17 @@
       export PYTHONPATH=PYTHONPATH:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib/python3.5/site-packages/:{{ base_dir }}/BankValDj/:
   tags: linux
 
+- name: Check current timezone
+  become: yes
+  become_user: root
+  shell: ll /etc/localtime | rev| cut -f1 -d"/" | rev
+  register: current_zone
+  changed_when: False
+  tags: linux
+
+- name: Set Europe/London timezone
+  become: yes
+  become_user: root
+  file: src=/usr/share/zoneinfo/{{ timezone }}  dest=/etc/localtime state=link force=yes
+  when: current_zone.stdout != '{{ timezone }}'
+  tags: linux

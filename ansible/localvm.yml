@@ -4,6 +4,8 @@
   hosts: all
   become_method: sudo
   remote_user: vagrant
+  vars_files:
+    - host_vars/localvm.yml
 
   roles:
     - { role: setup,  tags: fullsetup }

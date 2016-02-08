@@ -10,5 +10,7 @@
 #  service: name=redis enabled=yes
 
 - name: Install celery for redis
+  become: yes
+  become_user: root
   pip: name=celery[redis]
 ###################

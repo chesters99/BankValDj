@@ -19,7 +19,7 @@ stats           = /tmp/uwsgistats.sock
 post-buffering  = 4096
 auto-procname   = true
 procname-prefix-spaced = BV
-#daemonize       = /var/log/nginx/{{ project_name }}_uwsgi.log
+daemonize       = /var/log/nginx/{{ project_name }}_uwsgi.log
 pidfile         = /tmp/uwsgi.pid
 touch-reload    = /tmp/uwsgi.touch
 
