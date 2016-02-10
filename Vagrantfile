@@ -2,22 +2,43 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "puppetlabs/centos-7.2-64-nocm"
-  config.vm.network "forwarded_port", guest: 8000, host: 8000 # django runserver
-  config.vm.network "forwarded_port", guest: 443, host: 443   # nginx https
-  config.vm.network "forwarded_port", guest: 80, host: 8080   # nginx http
-  config.vm.network "forwarded_port", guest: 5432, host: 5432 # postgresql from pycharm
-  config.vm.network "public_network", ip: "192.168.0.5", bridge: "en0: Wi-Fi (AirPort)"
-  config.vm.synced_folder '.', '/vagrant', disabled: true
-  config.vm.synced_folder "/Users/graham/Documents/Projects/BankValDj", "/home/vagrant/BankValDj"
-  config.vm.provider "virtualbox" do |vb|
-    vb.gui = false
-    vb.memory = "1024"
-    vb.cpus = "2"
-    vb.customize ["modifyvm", :id, "--ioapic", "on"]
+  config.vm.define :localvm do |local|
+    local.vm.box = "puppetlabs/centos-7.2-64-nocm"
+    local.vm.network "forwarded_port", guest: 8000, host: 8000 # django runserver
+    local.vm.network "forwarded_port", guest: 443, host: 443   # nginx https
+    local.vm.network "forwarded_port", guest: 80, host: 8080   # nginx http
+    local.vm.network "forwarded_port", guest: 5432, host: 5432 # postgresql from pycharm     x.vm.network "public_network", ip: "192.168.0.5", bridge: "en0: Wi-Fi (AirPort)"
+    local.vm.synced_folder '.', '/vagrant', disabled: true
+    local.vm.synced_folder "/Users/graham/Documents/Projects/BankValDj", "/home/vagrant/BankValDj"
+    local.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.memory = "1024"
+      vb.cpus = "2"
+      vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    end
   end
-  config.vm.provision :ansible do |ansible|
-#    ansible.verbose = "vvv"
-    ansible.playbook = "ansible/localvm.yml"
+
+  config.vm.define :production do |prod|
+    prod.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
+    prod.vm.box = "dummy"
+    prod.vm.synced_folder '.', '/vagrant', disabled: true
+    prod.vm.provider :aws do |aws, override|
+      aws.access_key_id = ENV['AWS_KEY']
+      aws.secret_access_key = ENV['AWS_SECRET']
+      aws.keypair_name = ENV['AWS_KEYNAME']
+#      aws.ami = "ami-76817c1e"
+      aws.ami = "ami-2051294a" # redhat 7.2
+      aws.region = "us-east-1"
+      aws.instance_type = "t2.micro"
+      aws.security_groups = ['default']
+      aws.elastic_ip = "52.73.139.177"
+      override.ssh.username = "ec2-user"
+      override.ssh.private_key_path = ENV['AWS_KEYPATH']
+    end
   end
+
+#    config.vm.provision :ansible do |ansible|
+#      ansible.verbose = "vvv"
+#      ansible.playbook = "ansible/localvm.yml"
+#    end
 end

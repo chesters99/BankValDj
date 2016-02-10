@@ -1,1 +1,1 @@
-www.gchester.com nickname=production vm=0 branch=master
+www.gchester.com nickname=production vm=0 branch=master ansible_user=ec2-user ansible_ssh_private_key_file='/Users/graham/Documents/Projects/BankValDj/BankValDj/settings/secret/USEast21Aug_secret.pem'

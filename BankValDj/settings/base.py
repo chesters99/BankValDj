@@ -194,11 +194,11 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERYBEAT_SCHEDULE = {
-    # crontab(hour=0, minute=0, day_of_week='saturday')
-    'schedule-name': {  # example: 'file-backup'
-        'task': 'accounts.tasks.test_task',  # example: 'files.tasks.cleanup'
-        # 'schedule': crontab(...)
-        'schedule': timedelta(seconds=10),
-        'args': (3,),
-    },
+    ### crontab(hour=0, minute=0, day_of_week='saturday')
+    # 'schedule-name': {  # example: 'file-backup'
+    #     'task': 'accounts.tasks.test_task',  # example: 'files.tasks.cleanup'
+    #     # 'schedule': crontab(...)
+    #     'schedule': timedelta(seconds=10),
+    #     'args': (3,),
+    # },
 }

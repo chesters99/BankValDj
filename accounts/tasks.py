@@ -7,4 +7,3 @@ import time
 def test_task(param=2):
     time.sleep(param)
     return 'yes!!! task completed sleeping for %i seconds!' % param
-
