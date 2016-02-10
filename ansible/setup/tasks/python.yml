@@ -2,65 +2,65 @@
 #################### Install Python and related tools
 
 - name: Install Python3 - Create Python temp directory
-  file: path="{{ base_dir }}/Python3" state=directory
+  file: path="{{ base_dir }}/python" state=directory
   tags: python
 - name: Install Python3 - Get Python 3
-  get_url: url=https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tar.xz
-           dest="{{ base_dir }}/Python3/Python3.tar.xz" mode=0444
-  tags: python
+  get_url: url=https://www.python.org/ftp/python/{{ python_version }}/Python-{{ python_version }}.tar.xz
+           dest="{{ base_dir }}/python/python.tar.xz" mode=0444
+  tags: install python
 - name: Install Python3 - Unarchive Python3 tarball
-  unarchive: src="{{ base_dir }}/Python3/Python3.tar.xz" dest="{{ base_dir }}/Python3"
-             owner={{ username }} copy=no creates={{ base_dir }}/Python3/Python-3.5.0
-  tags: python
+  unarchive: src="{{ base_dir }}/python/python.tar.xz" dest="{{ base_dir }}/python"
+             owner={{ username }} copy=no creates={{ base_dir }}/python/Python-{{ python_version }}
+  tags: install python
 - name: Install Python3 - Configure
   command: ./configure --with-ensurepip=install
   args:
-    chdir: "{{ base_dir }}/Python3/Python-3.5.0"
-    creates: "{{ base_dir }}/Python3/Python-3.5.0/Makefile"
-  tags: python
+    chdir: "{{ base_dir }}/python/Python-{{ python_version }}"
+    creates: "{{ base_dir }}/python/Python-{{ python_version }}/Makefile"
+  tags: install python
 - name: Install Python3 - Make
   command: make
   args:
-    chdir: "{{ base_dir }}/Python3/Python-3.5.0"
-    creates: "{{ base_dir }}/Python3/Python-3.5.0/python"
-  tags: python
+    chdir: "{{ base_dir }}/python/Python-{{ python_version }}"
+    creates: "{{ base_dir }}/python/Python-{{ python_version }}/python"
+  tags: install python
 - name: Install Python3 - Make Install
   become: yes
   become_user: root
   command: make install
   args:
-    chdir: "{{ base_dir }}/Python3/Python-3.5.0"
+    chdir: "{{ base_dir }}/python/Python-{{ python_version }}"
     creates: /usr/local/bin/python3
-  tags: python
+  tags: install python
 - name: Install Python3 - link python to python3
   become: yes
   become_user: root
   file: src=/usr/local/bin/python3 dest=/usr/local/bin/python state=link force=yes
-  tags: python
+  tags: install python
 - name: Install Python3 - link pip to pip3
   become: yes
   become_user: root
   file: src=/usr/local/bin/pip3 dest=/usr/local/bin/pip state=link force=yes
-  tags: python
+  tags: install python
 
 - name: ensure pip is latest version
   become: yes
   become_user: root
   pip: name=pip state=latest
-  tags: python
+  tags: install python
 - name: Install virtualenv
   become: yes
   become_user: root
   pip: name=virtualenv
-  tags: python
+  tags: install python
 - name: Install virtualenvwrapper
   become: yes
   become_user: root
   pip: name=virtualenvwrapper
-  tags: python
+  tags: install python
 - name: Make a virtualenv in {{ base_dir }}/.virtualenvs/{{ project_name }} and assign to project
   shell: . /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv {{ project_name }} -a {{ project_path }}
   args:
     executable: /bin/bash
     creates: "{{ base_dir }}/.virtualenvs/{{ project_name }}"
-  tags: python
+  tags: install python

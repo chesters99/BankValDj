@@ -5,17 +5,17 @@
   become_user: root
   yum:
     name: http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
-  tags: webserver
+  tags: install nginx
 - name: Install Nginx
   become: yes
   become_user: root
   yum: name=nginx state=installed
-  tags: webserver
+  tags: install nginx
 - name: enable nginx
   become: yes
   become_user: root
   service: name=nginx enabled=yes
-  tags: webserver
+  tags: install nginx
 - name: Add vagrant group to nginx to enable nginx to read project source
   become: yes
   become_user: root
@@ -23,58 +23,60 @@
     dest: /etc/nginx/nginx.conf
     regexp: '^user  nginx'
     line: "user  nginx vagrant;"
-  tags: webserver
+  tags: install nginx
 
 - name: Allow port 80 through firewall
   become: yes
   become_user: root
   firewalld: port=80/tcp permanent=true state=enabled
-  tags: webserver
+  tags: install nginx
 - name: Allow port 443 through firewall
   become: yes
   become_user: root
   firewalld: port=443/tcp permanent=true state=enabled
-  tags: webserver
+  tags: install nginx
 - name: Allow port 8000 through firewall
   become: yes
   become_user: root
   firewalld: port=8000/tcp permanent=true state=enabled
-  tags: webserver
+  tags: install nginx
 - name: Restart firewalld to enable new rules
   become: yes
   become_user: root
   service: name=firewalld state=restarted
-  tags: webserver
+  tags: install nginx
 
 ################### Install uswgi
 
-- name: Install uwsgi
+- name: Install uwsgi globally
   become: yes
   become_user: root
   pip: name=uwsgi
-  tags: webserver
+  tags: install uwsgi
 
 - name: Create uwsgi config directory
   become: yes
   become_user: root
   file: path="/etc/uwsgi/vassals" state=directory owner=nginx group=nginx
-  tags: webserver
+  tags: install uwsgi
 
 - name: change log directory permissions for uwsgi
   become: yes
   become_user: root
   file: path=/var/log/nginx state=directory owner=nginx group=nginx mode=0775
-  tags: webserver1
+  tags: install uwsgi
 
 - name: Create the uwsgi startup service
   become: yes
   become_user: root
   template: src=deploy/templates/uwsgi.service.j2 dest=/etc/systemd/system/uwsgi.service
             backup=yes owner=nginx group=nginx mode=0750
-  tags: webserver
+  tags: install uwsgi
 
 - name: enable uwsgi
   become: yes
   become_user: root
   service: name=uwsgi.service enabled=yes
-  tags: webserver
+  tags: install uwsgi
+
+###################

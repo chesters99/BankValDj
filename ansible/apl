@@ -1,5 +1,5 @@
 #!/bin/bash
 # Run with:
 # ./apl --tags=xxxxx 
-/usr/bin/env ansible-playbook -i localvm "$@" site.yml 
+/usr/bin/env ansible-playbook -i localvm "$@" localvm.yml 
 

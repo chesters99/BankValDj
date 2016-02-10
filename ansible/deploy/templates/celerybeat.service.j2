@@ -1,0 +1,24 @@
+[Unit]
+Description=Celery beat scheduler
+After=network.target redis.target
+
+[Service]
+Type=simple
+User={{ username }}
+Group=nginx
+EnvironmentFile=-/etc/celery.conf
+WorkingDirectory={{ base_dir }}/{{ project_name }}
+# run ExecStartPre as priviledged user and set up /var/run
+PermissionsStartOnly=true
+ExecStartPre=-/usr/bin/mkdir ${CELERYBEAT_STATE_DIR}
+ExecStartPre=/usr/bin/chown -R {{ username }}:nginx ${CELERYBEAT_STATE_DIR}
+ExecStart={{ base_dir}}/.virtualenvs/{{ project_name }}/bin/celery beat -A ${CELERY_APP} \
+    --workdir=${CELERYBEAT_WORK_DIR} \
+    --pidfile=${CELERYBEAT_PID_FILE} \
+    --logfile=${CELERYBEAT_LOG_FILE} \
+    --loglevel=${CELERYBEAT_LOG_LEVEL} \
+    --schedule=${CELERYBEAT_SCHEDULE}
+ExecStop=/bin/systemctl kill celerybeat.service
+
+[Install]
+WantedBy=multi-user.target

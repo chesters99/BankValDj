@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SITE_ID = 1
@@ -185,10 +186,19 @@ DJSTRIPE_PLANS = {
 CONN_MAX_AGE = 300  # database pooling
 
 # Celery and Celerybeat settings
+# from celery.schedules import crontab
 BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+CELERYBEAT_SCHEDULE = {
+    # crontab(hour=0, minute=0, day_of_week='saturday')
+    'schedule-name': {  # example: 'file-backup'
+        'task': 'accounts.tasks.test_task',  # example: 'files.tasks.cleanup'
+        # 'schedule': crontab(...)
+        'schedule': timedelta(seconds=10),
+        'args': (3,),
+    },
+}

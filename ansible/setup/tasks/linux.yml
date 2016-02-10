@@ -12,11 +12,11 @@
     - libffi-devel # required for pip installs (cryptography)
     - ntp
     - git
-  tags: linux
+  tags: install linux
 
 - name: Set {{ username }} directory to be group executable (for nginx access)
   file: path={{ base_dir }} state=directory mode="g=rx"
-  tags: linux
+  tags: install linux
 
 - name: Add exports/aliases to bash_profile
   become: yes
@@ -30,7 +30,7 @@
       alias m='./manage.py'
       alias celw='celery -A BankValDj worker --loglevel=INFO'
       export PYTHONPATH=PYTHONPATH:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib/python3.5/site-packages/:{{ base_dir }}/BankValDj/:
-  tags: linux
+  tags: install linux
 
 - name: Check current timezone
   become: yes
@@ -38,11 +38,17 @@
   shell: ll /etc/localtime | rev| cut -f1 -d"/" | rev
   register: current_zone
   changed_when: False
-  tags: linux
+  tags: install linux
 
 - name: Set Europe/London timezone
   become: yes
   become_user: root
   file: src=/usr/share/zoneinfo/{{ timezone }}  dest=/etc/localtime state=link force=yes
   when: current_zone.stdout != '{{ timezone }}'
-  tags: linux
+  tags: install linux
+
+- name: restart ntp daemon
+  become: yes
+  become_user: root
+  service: name=ntpd state=restarted enabled=yes
+  tags: install linux

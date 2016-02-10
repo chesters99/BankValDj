@@ -1,10 +1,9 @@
 ---
-######### install redis from website, get uwsgi working, setup remote python interpreter (check fabfile too)
-######### add hosts - development, staging, production and setup amazon EC2
 ####################
 
 - include: linux.yml
 - include: python.yml
 - include: database.yml
 - include: webserver.yml
-- include: other.yml
+- include: redis.yml
+- include: celery.yml

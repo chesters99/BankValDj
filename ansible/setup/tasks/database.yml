@@ -1,6 +1,6 @@
 ---
 
-- name: Install PostgreSQL
+- name: Install PostgreSQL (install via yum as per advice on postgresql website)
   become: yes
   become_user: root
   yum: name={{ item }} state=installed
@@ -9,14 +9,14 @@
     - postgresql-contrib
     - postgresql-devel
     - python-psycopg2
-  tags: database
+  tags: install database
 
 - name: Initialise database
   become: yes
   become_user: root
   command: service postgresql initdb
            creates=/var/lib/pgsql/data/postgresql.conf
-  tags: database
+  tags: install database
 
 - name: postgresql should listen on all ports
   become: yes
@@ -24,7 +24,7 @@
   lineinfile: dest=/var/lib/pgsql/data/postgresql.conf
               regexp="^listen_addresses"
               line="listen_addresses = '*'" state=present
-  tags: database
+  tags: install database
 
 - name: postgresql should allow access from anywhere
   become: yes
@@ -32,31 +32,31 @@
   lineinfile: dest=/var/lib/pgsql/data/pg_hba.conf backup=yes
               regexp="^0.0.0.0"
               line="host    all           all           0.0.0.0/0     md5" state=present
-  tags: database
+  tags: install database
 
 - name: postgresql should allow access via md5 not ident
   become: yes
   become_user: postgres
   replace: dest=/var/lib/pgsql/data/pg_hba.conf regexp='ident' replace='md5' backup=yes
-  tags: database
+  tags: install database
 
 - name: Ensure the PostgreSQL service is running
   become: yes
   become_user: root
   service: name=postgresql state=started enabled=yes
-  tags: database
+  tags: install database
 
 - name: Ensure database is created
   become: yes
   become_user: postgres
   postgresql_db: name={{ db_name }} state=present
-  tags: database
+  tags: install database
 
 - name: Ensure user has access to the database
   become: yes
   become_user: postgres
   postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL state=present
-  tags: database
+  tags: install database
 
 - name: Allow port 5432 through firewall
   become: yes
@@ -67,5 +67,5 @@
   become: yes
   become_user: root
   service: name=firewalld state=restarted
-  tags: database
+  tags: install database
 

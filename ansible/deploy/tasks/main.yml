@@ -5,41 +5,57 @@
   become: yes
   become_user: root
   template: src=nginx.conf.j2 dest=/etc/nginx/conf.d/nginx.conf
-            owner=nginx group=nginx backup=yes
-  tags: deploy
+            owner=nginx group=nginx backup=yes force=yes
+  tags: deploy nginx
 
 - name: Copy ssl crt
   become: yes
   become_user: root
   copy: src="../{{ project_name }}/settings/secret/ssl_secret.crt"
-        dest=/etc/nginx/conf.d owner=nginx group=nginx
-  tags: deploy
+        dest=/etc/nginx/conf.d owner=nginx group=nginx force=yes
+  tags: deploy nginx
 - name: Copy ssl key
   become: yes
   become_user: root
   copy: src="../{{ project_name }}/settings/secret/ssl_secret.key"
-        dest=/etc/nginx/conf.d owner=nginx group=nginx
-  tags: deploy
+        dest=/etc/nginx/conf.d owner=nginx group=nginx force=yes
+  tags: deploy nginx
 
 - name: restart nginx
   become: yes
   become_user: root
   service: name=nginx state=restarted enabled=yes
-  tags: deploy
+  tags: deploy nginx
+
+####################
+
+- name: Create the redis configuration file
+  become: yes
+  become_user: root
+  template: src=redis.conf.j2 dest=/etc/redis.conf mode=0664
+            owner=nginx group=nginx backup=yes force=yes
+  tags: deploy redis
+
+- name: restart redis
+  become: yes
+  become_user: root
+  service: name=redis state=restarted enabled=yes
+  tags: deploy redis
 
 #################### setup uwsgi config and restart
 
 - name: Create the uwsgi configuration file
   become: yes
   become_user: root
-  template: src=uwsgi.ini.j2 dest=/etc/uwsgi/vassals/uwsgi.ini owner=nginx group=nginx
-  tags: deploy
+  template: src=uwsgi.ini.j2 dest=/etc/uwsgi/vassals/uwsgi.ini
+            owner=nginx group=nginx force=yes
+  tags: deploy uwsgi
 
 - name: restart uwsgi
   become: yes
   become_user: root
   service: name=uwsgi.service state=restarted enabled=yes
-  tags: deploy
+  tags: deploy uwsgi
 
 ####################
 
@@ -47,15 +63,19 @@
   become_user: "{{ username }}"
   pip: virtualenv={{ base_dir }}/.virtualenvs/{{ project_name }}
        requirements="{{ project_path }}/requirements/local.txt"
-  tags: deploy
+  tags: deploy django
 
 ####################
+
 - name: Ensure static directories are 0755 for nginx
   command: find {{ project_path }}/static/root -type d -exec chmod 0755 {} \;
-  tags: deploy1
+  tags: deploy
 - name: Ensure static files are 0644 for nginx
   command: find {{ project_path }}/static/root -type f -exec chmod 0644 {} \;
-  tags: deploy
+  tags: deploy nginx
+
+####################
+
 
 - name: Initialise Django - makemigrations and migrate
   become_user: "{{ username }}"
@@ -63,7 +83,31 @@
   args:
     executable: /bin/bash
     chdir: /{{ project_path }}
-  tags: deploy
+  tags: deploy django
+
+####################
+
+- name: configure and start celery and celerybeat services (needs django installed)
+  become: yes
+  become_user: root
+  template: src=celery.conf.j2 dest=/etc/celery.conf mode=0664
+            owner=nginx group=nginx backup=yes force=yes
+  tags: deploy celery
+
+- name: restart celery service
+  become: yes
+  become_user: root
+  service: name=celery state=restarted enabled=yes
+  tags: deploy celery
+
+- name: restart celerybeat service
+  become: yes
+  become_user: root
+  service: name=celerybeat state=restarted enabled=yes
+  tags: deploy celery
+
+####################
+
 
 #- name: Initialise Django - create superuser must be done from command line
 #- name: Initialise Django - m runserver 0.0.0.0:8000
@@ -75,3 +119,4 @@
 #  git: repo={{ project_repo }}
 #       only_if: "$vm == 1"
 #       dest=/{{ project_name }} version=master update=no accept_hostkey=True
+##14:21:12
