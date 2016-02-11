@@ -125,4 +125,3 @@
 
 #- name: Initialise Django - create superuser must be done from command line
 #- name: Initialise Django - m runserver 0.0.0.0:8000
-
