@@ -24,11 +24,6 @@ MIDDLEWARE_CLASSES += (
     # 'silk.middleware.SilkyMiddleware',
 )
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    }
-}
 
 DATABASES = {
     'default': {
@@ -40,6 +35,31 @@ DATABASES = {
         'PORT': secrets["DATABASE_PORT"],
     }
 }
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'debug': True,
+            'context_processors': [
+                # 'djstripe.context_processors.djstripe_settings',
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'loaders': (
+                'django.template.loaders.cached.Loader', (
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',)
+            )
+        },
+    },
+]
 
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_PATCH_SETTINGS = False
