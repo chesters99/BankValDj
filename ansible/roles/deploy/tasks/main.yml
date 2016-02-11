@@ -4,7 +4,7 @@
 
 - name: Pull {{ project_name }} source from the repository if not localvm
   git: repo="{{ project_repo }}"
-       dest="{{ project_path }}" version=master accept_hostkey=True
+       dest="{{ project_path }}" version=master accept_hostkey=True update=yes
   when: "vm == 'no'"
   tags: deploy code
 
