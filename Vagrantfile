@@ -49,6 +49,4 @@ Vagrant.configure(2) do |config|
       ansible_ssh_private_key_file="/Users/graham/Documents/Projects/BankValDj/BankValDj/settings/secret/USEast21Aug_secret.pem"
     end
   end
-
-
 end
