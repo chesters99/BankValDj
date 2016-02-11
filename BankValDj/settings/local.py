@@ -3,7 +3,6 @@ from .base import *
 
 DEBUG = True
 
-
 with open(os.path.join(BASE_DIR, 'BankValDj', 'settings', 'secret/localvm_secrets.json')) as f:
     secrets = json.loads(f.read())
 SECRET_KEY = secrets["SECRET_KEY"]

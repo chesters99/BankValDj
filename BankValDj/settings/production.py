@@ -2,7 +2,6 @@ import json
 from .base import *
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 with open(os.path.join(BASE_DIR, 'BankValDj', 'settings', 'secret/production_secrets.json')) as f:
     secrets = json.loads(f.read())
