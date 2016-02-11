@@ -51,7 +51,7 @@
 - name: Install uwsgi globally
   become: yes
   become_user: root
-  pip: name=uwsgi
+  pip: name=uwsgi executable=/usr/local/bin/pip3
   tags: install uwsgi
 
 - name: Create uwsgi config directory
@@ -69,7 +69,7 @@
 - name: Create the uwsgi startup service
   become: yes
   become_user: root
-  template: src=deploy/templates/uwsgi.service.j2 dest=/etc/systemd/system/uwsgi.service
+  template: src=roles/deploy/templates/uwsgi.service.j2 dest=/etc/systemd/system/uwsgi.service
             backup=yes owner=nginx group=nginx mode=0750
   tags: install uwsgi
 

@@ -46,17 +46,17 @@
 - name: ensure pip is latest version
   become: yes
   become_user: root
-  pip: name=pip state=latest
+  pip: name=pip executable=/usr/local/bin/pip3 state=latest
   tags: install python
 - name: Install virtualenv
   become: yes
   become_user: root
-  pip: name=virtualenv
+  pip: name=virtualenv executable=/usr/local/bin/pip3
   tags: install python
 - name: Install virtualenvwrapper
   become: yes
   become_user: root
-  pip: name=virtualenvwrapper
+  pip: name=virtualenvwrapper executable=/usr/local/bin/pip3
   tags: install python
 - name: Make a virtualenv in {{ base_dir }}/.virtualenvs/{{ project_name }} and assign to project
   shell: . /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv {{ project_name }} -a {{ project_path }}

@@ -1,5 +1,4 @@
 #!/bin/bash
 # Run with:
-# ./apl --tags=xxxxx 
-/usr/bin/env ansible-playbook -i production "$@" production.yml 
-
+# ./apxxxx --tags=xxxxx
+/usr/bin/env ansible-playbook -i hosts --limit production "$@" site.yml

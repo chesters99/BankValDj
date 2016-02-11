@@ -7,15 +7,22 @@
   yum: name={{ item }} state=latest
   with_items:
     - bash
-    - openssl # required for python3, pip
+    - openssl       # required for python3, pip
     - openssl-devel # required for python3, pip
-    - libffi-devel # required for pip installs (cryptography)
+    - libffi-devel  # required for pip installs (cryptography)
     - ntp
     - git
+    - gcc           # required for amazon ec2 redhat 7.2
+    - firewalld     # required for amazon ec2 redhat 7.2
   tags: install linux
 
 - name: Set {{ username }} directory to be group executable (for nginx access)
   file: path={{ base_dir }} state=directory mode="g=rx"
+  tags: install linux
+
+- name: Create {{ project_name }} directory if not localvm
+  file: path={{ project_name }} state=directory mode=0750
+  when: "vm == 'no'"
   tags: install linux
 
 - name: Add exports/aliases to bash_profile

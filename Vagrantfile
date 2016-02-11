@@ -16,6 +16,12 @@ Vagrant.configure(2) do |config|
       vb.cpus = "2"
       vb.customize ["modifyvm", :id, "--ioapic", "on"]
     end
+    config.vm.provision :ansible do |ansible|
+#      ansible.verbose = "vvvv"
+      ansible.playbook = "ansible/site.yml"
+      ansible.inventory_path = "ansible/hosts"
+      ansible.limit="localvm"
+    end
   end
 
   config.vm.define :production do |prod|
@@ -26,7 +32,6 @@ Vagrant.configure(2) do |config|
       aws.access_key_id = ENV['AWS_KEY']
       aws.secret_access_key = ENV['AWS_SECRET']
       aws.keypair_name = ENV['AWS_KEYNAME']
-#      aws.ami = "ami-76817c1e"
       aws.ami = "ami-2051294a" # redhat 7.2
       aws.region = "us-east-1"
       aws.instance_type = "t2.micro"
@@ -35,10 +40,15 @@ Vagrant.configure(2) do |config|
       override.ssh.username = "ec2-user"
       override.ssh.private_key_path = ENV['AWS_KEYPATH']
     end
+    config.vm.provision :ansible do |ansible|
+#      ansible.verbose = "vvvv"
+      ansible.playbook = "ansible/site.yml"
+      ansible.inventory_path = "ansible/hosts"
+      ansible.limit="production"
+      ansible_user="ec2-user"
+      ansible_ssh_private_key_file="/Users/graham/Documents/Projects/BankValDj/BankValDj/settings/secret/USEast21Aug_secret.pem"
+    end
   end
 
-#    config.vm.provision :ansible do |ansible|
-#      ansible.verbose = "vvv"
-#      ansible.playbook = "ansible/localvm.yml"
-#    end
+
 end

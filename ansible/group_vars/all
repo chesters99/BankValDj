@@ -1,14 +1,12 @@
 ---
 # Application settings.
 project_name: BankValDj
-username: vagrant
 timezone: "Europe/London"
-project_repo: "https://chesters99:hudson-99@github.com/chesters99/{{ project_name }}.git"
-domain_name: gchester.com
 base_dir: /home/{{ username }}
 project_path: "{{ base_dir }}/{{ project_name }}"
 python_version: "3.5.0"
 redis_version: "3.0.7"
+domain_name: "gchester.com"
 
 # database settings
 db_name: "{{ project_name }}"
@@ -16,12 +14,12 @@ db_user: django
 db_password: django
 
 # Nginx settings
-nginx_http_port: 80
-nginx_https_port: 443
-nginx_access_log_file: "{{ application_log_dir }}/nginx_access.log"
-nginx_error_log_file: "{{ application_log_dir }}/nginx_error.log"
-nginx_static_dir: "{{ virtualenv_path }}/static/"
-nginx_media_dir: "{{ virtualenv_path }}/media/"
+#nginx_http_port: 80
+#nginx_https_port: 443
+#nginx_access_log_file: "{{ application_log_dir }}/nginx_access.log"
+#nginx_error_log_file: "{{ application_log_dir }}/nginx_error.log"
+#nginx_static_dir: "{{ virtualenv_path }}/static/"
+#nginx_media_dir: "{{ virtualenv_path }}/media/"
 #
 ## Django Environment variables
 #django_environment:

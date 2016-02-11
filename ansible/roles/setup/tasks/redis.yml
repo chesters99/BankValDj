@@ -9,13 +9,13 @@
 
 ###################
 
-- name: Install redis - Download from redis website
+- name: Install redis - make temp redis directory
   file: path="{{ base_dir }}/redis" state=directory
   tags: install redis
 - name: Install redis - Download from redis website
   get_url: url=http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz
            dest="{{ base_dir }}/redis/redis.tar.gz" mode=0444
-  tags: redis
+  tags: install redis
 - name: Install redis - Unarchive redis tarball
   unarchive: src="{{ base_dir }}/redis/redis.tar.gz" dest="{{ base_dir }}/redis"
              owner={{ username }} copy=no creates={{ base_dir }}/redis/redis-{{ redis_version }}
@@ -39,7 +39,7 @@
 - name: Create the redis startup service
   become: yes
   become_user: root
-  template: src=deploy/templates/redis.service.j2 dest=/etc/systemd/system/redis.service
+  template: src=roles/deploy/templates/redis.service.j2 dest=/etc/systemd/system/redis.service
             backup=yes owner=nginx group=nginx mode=0750
   tags: install redis
 

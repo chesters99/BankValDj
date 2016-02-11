@@ -1,6 +1,13 @@
 ---
-#################### setup nginx config and restart nginx
 
+#################### get source code from git if not local machine
+
+- name: Pull {{ project_name }} source from the repository
+  git: repo="{{ project_repo }}"
+       dest="{{ project_path }}" version=master update=no accept_hostkey=True
+  when: "vm == 'no'"
+
+#################### setup nginx config and restart nginx
 - name: Create the Nginx configuration file
   become: yes
   become_user: root
@@ -42,21 +49,6 @@
   service: name=redis state=restarted enabled=yes
   tags: deploy redis
 
-#################### setup uwsgi config and restart
-
-- name: Create the uwsgi configuration file
-  become: yes
-  become_user: root
-  template: src=uwsgi.ini.j2 dest=/etc/uwsgi/vassals/uwsgi.ini
-            owner=nginx group=nginx force=yes
-  tags: deploy uwsgi
-
-- name: restart uwsgi
-  become: yes
-  become_user: root
-  service: name=uwsgi.service state=restarted enabled=yes
-  tags: deploy uwsgi
-
 ####################
 
 - name: Setup {{ project_name }} virtualenv site packages in {{ base_dir }}/.virtualenvs/{{ project_name }}
@@ -76,7 +68,6 @@
 
 ####################
 
-
 - name: Initialise Django - makemigrations and migrate
   become_user: "{{ username }}"
   shell: . /usr/local/bin/virtualenvwrapper.sh && workon BankValDj && ./manage.py makemigrations && ./manage.py migrate
@@ -84,6 +75,21 @@
     executable: /bin/bash
     chdir: /{{ project_path }}
   tags: deploy django
+
+#################### setup uwsgi config and restart
+
+- name: Create the uwsgi configuration file
+  become: yes
+  become_user: root
+  template: src=uwsgi.ini.j2 dest=/etc/uwsgi/vassals/uwsgi.ini
+            owner=nginx group=nginx force=yes
+  tags: deploy uwsgi
+
+- name: restart uwsgi
+  become: yes
+  become_user: root
+  service: name=uwsgi.service state=restarted enabled=yes
+  tags: deploy uwsgi
 
 ####################
 
@@ -112,11 +118,3 @@
 #- name: Initialise Django - create superuser must be done from command line
 #- name: Initialise Django - m runserver 0.0.0.0:8000
 
-####################
-
-#- name: Pull {{ project_name }} source from the repository.
-#  become_user: "{{ username }}"
-#  git: repo={{ project_repo }}
-#       only_if: "$vm == 1"
-#       dest=/{{ project_name }} version=master update=no accept_hostkey=True
-##14:21:12
