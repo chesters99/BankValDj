@@ -13,7 +13,6 @@ __pycache__/
 static/root
 static/bootstrap
 docs/build
-migrations/
 rules.json
 
 # secure stuff

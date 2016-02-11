@@ -58,14 +58,14 @@
   postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL state=present
   tags: install database
 
+- name: Start firewalld to add new rules
+  become: yes
+  become_user: root
+  service: name=firewalld state=started
+  tags: install database
+
 - name: Allow port 5432 through firewall
   become: yes
   become_user: root
-  firewalld: port=5432/tcp permanent=true state=enabled
-  tags: database
-- name: Restart firewalld to enable new rules
-  become: yes
-  become_user: root
-  service: name=firewalld state=restarted
+  firewalld: port=5432/tcp zone=public immediate=yes permanent=true state=enabled
   tags: install database
-
