@@ -16,6 +16,15 @@
     - firewalld     # required for amazon ec2 redhat 7.2
   tags: install linux
 
+- name: Change SELINUX to permissive
+  become: yes
+  become_user: root
+  lineinfile:
+    dest: /etc/selinux/config
+    regexp: '^SELINUX=enforcing'
+    line: "SELINUX=permissive"
+  tags: install linux
+
 - name: Set {{ username }} directory to be group executable (for nginx access)
   file: path={{ base_dir }} state=directory mode="g=rx"
   tags: install linux

@@ -2,7 +2,7 @@
 CELERY_BIN="{{ base_dir }}/.virtualenvs/{{ project_name }}/bin/celery"
 CELERYD_USER="{{ username }}"
 CELERYD_GROUP="nginx"
-DJANGO_SETTINGS_MODULE="{{ project_name }}.settings.local"
+DJANGO_SETTINGS_MODULE="{{ project_name }}.settings.{{ group_names[0] }}"
 CELERY_APP="{{ project_name }}:celery_app"
 CELERY_CREATE_DIRS=1
 CELERYD_CHDIR="{{ project_path }}"
