@@ -22,7 +22,7 @@
   lineinfile:
     dest: /etc/nginx/nginx.conf
     regexp: '^user  nginx'
-    line: "user  nginx vagrant;"
+    line: "user  nginx {{ username }};"
   tags: install nginx
 
 - name: Allow port 80 through firewall

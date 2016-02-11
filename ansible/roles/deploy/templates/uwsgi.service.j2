@@ -3,7 +3,7 @@ Description=uWSGI Emperor
 After=syslog.target
 
 [Service]
-User=vagrant
+User={{ username }}
 Group=nginx
 #ExecStart=/usr/local/bin/uwsgi --ini /etc/uwsgi/vassals/uwsgi.ini
 ExecStart=/usr/local/bin/uwsgi --emperor /etc/uwsgi/vassals

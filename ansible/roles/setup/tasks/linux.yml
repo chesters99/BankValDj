@@ -36,6 +36,7 @@
       source /usr/local/bin/virtualenvwrapper.sh
       alias m='./manage.py'
       alias celw='celery -A BankValDj worker --loglevel=INFO'
+      export DJANGO_SETTINGS_MODULE={{ project_name }}.settings.{{ group_names[0] }}
       export PYTHONPATH=PYTHONPATH:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib/python3.5/site-packages/:{{ base_dir }}/BankValDj/:
   tags: install linux
 
