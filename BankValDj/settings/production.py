@@ -22,7 +22,7 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_HSTS_SECONDS = 5
 X_FRAME_OPTIONS = 'DENY'
 
-ALLOWED_HOSTS = ['gchester.com', 'www.gchester.com', '54.164.140.224']
+ALLOWED_HOSTS = ['.gchester.com',]
 
 DATABASES = {
     'default': {
@@ -35,9 +35,3 @@ DATABASES = {
     }
 }
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/var/tmp/django_cache',
-    }
-}

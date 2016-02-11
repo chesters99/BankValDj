@@ -11,3 +11,4 @@ django-localflavor==1.2         # for UK counties, post code validation etc
 dj-stripe==0.7.0                # Credit/Debit card payments
 redis==2.10.5                   # redis required for celery scheduler
 django-extensions==1.6.1        # additional manage.py commands
+django-redis-cache==1.6.5       # redis caching in settings file

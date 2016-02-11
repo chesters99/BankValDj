@@ -1,5 +1,4 @@
 import os
-from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SITE_ID = 1
@@ -54,12 +53,16 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.cache.FetchFromCacheMiddleware', # use caching per page, not by whole site
 )
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-    ),
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '/tmp/redis.sock',
+    },
 }
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+CONN_MAX_AGE = 300  # database pooling
 
 ROOT_URLCONF = '%s.urls' % os.path.basename(BASE_DIR)
 WSGI_APPLICATION = '%s.wsgi.application' % os.path.basename(BASE_DIR)
@@ -97,6 +100,13 @@ TEMPLATES = [
         },
     },
 ]
+
+TEMPLATE_LOADERS = (
+    ('django.template.loaders.cached.Loader', (
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )),
+)
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static', 'source'), )
 STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'root')
@@ -171,7 +181,6 @@ LOGGING = {
     }
 }
 
-
 DJSTRIPE_PLANS = {
     'monthly': {
         'stripe_plan_id': 'monthly_plan',
@@ -183,7 +192,12 @@ DJSTRIPE_PLANS = {
     },
 }
 
-CONN_MAX_AGE = 300  # database pooling
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}
 
 # Celery and Celerybeat settings
 # from celery.schedules import crontab
