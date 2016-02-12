@@ -95,10 +95,9 @@ class LogoutUser(ActiveLoginRequiredMixin, RedirectView):
 def text_email(request):
     subject = 'Rubbish Text Email'
     to_email = ['chesters99@yahoo.com']
-    from_email = 'django@gchester.com'
     context = {'user': 'graham', 'content': 'rubbish content to annoy you1'}
     message = render_to_string('email.txt', context)
-    EmailMessage(subject, message, to=to_email, from_email=from_email).send()
+    EmailMessage(subject, message, to=to_email).send()
     return HttpResponse('text email sent')
 
 
@@ -106,10 +105,9 @@ def text_email(request):
 def html_email(request):
     subject = 'Rubbish HTML Email'
     to_email = ['chesters99@yahoo.com']
-    from_email = 'django@gchester.com'
     context = {'user': 'graham', 'content': 'rubbish content to annoy you2'}
     contents = get_template('email.html').render(Context(context))
-    message = EmailMessage(subject, contents, to=to_email, from_email=from_email)
+    message = EmailMessage(subject, contents, to=to_email)
     message.content_subtype = 'html'
     message.send()
     return HttpResponse('html email sent')

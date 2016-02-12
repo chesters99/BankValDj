@@ -9,15 +9,22 @@ SECRET_KEY = secrets["SECRET_KEY"]
 STRIPE_SECRET_KEY = secrets["STRIPE_SECRET_KEY"]
 STRIPE_PUBLIC_KEY = secrets["STRIPE_PUBLIC_KEY"]
 
-#email settings for google (us in localvm only)
+# to test emails, do the following
+#from django.core.mail import EmailMessage
+#email = EmailMessage('Mail Test', 'This is a test', to=['chesters99@yahoo.com'])
+#email.send()
+
+#email settings for google in localvm only
+# EMAIL_PORT = 465
+# EMAIL_USE_SSL = True # EMAIL_PORT = 465
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True # EMAIL_PORT = 465
+
 EMAIL_HOST_USER = 'gchester99@gmail.com'
 EMAIL_HOST_PASSWORD = 'hudson-99'
-EMAIL_USE_SSL = True # EMAIL_PORT = 465
 DEFAULT_FROM_EMAIL = 'gchester99@gmail.com'
 SERVER_EMAIL = 'gchester99@gmail.com'
-
 
 INSTALLED_APPS += (
     'django_extensions',
