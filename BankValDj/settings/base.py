@@ -5,10 +5,6 @@ SITE_ID = 1
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # in case debug mode is turned off this is required
 
 ADMINS = (('Graham', 'chesters99@yahoo.com'),)
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 25
-# EMAIL_USE_TLS = True # causes starttls error on amazon ec2
-SERVER_EMAIL = 'django@gchester.com'
 
 LOCAL_APPS = (
     'main',
@@ -80,8 +76,6 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 LOGIN_URL = '/main/loginuser/'
 LOGIN_REDIRECT_URL = '/'
-
-
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static', 'source'), )
 STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'root')

@@ -9,7 +9,15 @@ SECRET_KEY = secrets["SECRET_KEY"]
 STRIPE_SECRET_KEY = secrets["STRIPE_SECRET_KEY"]
 STRIPE_PUBLIC_KEY = secrets["STRIPE_PUBLIC_KEY"]
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # log emails to console
+#email settings for google (us in localvm only)
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'gchester99@gmail.com'
+EMAIL_HOST_PASSWORD = 'hudson-99'
+EMAIL_USE_SSL = True # EMAIL_PORT = 465
+DEFAULT_FROM_EMAIL = 'gchester99@gmail.com'
+SERVER_EMAIL = 'gchester99@gmail.com'
+
 
 INSTALLED_APPS += (
     'django_extensions',

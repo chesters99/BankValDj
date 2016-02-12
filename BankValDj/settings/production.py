@@ -9,6 +9,15 @@ SECRET_KEY = secrets["SECRET_KEY"]
 STRIPE_SECRET_KEY = secrets["STRIPE_SECRET_KEY"]
 STRIPE_PUBLIC_KEY = secrets["STRIPE_PUBLIC_KEY"]
 
+# email settings for postfix in production
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = 'django@gchester.com'
+SERVER_EMAIL = 'djadmin@gchester.com'
+
 os.environ['HTTPS'] = "on"
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
