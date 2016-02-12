@@ -49,13 +49,6 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.cache.FetchFromCacheMiddleware', # use caching per page, not by whole site
 )
 
-CACHES = {
-    'default': {
-        'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': '/tmp/redis.sock',
-    },
-}
-
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 CONN_MAX_AGE = 300  # database pooling
@@ -82,6 +75,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'root')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'), )
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '/tmp/redis.sock',
+    },
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
