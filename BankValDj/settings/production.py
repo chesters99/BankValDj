@@ -18,17 +18,9 @@ EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = 'django@gchester.com'
 SERVER_EMAIL = 'djadmin@gchester.com'
 
-os.environ['HTTPS'] = "on"
 CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_HSTS_SECONDS = 5
-X_FRAME_OPTIONS = 'DENY'
 
 ALLOWED_HOSTS = ['.gchester.com',]
 
@@ -67,3 +59,10 @@ TEMPLATES = [
         },
     },
 ]
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '/tmp/redis.sock',
+    },
+}

@@ -3,7 +3,6 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SITE_ID = 1
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # in case debug mode is turned off this is required
-
 ADMINS = (('Graham', 'chesters99@yahoo.com'),)
 
 LOCAL_APPS = (
@@ -58,6 +57,15 @@ CACHES = {
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
+
+CSRF_COOKIE_HTTPONLY = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_HSTS_SECONDS = 5
+X_FRAME_OPTIONS = 'DENY'
+
 CONN_MAX_AGE = 300  # database pooling
 
 ROOT_URLCONF = '%s.urls' % os.path.basename(BASE_DIR)
@@ -80,7 +88,6 @@ LOGIN_REDIRECT_URL = '/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static', 'source'), )
 STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'root')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
-
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'), )
 
 AUTH_PASSWORD_VALIDATORS = [
