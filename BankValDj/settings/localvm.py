@@ -20,7 +20,6 @@ STRIPE_PUBLIC_KEY = secrets["STRIPE_PUBLIC_KEY"]
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True # EMAIL_PORT = 465
-
 EMAIL_HOST_USER = 'gchester99@gmail.com'
 EMAIL_HOST_PASSWORD = 'hudson-99'
 DEFAULT_FROM_EMAIL = 'gchester99@gmail.com'
