@@ -5,7 +5,7 @@
   become: yes
   become_user: root
   hostname: name="{{ inventory_hostname }}"
-  tags: install linux1
+  tags: install linux
 
 - name: Ensure key linux packages are installed and the latest versions
   become: yes

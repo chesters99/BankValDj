@@ -15,6 +15,7 @@
   tags: deploy code
 
 #################### setup nginx config and restart nginx
+
 - name: Create the Nginx configuration file
   become: yes
   become_user: root
@@ -22,17 +23,13 @@
             owner=nginx group=nginx backup=yes force=yes
   tags: deploy nginx
 
-- name: Copy ssl crt
+- name: copy SSL files to remote host nginx conf
   become: yes
   become_user: root
-  copy: src="../{{ project_name }}/settings/secret/ssl_secret.crt"
-        dest=/etc/nginx/conf.d owner=nginx group=nginx force=yes
-  tags: deploy nginx
-- name: Copy ssl key
-  become: yes
-  become_user: root
-  copy: src="../{{ project_name }}/settings/secret/ssl_secret.key"
-        dest=/etc/nginx/conf.d owner=nginx group=nginx force=yes
+  copy: src={{ item }} dest=/etc/nginx/conf.d owner=nginx group=nginx force=yes
+  with_items:
+    - "../{{ project_name }}/settings/secret/{{ group_names[0] }}_cert.pem"
+    - "../{{ project_name }}/settings/secret/{{ group_names[0] }}_key.pem"
   tags: deploy nginx
 
 - name: restart nginx
