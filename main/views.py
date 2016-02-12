@@ -110,6 +110,7 @@ def html_email(request):
     message = EmailMessage(subject, contents, to=to_email)
     message.content_subtype = 'html'
     message.send()
+    print("IP Address for debug-toolbar: " + request.META['REMOTE_ADDR'])
     return HttpResponse('html email sent')
 
 

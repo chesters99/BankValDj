@@ -32,10 +32,10 @@ INSTALLED_APPS += (
     #    'silk',
 )
 
-MIDDLEWARE_CLASSES += (
+MIDDLEWARE_CLASSES =  (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     # 'silk.middleware.SilkyMiddleware',
-)
+) + MIDDLEWARE_CLASSES
 
 
 DATABASES = {
@@ -74,8 +74,7 @@ TEMPLATES = [
     },
 ]
 
-
-INTERNAL_IPS = ('127.0.0.1',)
+INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') # include virtualbox VM address
 DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # DEBUG_TOOLBAR_PANELS = [
 #     'debug_toolbar.panels.versions.VersionsPanel',
