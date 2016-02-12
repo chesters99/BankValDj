@@ -1,6 +1,12 @@
 ---
 #################### Install linux packages, setup linux and user
 
+- name: Set hostname
+  become: yes
+  become_user: root
+  hostname: name="{{ inventory_hostname }}"
+  tags: install linux1
+
 - name: Ensure key linux packages are installed and the latest versions
   become: yes
   become_user: root
