@@ -128,7 +128,7 @@ LOGGING = {
         'errorfile': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': '../django_errors.log',
+            'filename': '../../django_errors.log',
             'formatter': 'verbose'
         },
         'mail_admins': {
