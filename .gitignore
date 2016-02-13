@@ -1,12 +1,12 @@
 # Mac & IDE stuff
 .DS_Store
-.nbproject*
 Thumbs.db
-.idea
+
 __pycache__/
 *.py[cod]
 .cache
 .coverage
+.idea
 .vagrant
 
 # project stuff
@@ -18,4 +18,5 @@ rules.json
 # secure stuff
 *.db
 *secret*
+*.pem
 *.log
