@@ -1,8 +1,7 @@
 # Mac & IDE stuff
 .DS_Store
-Thumbs.db
 
-__pycache__/
+__pycache__
 *.py[cod]
 .cache
 .coverage
