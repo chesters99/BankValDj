@@ -30,6 +30,7 @@
   with_items:
     - "../{{ project_name }}/settings/secret/{{ group_names[0] }}_cert.pem"
     - "../{{ project_name }}/settings/secret/{{ group_names[0] }}_key.pem"
+    - "../{{ project_name }}/settings/secret/dhparams.pem"
   tags: deploy nginx
 
 - name: restart nginx
