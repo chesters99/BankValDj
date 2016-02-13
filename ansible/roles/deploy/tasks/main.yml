@@ -102,7 +102,9 @@
   become: yes
   become_user: root
   service: name=uwsgi.service state=restarted enabled=yes
-  tags: deploy uwsgi
+  tags:
+    - deploy uwsgi
+    - deploy code
 
 ####################
 
