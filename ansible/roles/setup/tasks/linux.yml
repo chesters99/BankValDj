@@ -34,7 +34,7 @@
 - name: Change SELINUX to permissive NOW
   become: yes
   become_user: root
-  command: echo 0 > /selinux/enforce
+  command: setenforce 0
   tags: install linux
 
 - name: Set {{ username }} directory to be group executable (for nginx access)

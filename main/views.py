@@ -90,7 +90,6 @@ class LogoutUser(ActiveLoginRequiredMixin, RedirectView):
         auth.logout(self.request)
         return reverse('main:loginuser')
 
-
 @csrf_exempt
 def text_email(request):
     subject = 'Rubbish Text Email'
@@ -99,7 +98,6 @@ def text_email(request):
     message = render_to_string('email.txt', context)
     EmailMessage(subject, message, to=to_email).send()
     return HttpResponse('text email sent')
-
 
 @csrf_exempt
 def html_email(request):
