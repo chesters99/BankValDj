@@ -35,6 +35,7 @@
   become: yes
   become_user: root
   command: setenforce 0
+  ignore_errors: yes
   tags: install linux
 
 - name: Set {{ username }} directory to be group executable (for nginx access)
