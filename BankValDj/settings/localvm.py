@@ -2,6 +2,7 @@ import json
 from .base import *
 
 DEBUG = True
+os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = '0.0.0.0:8080'
 
 with open(os.path.join(BASE_DIR, 'BankValDj', 'settings', 'secret/localvm_secrets.json')) as f:
     secrets = json.loads(f.read())
@@ -40,7 +41,7 @@ MIDDLEWARE_CLASSES =  (
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': secrets["DATABASE_NAME"],
         'USER': secrets["DATABASE_USER"],
         'PASSWORD': secrets["DATABASE_PASSWORD"],
@@ -73,8 +74,8 @@ TEMPLATES = [
         },
     },
 ]
-
-INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') # include virtualbox VM address
+# re-add the following line to enable debug toolbar
+#INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') # include virtualbox VM address
 DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # DEBUG_TOOLBAR_PANELS = [
 #     'debug_toolbar.panels.versions.VersionsPanel',

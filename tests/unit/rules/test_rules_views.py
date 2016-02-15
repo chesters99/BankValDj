@@ -1,7 +1,6 @@
 from tests.initialise import UnitTest
 from rules.models import Rule
 
-
 class RulesViewTests(UnitTest):
     """Test Rule Views"""
 
@@ -19,6 +18,7 @@ class RulesViewTests(UnitTest):
         assert 'Rules loaded successfully' in response.content.decode(), response.content.decode()
 
     def test_detail_view(self):
+        self.login_as_superuser(self.client)
         self.load_rules('400000')
         rule = Rule.objects.filter(start_sort='400000')[:1].get()
         response = self.client.get('/rules/detail/%s/' % rule.id)

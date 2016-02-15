@@ -7,12 +7,14 @@ error_log               /var/log/nginx/nginx_error.log;
 access_log              off; # /var/log/nginx/nginx_access.log;
 error_page              400 500 502 503 504 /500.html;
 
+
 # performance parameters from lincoln loop performance django video
 #tcp_nopush              on;
 #tcp_nodelay             on;
 #types_hash_max_size     2048;
 #server_tokens           off;
 #server_names_hash_bucket_size 64;
+#worker_processes        auto;
 # end performance parameters
 
 upstream django {
@@ -33,13 +35,23 @@ server {
     {% if group_names[0] == "production" %}
     return                  301 https://$server_name$request_uri;
     {% endif %}
-    location /media         { alias {{ project_path }}/static/media; }
-    location /static        { alias {{ project_path }}/static/root; expires 30d;}
-    location /robots.txt    { alias {{ project_path }}/static/root/robots.txt; expires 30d;}
-    location /favicon.ico   { alias {{ project_path }}/static/root/favicon.ico; expires 30d;}
+    location /media         { alias {{ project_path }}/static/media; expires 1d;
+                              add_header Cache-Control "public";
+                            }
+    location /static        { alias {{ project_path }}/static/root; expires 1d;
+                              add_header Cache-Control "public";
+                            }
+    location /robots.txt    { alias {{ project_path }}/static/root/robots.txt; expires 1d;
+                              add_header Cache-Control "public";
+                            }
+    location /favicon.ico   { alias {{ project_path }}/static/root/favicon.ico; expires 1d;
+                              add_header Cache-Control "public";
+                            }
     location /              { uwsgi_pass django; include /etc/nginx/uwsgi_params; }
     location /apis          { rewrite ^(.*) https://gchester.com$1 permanent; }  # all api access is via https
-    location = /500.html    { root {{ project_path }}/main/templates; }
+    location = /500.html    { root {{ project_path }}/main/templates;
+                              add_header Last-Modified $date_gmt; if_modified_since off; etag off;
+                            }
     gzip                    on;
     gzip_min_length         1100;
     gzip_buffers            4 32k;
@@ -60,10 +72,18 @@ server {
     ssl_protocols           TLSv1.1 TLSv1.2;
     ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK';
     ssl_dhparam             /etc/nginx/conf.d/dhparams.pem;
-    location /media         { alias {{ project_path }}/static/media; }
-    location /static        { alias {{ project_path }}/static/root; expires 30d;}
-    location /robots.txt    { alias {{ project_path }}/static/root/robots.txt; expires 30d;}
-    location /favicon.ico   { alias {{ project_path }}/static/root/favicon.ico; expires 30d;}
+    location /media         { alias {{ project_path }}/static/media;
+                              add_header Cache-Control "public";
+                            }
+    location /static        { alias {{ project_path }}/static/root;
+                              add_header Cache-Control "public";
+                            }
+    location /robots.txt    { alias {{ project_path }}/static/root/robots.txt;
+                              add_header Cache-Control "public";
+                            }
+    location /favicon.ico   { alias {{ project_path }}/static/root/favicon.ico;
+                              add_header Cache-Control "public";
+                            }
     location /              { uwsgi_pass django; include /etc/nginx/uwsgi_params; }
     location = /500.html    { root {{ project_path }}/main/templates; }
 

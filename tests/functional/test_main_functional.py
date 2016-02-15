@@ -1,5 +1,5 @@
 from tests.initialise import FunctionalTest
-
+from random import randint
 
 class MainTests(FunctionalTest):
     def test_home_page_ok(self):
@@ -41,13 +41,13 @@ class MainTests(FunctionalTest):
         self.login()
         self.browser.get(self.my_server_url + '/main/createuser/')
         username_field = self.browser.find_element_by_name('username')
-        username_field.send_keys('testuser1')
+        username_field.send_keys('testuser_'+str(randint(0,10000)))
         password_field = self.browser.find_element_by_name('password')
-        password_field.send_keys('testuser1p')
+        password_field.send_keys('testuserp')
         if not self.production:
             button = self.browser.find_element_by_name('submit')  # make test read only so can run against production
             button.click()
         body = self.browser.find_element_by_tag_name('body')
         assert 'Existing Users' in body.text
         if not self.production:
-            assert 'User Created Successfully' in body.text
+            assert 'User Created Successfully' in body.text, body.text

@@ -1,5 +1,4 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.decorators import method_decorator
 from django.contrib import messages
 
 
@@ -24,16 +23,16 @@ class ActiveLoginRequiredMixin(LoginRequiredMixin):
             return self.handle_no_permission()
         return super(ActiveLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
-
-def class_decorator(decorator):  # applies a method decorator to a class
-    def inner(cls):
-        orig_dispatch = cls.dispatch
-
-        @method_decorator(decorator)
-        def new_dispatch(self, request, *args, **kwargs):
-            return orig_dispatch(self, request, *args, **kwargs)
-
-        cls.dispatch = new_dispatch
-        return cls
-
-    return inner
+#
+# def class_decorator(decorator):  # applies a method decorator to a class
+#     def inner(cls):
+#         orig_dispatch = cls.dispatch
+#
+#         @method_decorator(decorator)
+#         def new_dispatch(self, request, *args, **kwargs):
+#             return orig_dispatch(self, request, *args, **kwargs)
+#
+#         cls.dispatch = new_dispatch
+#         return cls
+#
+#     return inner

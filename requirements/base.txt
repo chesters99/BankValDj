@@ -11,3 +11,5 @@ dj-stripe==0.8.0                # Credit/Debit card payments
 redis==2.10.5                   # redis required for celery scheduler
 django-extensions==1.6.1        # additional manage.py commands
 django-redis-cache==1.6.5       # redis caching in settings file
+flower==0.8.4                   # celery flower task monitor (from high performance django book)
+uwsgitop==0.9                   # top task manager for uwsgi (from high performance django book)

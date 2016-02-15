@@ -1,14 +1,19 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>"Internal Server Error</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UK Bank Account Validation">
+    <meta name="author" content="grahamc">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/favicon.ico" rel="shortcut icon">
+</head>
+<body>
 
-{% block title %}Internal Server Error {% endblock %}
-
-{% block content %}
-<link href="/static/css/myBootstrap.css" rel="stylesheet">
-
-<p style="color:red">Sorry, but something has gone wrong with the processing of your request</p>
+<p style="color:red">Sorry! but something has gone wrong with the processing of your request</p>
 <p style="color:red">Our engineers have been notified</p>
 <br>
 <a class="btn btn-link" href="/">Click <b>here</b> to go to the home page</a>
 <br>
 <button class="btn btn-link" onclick="window.history.back();">Or click <b>here</b> to go back a page</button>
-{% endblock %}

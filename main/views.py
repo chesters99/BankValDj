@@ -1,4 +1,4 @@
-""" views for application root """
+""" documentation from views.py for application "**main**" (for sphinx) """
 from time import sleep
 from django.contrib import auth
 from django.contrib.auth import user_login_failed, get_user_model
@@ -16,8 +16,8 @@ from django.db import IntegrityError, transaction
 from django.contrib import messages
 from eventlog.models import Log
 from .forms import CreateUserForm
-from main.decorators import class_decorator, ActiveLoginRequiredMixin
-
+from main.decorators import ActiveLoginRequiredMixin
+from django.utils.decorators import method_decorator
 
 @receiver(user_login_failed)
 def delay_next_login(*args, **kwargs):
@@ -33,7 +33,6 @@ class IndexView(TemplateView):
         return context
 
 
-@class_decorator(cache_page(60*15))
 class Graph(TemplateView):
     template_name = 'graph.html'
 
@@ -50,8 +49,8 @@ class Graph(TemplateView):
         return context
 
 
-@class_decorator(never_cache)
-@class_decorator(sensitive_post_parameters('password'))
+@method_decorator(never_cache, name='dispatch')
+@method_decorator(sensitive_post_parameters('password'), name='dispatch')
 class CreateUser(ActiveLoginRequiredMixin, FormView):
     form_class = CreateUserForm
     template_name = 'create_user.html'

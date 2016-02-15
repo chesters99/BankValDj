@@ -3,14 +3,30 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to BankValDj's documentation!
-=====================================
+UK Bank Account Validation
+==========================
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
+
+Models
+======
+.. automodule:: main.models
+    :members:
+
+.. automodule:: rules.models
+    :members:
+
+Views
+=====
+.. automodule:: main.views
+    :members:
+
+.. automodule:: rules.views
+    :members:
 
 
 Indices and tables
@@ -21,8 +37,10 @@ Indices and tables
 * :ref:`search`
 
 Overview
---------
+========
 qweqweqweqweqweqwe
 qweqweqweqweqweqwe
 qweqweqweqweqweqwe
 qweqweqweqweqweqwe
+
+

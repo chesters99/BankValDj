@@ -1,3 +1,4 @@
+""" documentation from views.py for application "**rules**" (for Sphinx) """
 from os import path
 from django.contrib.syndication.views import Feed
 from django.shortcuts import render_to_response

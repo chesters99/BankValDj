@@ -1,14 +1,15 @@
 from django.db import transaction
+from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView
 from django.core.urlresolvers import reverse_lazy
 from django.conf import settings
 from djstripe.models import Customer
-from main.decorators import class_decorator, ActiveLoginRequiredMixin
+from main.decorators import ActiveLoginRequiredMixin
 from .forms import StripeForm
 
 
-@class_decorator(cache_control(private=True))
+@method_decorator(cache_control(private=True), name='dispatch')
 class SubscribeView(ActiveLoginRequiredMixin, FormView):
     template_name = 'subscribe.html'
     form_class = StripeForm

@@ -40,11 +40,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'BankValDj.middleware.CurrentUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',  # set site object on every request
     'django.middleware.locale.LocaleMiddleware',
-    'BankValDj.middleware.CurrentUserMiddleware',
+
     # 'django.middleware.cache.FetchFromCacheMiddleware', # use caching per page, not by whole site
 )
 
@@ -128,7 +129,7 @@ LOGGING = {
         'errorfile': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': '../../django_errors.log',
+            'filename': os.path.join('../',BASE_DIR, 'django_errors.log'),
             'formatter': 'verbose'
         },
         'mail_admins': {

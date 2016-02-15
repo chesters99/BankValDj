@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{%  load cache %}
+{%  cache 600 about %}
 
 {% block title %}About this website{% endblock %}
 
@@ -14,4 +16,4 @@ Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, tur
 commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. 
 </p>
 {% endblock %}
-
+{% endcache %}

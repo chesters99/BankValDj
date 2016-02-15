@@ -78,7 +78,7 @@ class Rule(CommonModel):
     def __str__(self):
         return '%s %s-%s' % (self.id, self.start_sort, self.end_sort)
 
-    def delete(self, using=None):  # turn physical delete requests into logical deletes
+    def delete(self, using=None, keep_parents=None):  # turn physical delete requests into logical deletes
         if self.active:
             self.active = False
             self.save()
@@ -87,6 +87,7 @@ class Rule(CommonModel):
         if not hasattr(self, 'site'):
             self.site = Site.objects.get_current()
         user = get_current_user()
+
         user_model = get_user_model()
         if not isinstance(user, user_model):
             user = user_model.objects.first()  # if no user available then assume 1st user is superuser

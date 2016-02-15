@@ -50,7 +50,7 @@
   become: yes
   become_user: postgres
   postgresql_db: name={{ db_name }} state=present
-  tags: install database
+  tags: install database1
 
 - name: Ensure user has access to the database
   become: yes
@@ -61,7 +61,7 @@
 - name: Start firewalld to add new rules
   become: yes
   become_user: root
-  service: name=firewalld state=started
+  service: name=firewalld state=restarted
   tags: install database
 
 - name: Allow port 5432 through firewall

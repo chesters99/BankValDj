@@ -26,7 +26,7 @@ ALLOWED_HOSTS = ['.gchester.com',]
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': secrets["DATABASE_NAME"],
         'USER': secrets["DATABASE_USER"],
         'PASSWORD': secrets["DATABASE_PASSWORD"],

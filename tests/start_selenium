@@ -1,0 +1,4 @@
+#!/bin/bash
+# Run with:
+# ./start selenium 
+selenium-server -p 4444  "$@"  &

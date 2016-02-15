@@ -19,7 +19,7 @@ sitemaps = {'static': StaticViewSiteMap}
 urlpatterns = i18n_patterns(
     url(r'^admin/doc/', include(admindocs_urls)),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', cache_page(60*15)(IndexView.as_view()), name='index'),
+    url(r'^$', IndexView.as_view(), name='index'),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     url(r'^admin/password_reset/$', auth_views.password_reset, name='admin_password_reset'),
     url(r'^admin/password_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),

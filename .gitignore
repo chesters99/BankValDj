@@ -19,3 +19,8 @@ rules.json
 *secret*
 *.pem
 *.log
+
+# Sphinx Stuff
+_build
+_static
+_templates
