@@ -75,6 +75,7 @@
     ./manage.py collectstatic --noinput &&
     ./manage.py makemigrations &&
     ./manage.py migrate &&
+    ./manage.py loaddata site &&
     echo "from django.contrib.auth.models import User; User.objects.create_superuser('graham', 'chesters99@yahoo.com', 'testpass')" | python manage.py shell
   args:
     executable: /bin/bash

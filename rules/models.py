@@ -87,7 +87,6 @@ class Rule(CommonModel):
         if not hasattr(self, 'site'):
             self.site = Site.objects.get_current()
         user = get_current_user()
-
         user_model = get_user_model()
         if not isinstance(user, user_model):
             user = user_model.objects.first()  # if no user available then assume 1st user is superuser
@@ -121,7 +120,6 @@ def get_rules(filename: str):
 def load_rules(rows: dict, sort_code=None):
     """ load all templates (if sort code is None) or load templates applicable to a specific sort code"""
     Rule.objects.all().delete()
-    records = 0
     label = ("start_sort", "end_sort", "mod_rule", "weight0", "weight1", "weight2", "weight3", "weight4",
              "weight5", "weight6", "weight7", "weight8", "weight9", "weight10", "weight11", "weight12",
              "weight13", "mod_exception")
@@ -134,8 +132,5 @@ def load_rules(rows: dict, sort_code=None):
             continue  # if sort_code was specified then ignore all records that don't match sort_code
         for i in range(0, 18):
             rule[label[i]] = line_list[i]
-
         Rule.objects.create(**rule)
-        records += 1
-
-    return records
+    return len(rows)

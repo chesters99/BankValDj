@@ -2,7 +2,6 @@
 
 django-debug-toolbar==1.4       # debugging toolbar (use IP=127.0.0.1)
 django-debug-toolbar-template-timings>=0.6.4 # additional panel for debug toolbar
-
 Werkzeug==0.11.3                # html debugger works with manage.py runserver_plus
 django-silk==0.5.6              # html performance analyser access from <host>/silk in browser
 Sphinx==1.3.5                   # documentation generator
@@ -14,10 +13,5 @@ pytest-cov==2.2.1               # coverage reporting for py.test
 selenium==2.50.0		        # browser based testing package
 pytest==2.8.7                   # python testing module
 pytest-django==2.9.1		    # use py.test with Django
+pytest-xdist==1.14              # parallel running of pytest "py.test -n 2"
 pyOpenSSL==0.15.1               # required for runserver_plus on SSL
-
-# the following must be installed with pip2.6 to make Fabric deployment tool work
-# fabric
-# boto
-# paramiko
-# fabric==1.8.1 # NOTE: the latest fabric doesnt work with paramiko or pycrpto!!!!

@@ -7,7 +7,6 @@ from pytz import all_timezones
 from .countries import COUNTRIES
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 
 TIME_ZONE_CHOICES = [(tz, tz) for tz in all_timezones]
 
