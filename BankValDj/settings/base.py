@@ -129,7 +129,7 @@ LOGGING = {
         'errorfile': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'log/django_errors.log'),
+            'filename': os.path.join(os.path.dirname(BASE_DIR), 'djerrors.log'),
             'formatter': 'verbose'
         },
         'mail_admins': {
