@@ -37,7 +37,7 @@ Vagrant.configure(2) do |config|
       aws.region = "us-east-1"
       aws.instance_type = "t2.micro"
       aws.security_groups = ['default']
-      aws.elastic_ip = "52.73.139.177"
+      aws.elastic_ip = "52.0.111.249"
       override.ssh.username = "ec2-user"
       override.ssh.private_key_path = ENV['AWS_KEYPATH']
     end

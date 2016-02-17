@@ -7,6 +7,18 @@
   hostname: name="{{ inventory_hostname }}"
   tags: install linux
 
+- name: Install RPM forge repo (for htop)
+  become: yes
+  become_user: root
+  yum: name=http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm state=present
+  tags: install linux
+
+- name: install the pg_top rpm from a remote repo
+  become: yes
+  become_user: root
+  yum: name=http://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/pgdg-redhat95-9.5-2.noarch.rpm state=present
+  tags: install linux
+
 - name: Ensure key linux packages are installed and the latest versions
   become: yes
   become_user: root
@@ -16,26 +28,12 @@
     - openssl       # required for python3, pip
     - openssl-devel # required for python3, pip
     - libffi-devel  # required for pip installs (cryptography)
-    - epel-release  # reuqired for htop
     - ntp
     - git
     - gcc           # required for amazon ec2 redhat 7.2
     - firewalld     # required for amazon ec2 redhat 7.2
-  tags: install linux
-
-- name: install the pg_top rpm from a remote repo
-  become: yes
-  become_user: root
-  yum: name=http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-centos93-9.3-1.noarch.rpm state=present
-  tags: install linux
-
-- name: Install htop after epel-release, and PG_top after rpm install
-  become: yes
-  become_user: root
-  yum: name={{ item }} state=latest disable_gpg_check=yes
-  with_items:
     - htop
-    - pg_top93
+    - pg_top95
   tags: install linux
 
 - name: Change SELINUX to permissive permanently

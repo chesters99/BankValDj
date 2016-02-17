@@ -13,7 +13,6 @@ static/root
 static/bootstrap
 docs/build
 rules.json
-*errors.log
 
 # secure stuff
 *.db
