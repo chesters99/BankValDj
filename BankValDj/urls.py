@@ -4,7 +4,6 @@ from django.contrib.admindocs import urls as admindocs_urls
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
-from django.views.decorators.cache import cache_page
 from django.contrib.auth import views as auth_views
 from django.conf.urls.i18n import i18n_patterns
 
@@ -38,6 +37,7 @@ for app in settings.LOCAL_APPS:
 
 if settings.DEBUG:
     urlpatterns += [
+        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
         url(r'^404/$', TemplateView.as_view(template_name="404.html")),     # enable local preview of error pages
         url(r'^500/$', TemplateView.as_view(template_name="500.html")), ]
     import debug_toolbar

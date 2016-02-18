@@ -34,7 +34,7 @@
                         <td>{{ rule.weight12 }}</td><td>{{ rule.weight13 }}</td><td>{{ rule.mod_exception }}</td>
                         <td><a class="btn btn-xs btn-primary" href="{% url 'rules:detail' pk=rule.id %}">detail</a></td>
                         <td><a class="btn btn-xs btn-warning" href="{% url 'rules:update' pk=rule.id %}">edit</a></td>
-                        <td><a class="btn btn-xs btn-danger" href="{% url 'rules:delete' pk=rule.id %}">delete</a></td>
+                        <td><a class="btn btn-xs btn-danger"  href="{% url 'rules:delete' pk=rule.id %}">delete</a></td>
                     </tr>
                 {% endfor %}
             </table>

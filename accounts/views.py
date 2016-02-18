@@ -16,8 +16,7 @@ class ValidateAccount(FormView):
         sort_code = form.cleaned_data['sort_code']
         account_number = form.cleaned_data['account_number']
         bv = Validator()
-        result = bv.validate(sort_code, account_number)
-        if result:
+        if bv.validate(sort_code, account_number):
             messages.success(self.request, sort_code + "-" + account_number + " is a valid bank account")
         else:
             messages.error(self.request, sort_code + "-" + account_number + " " + bv.message)
@@ -39,12 +38,10 @@ class BulkTest(FormView):
         if tests.message is None:
             bv = Validator()
             for sort_code, account_number in tests.test:
-                valid = bv.validate(sort_code, account_number)
-                if bv.message is not None:
-                    messages.error(self.request,
-                                   sort_code + '-' + account_number + ' Valid=' + str(valid) + ' ' + bv.message)
+                if bv.validate(sort_code, account_number):
+                    messages.success(self.request, sort_code + '-' + account_number + ' Valid=True')
                 else:
-                    messages.success(self.request, sort_code + '-' + account_number + ' Valid=' + str(valid))
+                    messages.error(self.request, sort_code + '-' + account_number + ' Valid=False ' + bv.message)
         else:
             messages.error(self.request, "Error Opening:" + filename + '. ' + tests.message)
         context = self.get_context_data(**kwargs)
