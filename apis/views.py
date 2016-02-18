@@ -26,13 +26,13 @@ class Validate(APIView):
         serializer = ValidateSerialiser(data=request.data)
         if serializer.is_valid():
             bv = Validator()
-            if bv.validate(sort_code=serializer.data['sort_code'],
-                           account_number=serializer.data['account_number']):
-                serializer.data['message'] = 'Valid Account'
-                return Response(serializer.data, status=status.HTTP_200_OK)
+            if bv.validate(sort_code=serializer.validated_data['sort_code'],
+                           account_number=serializer.validated_data['account_number']):
+                serializer.validated_data['message']= 'Valid Account'
+                return Response(serializer.validated_data, status=status.HTTP_200_OK)
             else:
-                serializer.data['message'] = bv.message
-                return Response(serializer.data, status=status.HTTP_406_NOT_ACCEPTABLE)
+                serializer.validated_data['message']= bv.message
+                return Response(serializer.validated_data, status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
