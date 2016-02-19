@@ -1,5 +1,5 @@
 import httplib2
-from django.db import models, IntegrityError
+from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager

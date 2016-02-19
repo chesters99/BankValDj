@@ -8,12 +8,13 @@ Vagrant.configure(2) do |config|
     local.vm.network "forwarded_port", guest: 5555, host: 5555 # celery flower task monitor
     local.vm.network "forwarded_port", guest: 443, host: 8443   # nginx https
     local.vm.network "forwarded_port", guest: 80, host: 8080   # nginx http
-    local.vm.network "forwarded_port", guest: 5432, host: 5432 # postgresql from pycharm     x.vm.network "public_network", ip: "192.168.0.5", bridge: "en0: Wi-Fi (AirPort)"
+    local.vm.network "forwarded_port", guest: 5432, host: 5432 # postgresql from pycharm
+#    local.vm.network "public_network", ip: "192.168.0.5", bridge: "en0: Wi-Fi (AirPort)"
     local.vm.synced_folder '.', '/vagrant', disabled: true
     local.vm.synced_folder "/Users/graham/Documents/Projects/BankValDj", "/home/vagrant/BankValDj"
     local.vm.provider "virtualbox" do |vb|
       vb.gui = false
-      vb.memory = "1536"
+      vb.memory = "2048"
       vb.cpus = "2"
       vb.customize ["modifyvm", :id, "--ioapic", "on"]
     end
