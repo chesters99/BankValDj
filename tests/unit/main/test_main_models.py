@@ -1,9 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
-from tests.initialise import UnitTest
+from django.test import TestCase
 
 
-class MainModelTests(UnitTest):
+class MainModelTests(TestCase):
+    fixtures = ['users.json']
     def test_get_all_users(self):
         users = get_user_model().objects.all()
         assert users.count() >= 1, users.count()

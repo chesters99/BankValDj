@@ -5,6 +5,7 @@ __pycache__
 *.py[cod]
 .cache
 .coverage
+
 .idea
 .vagrant
 
@@ -13,6 +14,7 @@ static/root
 static/bootstrap
 docs/build
 rules.json
+users.json
 
 # secure stuff
 *.db

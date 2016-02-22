@@ -1,15 +1,16 @@
-from django.test import RequestFactory
+from django.test import RequestFactory, TestCase
 from main.views import Graph
-from tests.initialise import UnitTest
 
+class MainViews(TestCase):
+    fixtures = ['users.json']
+    def login_as_superuser(self, client):
+        response = client.post('/main/loginuser/', {'username': 'graham', 'password': 'testpass'})
+        assert response.status_code == 302, response.status_code
 
-class MainViews(UnitTest):
-    """Test templates Views"""
     def test_with_requestfactory(self):  # request factory is faster than django web client
         factory = RequestFactory()
         request = factory.get('/')
         request.session = {}
-        request.user = self.user
         response = Graph.as_view()(request)
         assert response.status_code == 200
 
@@ -67,7 +68,7 @@ class MainViews(UnitTest):
     def test_loginuser_view(self):
         self.login_as_superuser(self.client)
         response = self.client.post('/main/loginuser',
-                                    {'username': self.username, 'password': self.password}, follow=True)
+                                    {'username': 'graham', 'password': 'testpass'}, follow=True)
         assert response.status_code == 200
         assert 'successfully logged in' in response.content.decode(), response.content.decode()
 

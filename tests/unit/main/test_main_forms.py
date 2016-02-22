@@ -1,8 +1,7 @@
 from main.forms import *
-from tests.initialise import UnitTest
+from django.test import TestCase
 
-
-class MainFormTests(UnitTest):
+class MainFormTests(TestCase):
     """Test templates forms"""
 
     def test_createuserform_valid(self):

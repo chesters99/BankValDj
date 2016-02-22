@@ -1,8 +1,8 @@
-from tests.initialise import UnitTest
+from django.test import TestCase
 from accounts.forms import *
 
 
-class AccountsFormTests(UnitTest):
+class AccountsFormTests(TestCase):
     """Test Accounts forms"""
 
     def test_validateaccountform_valid(self):

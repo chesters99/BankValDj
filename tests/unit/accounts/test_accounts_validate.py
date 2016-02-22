@@ -1,11 +1,11 @@
-from tests.initialise import UnitTest
+from django.test import TestCase
 from accounts.utils.BankValidator import Validator
 
 
-class AccountValidation(UnitTest):
+class AccountValidation(TestCase):
+    fixtures = ['users.json','rules.json']
 
     def test_general_account_validation(self):
-        self.load_rules()
         bv = Validator()
         assert bv.validate('089999', '12345678901') is False
         assert bv.message == 'Invalid Account Number Length:11'
@@ -24,7 +24,6 @@ class AccountValidation(UnitTest):
         assert bv.message == 'Warning:No Rule Found'
 
     def test_vocalink_supplied_tests(self):
-        self.load_rules()
         bv = Validator()
         assert bv.validate('089999', '66374958') is True
         assert bv.validate('107999', '88837491') is True

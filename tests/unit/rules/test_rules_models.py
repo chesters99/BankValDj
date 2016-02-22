@@ -1,17 +1,17 @@
 import os
 from django.conf import settings
-from tests.initialise import UnitTest
+from django.test import TestCase
 from rules.models import Rule, get_rules, load_rules
 
 
-class RuleModelTests(UnitTest):
+class RuleModelTests(TestCase):
+    fixtures = ['users.json','rules.json']
+
     def test_get_all_rules(self):
-        self.load_rules()
         rules = Rule.objects.all()
         assert rules.count() > 950
 
     def test_get_a_rule(self):
-        self.load_rules('400000')
         rules = Rule.objects.filter(start_sort='400000')
         assert len(rules) >= 1
         assert rules.values()[0]['mod_rule'] == 'MOD11'

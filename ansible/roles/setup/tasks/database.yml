@@ -38,6 +38,18 @@
               line="listen_addresses = '*'" state=present
   tags: install database
 
+- name: postgres performance tweaks for no logging in test
+  become: yes
+  become_user: postgres
+  blockinfile:
+    dest: /var/lib/pgsql/9.5/data/postgresql.conf
+    block: |
+      fsync = off
+      synchronous_commit = off
+      full_page_writes = off
+  when: "vm == 'yes'"
+  tags: install database
+
 - name: postgresql should allow access from anywhere
   become: yes
   become_user: postgres

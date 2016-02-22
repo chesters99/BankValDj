@@ -1,11 +1,15 @@
-from tests.initialise import UnitTest
+from django.test import TestCase
 from rules.models import Rule
 
-class RulesViewTests(UnitTest):
+class RulesViewTests(TestCase):
     """Test Rule Views"""
+    fixtures = ['users.json','rules.json']
+
+    def login_as_superuser(self, client):
+        response = client.post('/main/loginuser/', {'username': 'graham', 'password': 'testpass'})
+        assert response.status_code == 302, response.status_code
 
     def test_search_rules_view(self):
-        self.load_rules('400000')
         response = self.client.get('/rules/search/', {'q': '400000'})
         assert response.status_code == 200
         assert 'MOD11' in response.content.decode(), response.content.decode()
@@ -19,7 +23,6 @@ class RulesViewTests(UnitTest):
 
     def test_detail_view(self):
         self.login_as_superuser(self.client)
-        self.load_rules('400000')
         rule = Rule.objects.filter(start_sort='400000')[:1].get()
         response = self.client.get('/rules/detail/%s/' % rule.id)
         assert response.status_code == 200
@@ -27,7 +30,6 @@ class RulesViewTests(UnitTest):
         assert 'MOD11' in response.content.decode(), response.content.decode()
 
     def test_update_view(self):
-        self.load_rules('400000')
         rule = Rule.objects.filter(start_sort='400000')[:1].get()
         self.login_as_superuser(self.client)
 
@@ -42,7 +44,6 @@ class RulesViewTests(UnitTest):
         assert 'DBLAL' in response2.content.decode(), response2.content.decode()
 
     def test_delete_view(self):
-        self.load_rules('400000')
         rule = Rule.objects.filter(start_sort='400000')[:1].get()
         self.login_as_superuser(self.client)
 

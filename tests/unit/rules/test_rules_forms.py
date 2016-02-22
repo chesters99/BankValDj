@@ -1,8 +1,7 @@
-from tests.initialise import UnitTest
 from rules.forms import *
+from django.test import TestCase
 
-
-class RuleFormTests(UnitTest):
+class RuleFormTests(TestCase):
     """Test templates forms"""
 
     def test_ruleform_with_valid_data(self):
