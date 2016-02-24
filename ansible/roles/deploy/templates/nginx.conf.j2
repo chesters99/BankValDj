@@ -38,7 +38,7 @@ server {
 }
 
 server {
-    listen                  443 ssl http2;
+    listen                  443 ssl http2; # for localvm must access via https://localhost:8443
     server_name             {{ inventory_hostname }};
     client_max_body_size    1M;
     ssl                     on;
