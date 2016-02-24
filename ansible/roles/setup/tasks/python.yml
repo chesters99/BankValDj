@@ -3,7 +3,7 @@
 
 - name: Install Python3 - Create Python temp directory
   file: path="{{ base_dir }}/python" state=directory
-  tags: python
+  tags: install python
 - name: Install Python3 - Get Python 3
   get_url: url=https://www.python.org/ftp/python/{{ python_version }}/Python-{{ python_version }}.tar.xz
            dest="{{ base_dir }}/python/python.tar.xz" mode=0444

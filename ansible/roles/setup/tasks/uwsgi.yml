@@ -1,0 +1,34 @@
+---
+
+- name: Install uwsgi globally
+  become: yes
+  become_user: root
+  pip: name=uwsgi executable=/usr/local/bin/pip3
+  tags: install uwsgi
+
+- name: Create uwsgi config directory
+  become: yes
+  become_user: root
+  file: path="/etc/uwsgi/vassals" state=directory owner=nginx group=nginx
+  tags: install uwsgi
+
+- name: change log directory permissions for uwsgi
+  become: yes
+  become_user: root
+  file: path=/var/log/nginx state=directory owner=nginx group=nginx mode=0775
+  tags: install uwsgi
+
+- name: Create the uwsgi startup service
+  become: yes
+  become_user: root
+  template: src=roles/deploy/templates/uwsgi.service.j2 dest=/etc/systemd/system/uwsgi.service
+            backup=yes owner=nginx group=nginx mode=0750
+  tags: install uwsgi
+
+- name: enable uwsgi
+  become: yes
+  become_user: root
+  service: name=uwsgi.service enabled=yes
+  tags: install uwsgi
+
+###################

@@ -20,7 +20,7 @@ SERVER_EMAIL = 'djadmin@gchester.com'
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+#SECURE_SSL_REDIRECT = True
 
 ALLOWED_HOSTS = ['.gchester.com',]
 

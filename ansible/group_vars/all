@@ -6,6 +6,7 @@ base_dir: /home/{{ username }}
 project_path: "{{ base_dir }}/{{ project_name }}"
 python_version: "3.5.0"
 redis_version: "3.0.7"
+nginx_version: "1.9.5"
 domain_name: "gchester.com"
 
 # database settings

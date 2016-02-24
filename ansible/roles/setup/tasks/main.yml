@@ -4,6 +4,7 @@
 - include: linux.yml
 - include: python.yml
 - include: database.yml
-- include: webservers.yml
+- include: nginx.yml
+- include: uwsgi.yml
 - include: redis.yml
 - include: celery.yml
