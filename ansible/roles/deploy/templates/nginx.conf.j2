@@ -7,16 +7,6 @@ error_log               /var/log/nginx/nginx_error.log;
 access_log              off; # /var/log/nginx/nginx_access.log;
 error_page              400 500 502 503 504 /500.html;
 
-
-# performance parameters from lincoln loop performance django video
-#tcp_nopush              on;
-#tcp_nodelay             on;
-#types_hash_max_size     2048;
-#server_tokens           off;
-#server_names_hash_bucket_size 64;
-#worker_processes        auto;
-# end performance parameters
-
 upstream django {
     ip_hash;
 #    server                  unix:///tmp/{{ project_name }}.sock;
