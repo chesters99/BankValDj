@@ -36,6 +36,17 @@
     creates: "/usr/local/bin/nginx"
   tags: install nginx
 
+- name: Instal nginx - create group if not already there
+  become: yes
+  become_user: root
+  group: name=nginx state=present
+  tags: install nginx
+- name: Instal nginx - create user if not already there
+  become: yes
+  become_user: root
+  user: name=nginx group=nginx
+  tags: install nginx
+
 - name: make nginx/conf.d directory if doenst already exist
   become: yes
   become_user: root
