@@ -64,7 +64,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 CONN_MAX_AGE = 300  # database pooling
 
@@ -81,13 +81,12 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'root')
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_URL = '/main/loginuser/'
 LOGIN_REDIRECT_URL = '/'
-
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static', 'source'), )
-STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'root')
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'), )
 
 AUTH_PASSWORD_VALIDATORS = [

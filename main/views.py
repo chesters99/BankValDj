@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from django.http import HttpResponse
 from django.template import Context
 from django.template.loader import render_to_string, get_template
-from django.views.decorators.cache import never_cache, cache_page
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView, FormView, RedirectView
@@ -93,7 +93,7 @@ class LogoutUser(ActiveLoginRequiredMixin, RedirectView):
 def text_email(request):
     subject = 'Rubbish Text Email'
     to_email = ['chesters99@yahoo.com']
-    context = {'user': 'graham', 'content': 'rubbish content to annoy you1'}
+    context = {'user': 'graham', 'content': 'rubbish content to annoy you in text format'}
     message = render_to_string('email.txt', context)
     EmailMessage(subject, message, to=to_email).send()
     return HttpResponse('text email sent')
@@ -102,12 +102,11 @@ def text_email(request):
 def html_email(request):
     subject = 'Rubbish HTML Email'
     to_email = ['chesters99@yahoo.com']
-    context = {'user': 'graham', 'content': 'rubbish content to annoy you2'}
+    context = {'user': 'graham', 'content': 'rubbish content to annoy you in html format'}
     contents = get_template('email.html').render(Context(context))
     message = EmailMessage(subject, contents, to=to_email)
     message.content_subtype = 'html'
     message.send()
-    print("IP Address for debug-toolbar: " + request.META['REMOTE_ADDR'])
     return HttpResponse('html email sent')
 
 

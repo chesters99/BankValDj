@@ -41,7 +41,7 @@ server {
     {% if group_names[0] == "production" %}
     return                  301 https://$server_name$request_uri;
     {% endif %}
-    location /media         { alias {{ project_path }}/static/media; expires 1d;
+    location /media         { alias {{ project_path }}/media; expires 1d;
                               add_header Cache-Control "public";
                             }
     location /static        { alias {{ project_path }}/static/root; expires 1d;
@@ -66,7 +66,7 @@ server {
 }
 
 server {
-    listen                  443 ssl;
+    listen                  443 ssl http2;
     server_name             {{ inventory_hostname }};
     client_max_body_size    1M;
     ssl                     on;
