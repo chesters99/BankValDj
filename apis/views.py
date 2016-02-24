@@ -22,8 +22,9 @@ class Validate(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = [AllowAny,]
 
-    def post(self, request):
-        serializer = ValidateSerialiser(data=request.data)
+    def get(self, request, sort_code, account_number):
+        account = {'sort_code': sort_code, 'account_number': account_number}
+        serializer = ValidateSerialiser(data=account)
         if serializer.is_valid():
             bv = Validator()
             if bv.validate(sort_code=serializer.validated_data['sort_code'],
