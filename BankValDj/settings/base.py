@@ -2,7 +2,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SITE_ID = 1
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # in case debug mode is turned off this is required
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','.gchester.com']  # in case debug mode is turned off this is required
 ADMINS = (('Graham', 'chesters99@yahoo.com'),)
 
 LOCAL_APPS = (
