@@ -19,6 +19,7 @@ class RuleSerializer(serializers.ModelSerializer):
 
 
 class Validate(APIView):
+    """ Validates a UK bank Account in the format SSSSSS-AAAAAAAA where S is Sort Code and A is account number"""
     authentication_classes = (TokenAuthentication,)
     permission_classes = [AllowAny,]
 
