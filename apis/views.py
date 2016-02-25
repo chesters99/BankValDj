@@ -1,4 +1,5 @@
 from rest_framework import serializers, status
+from rest_framework.exceptions import APIException, ParseError
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 from rest_framework.authentication import TokenAuthentication
@@ -13,18 +14,31 @@ class ValidateSerialiser(serializers.Serializer):
     sort_code = serializers.CharField(max_length=6)
     account_number = serializers.CharField(max_length=11)
 
+
 class RuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rule
 
 
-class Validate(APIView):
-    """ Validates a UK bank Account in the format SSSSSS-AAAAAAAA where S is Sort Code and A is account number"""
+class APIOptions(APIView):
+    """ /apis/validate/?bank_account=SSSSSS-AAAAAAAA validates a UK Bank Account where S is Sort Code and A is account number
+        /apis/rules/X/ allows rules with key X to be retrieved, added, updated and deleted
+        /apis/rulelist/?start_sort=XXXXXX&end_sort=YYYYYY returns a list of all rules between specified sort codes """
     authentication_classes = (TokenAuthentication,)
     permission_classes = [AllowAny,]
 
-    def get(self, request, bank_account):
-        bank_account_split = bank_account.split('-')
+
+class Validate(APIView):
+    """ /apis/validate/?bank_account=SSSSSS-AAAAAAAA validates a UK Bank Account where S is Sort Code and A is account number """
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = [AllowAny,]
+
+    def get(self, request):
+        try:
+            bank_account_split = self.request.query_params.get('bank_account', None).split('-')
+        except AttributeError:
+            return Response('bank account not specified- use /apis/validate?bank_account=XXXXXX-YYYYYYYY', status=status.HTTP_400_BAD_REQUEST)
+
         account = {'sort_code': bank_account_split[0], 'account_number': bank_account_split[1]}
         serializer = ValidateSerialiser(data=account)
         if serializer.is_valid():
@@ -41,6 +55,7 @@ class Validate(APIView):
 
 
 class RuleViewSet(ModelViewSet):
+    """/apis/rules/X/ allows rules with key X to be retrieved, added, updated and deleted"""
     queryset = Rule.objects.all()
     serializer_class = RuleSerializer
     authentication_classes = (TokenAuthentication,)
@@ -48,6 +63,7 @@ class RuleViewSet(ModelViewSet):
 
 
 class RuleList(ListAPIView):
+    """/apis/rulelist/?start_sort=XXXXXX&end_sort=YYYYYY returns a list of all rules between specified sort codes """
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticatedOrReadOnly,)
     model = Rule
@@ -63,4 +79,4 @@ class RuleList(ListAPIView):
             if start_sort is not None and end_sort is not None:
                 return Rule.objects.filter(start_sort__gt=start_sort, end_sort__lt=end_sort)
             else:
-                return Rule.objects.none()
+                raise ParseError("Call API as /apis/rulelist/?start_sort=XXXXXX&end_sort=YYYYYY")
