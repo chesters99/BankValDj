@@ -22,8 +22,9 @@ class Validate(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = [AllowAny,]
 
-    def get(self, request, sort_code, account_number):
-        account = {'sort_code': sort_code, 'account_number': account_number}
+    def get(self, request, bank_account):
+        bank_account_split = bank_account.split('-')
+        account = {'sort_code': bank_account_split[0], 'account_number': bank_account_split[1]}
         serializer = ValidateSerialiser(data=account)
         if serializer.is_valid():
             bv = Validator()

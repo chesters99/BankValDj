@@ -11,12 +11,12 @@ class ApisTests(TestCase):
 
     def test_validate_api_valid(self):
         c = APIClient()
-        response = c.get(reverse('apis:validate', kwargs= {"sort_code": "500000", "account_number": "12312312"}))
+        response = c.get(reverse('apis:validate', kwargs= {'bank_account': '500000-12312312'}))
         assert response.status_code == 200, response.status_code
 
     def test_validate_api_invalid(self):
         c = APIClient()
-        response = c.get(reverse('apis:validate', kwargs= {"sort_code": "500000", "account_number": "12312313"}))
+        response = c.get(reverse('apis:validate', kwargs= {'bank_account': '500000-12312313'}))
         assert response.status_code == 406, response.status_code
 
     def test_get_rules_range(self):
