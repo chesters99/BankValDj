@@ -187,8 +187,7 @@ class Validator:
 
                 if rules[0].mod_exception in ('2', '9'):
                     sort_code = '309634'
-                    new_rules = Rule.objects.filter(start_sort__lte=sort_code).filter(end_sort__gte=sort_code)
-                    second_rule = new_rules[0]
+                    second_rule = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code).get()
 
                 if rules[0].mod_exception == '14':
                     if account_number[7] not in ('0', '1', '9'):
@@ -205,7 +204,7 @@ class Validator:
                         return False
                 else:
                     self.message = '2nd test required but no rule exists'
-                    return
+                    return False
 
                 if second_remainder == 0:
                     return True
