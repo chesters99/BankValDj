@@ -1,4 +1,5 @@
 import httplib2
+from os import path
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.sites.models import Site
@@ -12,6 +13,7 @@ from django.contrib import messages
 from django.contrib.auth.signals import user_logged_in
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import ArrayField
+from django.db import transaction
 
 
 def logged_in_message(user, request, **kwargs):
@@ -89,38 +91,23 @@ class Rule(CommonModel):
         return reverse('rules:detail', kwargs={'pk': self.id})
 
 
-def get_rules(filename: str, sort_code=None):
-    try:
-        if 'http:' in filename:
-            response, content = httplib2.Http('.cache').request(filename)
-            if response.status not in (200, 301):
-                raise RuntimeError('%s %s' % (response.status, response.reason))
-            rows = [line.strip() for line in content.decode("utf-8").split('\r\n')
-                    if line.strip() and line[0:5] <= (sort_code or line[0:5]) <= line[7:12]]
-        else:
-            with open(filename, "r") as f:
-                rows = [line.strip() for line in f
-                        if line.strip() and line[0:5] <= (sort_code or line[0:5]) <= line[7:12]]
-    except (IOError, RuntimeError):
-        return None
-    return rows
-
-
-def load_rules(rows: dict):
-    """ load all templates (if sort code is None) or load templates applicable to a specific sort code
-    :param rows: dict
-    """
-    Rule.objects.all().delete()
-    rule = {}
-    for row in rows:
-        line_list = [item for item in row.split()]
-        rule["start_sort"] = line_list[0]
-        rule["end_sort"] = line_list[1]
-        rule["mod_rule"] = line_list[2]
-        rule["weight"] = [line_list[w] for w in range(3,17)]
-        try:
-            rule["mod_exception"] = line_list[17]
-        except IndexError:
-            rule["mod_exception"] = ''
-        Rule.objects.create(**rule)
-    return len(rows)
+def load_rules(filename: str, sort_code=None):
+    if 'https:' in filename:
+        response, content = httplib2.Http('.cache').request(filename)
+        if response.status not in (200, 301):
+            raise RuntimeError('%s %s' % (response.status, response.reason))
+        f = content.decode("utf-8").split('\r\n')
+    else:
+        filename = path.join(settings.MEDIA_ROOT, filename).replace('..', '')
+        f = open(filename, "r")
+    with transaction.atomic():
+        for counter, line in enumerate(f):
+            if line and line[0:5] <= (sort_code or line[0:5]) <= line[7:12]:
+                items = [item for item in line.strip().split()]
+                try:
+                    mod_exception = items[17]
+                except IndexError:
+                    mod_exception = ''
+                Rule.objects.create(start_sort=items[0], end_sort=items[1], mod_rule=items[2],
+                                    weight=[items[w] for w in range(3,17)], mod_exception=mod_exception )
+    return counter

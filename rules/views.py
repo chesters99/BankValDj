@@ -1,5 +1,4 @@
 """ documentation from views.py for application "**rules**" (for Sphinx) """
-from os import path
 from django.contrib.syndication.views import Feed
 from django.shortcuts import render_to_response
 from django.contrib import messages
@@ -7,10 +6,8 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.decorators.csrf import csrf_exempt
-from django.db import transaction
-from django.conf import settings
 
-from .models import Rule, load_rules, get_rules
+from .models import Rule, load_rules
 from .forms import RuleForm, LoadRulesForm
 from main.decorators import DeleteMessageMixin, ActiveLoginRequiredMixin
 
@@ -76,27 +73,17 @@ class Create(ActiveLoginRequiredMixin, SuccessMessageMixin, CreateView):  # Usin
 class Load(ActiveLoginRequiredMixin, FormView):
     form_class = LoadRulesForm
     template_name = 'load.html'
-    initial = {'filename': 'valacdos.txt', 'vocalink_filename': 'http://www.vocalink.com/media/307043/valacdos.txt'}
+    initial = {'filename': 'valacdos.txt', 'vocalink_filename': 'https://www.vocalink.com/media/1518/valacdos.txt'}
 
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
         context['form'] = form
         filename = form.cleaned_data['filename']
-        if 'http' not in filename:
-            filename = path.join(settings.MEDIA_ROOT, filename).replace('..', '')
-        rows = get_rules(filename)
-        if not rows:
-            messages.error(self.request, 'Cant open file: ' + filename)
-        else:
-            try:
-                with transaction.atomic():  # create a 'sub-transaction' that can rollback on exception
-                    records = load_rules(rows)
-                    if not records:
-                        raise RuntimeError
-            except RuntimeError:
-                messages.error(self.request, 'File load Failed. Invalid record(s) found - check file format and re-run')
-            else:
-                messages.success(self.request, 'Rules loaded successfully with %s records' % records)
+        try:
+            records = load_rules(filename)
+            messages.success(self.request, 'Rules loaded successfully with %s records' % records)
+        except (IOError, IndexError, RuntimeError):
+            messages.error(self.request, 'Cant open file: ' + filename + ' or file is corrupt')
         return self.render_to_response(context)
 
 

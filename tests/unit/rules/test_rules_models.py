@@ -1,7 +1,7 @@
 import os
 from django.conf import settings
 from django.test import TestCase
-from rules.models import Rule, get_rules, load_rules
+from rules.models import Rule, load_rules
 
 
 class RuleModelTests(TestCase):
@@ -33,7 +33,7 @@ class RuleModelTests(TestCase):
         assert record.active is False
 
     def test_get_and_load_rules(self):
-        rows = get_rules(os.path.join(settings.MEDIA_ROOT, 'valacdos.txt'))
+        rows = load_rules(os.path.join(settings.MEDIA_ROOT, 'valacdos.txt'))
         assert len(rows) > 900
         records = load_rules(rows)
         assert records > 900
