@@ -71,6 +71,8 @@ class Rule(CommonModel):
         if self.active:
             self.active = False
             self.save()
+        else:
+            super(Rule, self).delete()
 
     def save(self, *args, **kwargs):
         if not hasattr(self, 'site'):
@@ -101,6 +103,7 @@ def load_rules(filename: str, sort_code=None):
         filename = path.join(settings.MEDIA_ROOT, filename).replace('..', '')
         f = open(filename, "r")
     with transaction.atomic():
+        Rule.objects.all().delete(); Rule.objects.all().delete() # once to inactivate, then to delete inactive
         for counter, line in enumerate(f):
             if line and line[0:5] <= (sort_code or line[0:5]) <= line[7:12]:
                 items = [item for item in line.strip().split()]

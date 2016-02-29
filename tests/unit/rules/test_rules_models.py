@@ -33,7 +33,6 @@ class RuleModelTests(TestCase):
         assert record.active is False
 
     def test_get_and_load_rules(self):
-        rows = load_rules(os.path.join(settings.MEDIA_ROOT, 'valacdos.txt'))
-        assert len(rows) > 900
-        records = load_rules(rows)
-        assert records > 900
+        count = load_rules(os.path.join(settings.MEDIA_ROOT, 'valacdos.txt'))
+        assert count > 900
+

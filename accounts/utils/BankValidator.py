@@ -1,29 +1,5 @@
 from math import floor
-
 from rules.models import Rule
-
-
-class RuleModel:
-    """ The RuleModel class holds an array of the applicable templates for a sort
-        code and a function to get these templates (__init__)"""
-
-    def __init__(self, sort_code):
-        """connect to database and return rule(s) for specified sort codes"""
-        self.message = None
-        self.rule = list({})
-        if not (len(sort_code) == 6) or not (sort_code.isdigit()):
-            self.message = "Sort Code must be 6 digits"
-            return
-
-        rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
-        if not any(rules):
-            self.message = "Warning:No Rule Found"
-            return
-
-        for count, rule in enumerate(rules):
-            self.rule.append({'start_sort': rule.start_sort, 'end_sort': rule.end_sort,
-                              'mod_rule': rule.mod_rule, 'weight': list(), 'mod_exception': rule.mod_exception})
-            self.rule[count]['weight'] = rule.weight
 
 
 class BulkTestModel:
@@ -97,17 +73,17 @@ class Validator:
         """
         total = 0
         for i in range(0, 14):
-            temp = int((sort_code + account_number)[i]) * int(rule['weight'][i])
-            if rule['mod_rule'] == Rule.DOUBLE_ALT:
+            temp = int((sort_code + account_number)[i]) * int(rule.weight[i])
+            if rule.mod_rule == Rule.DOUBLE_ALT:
                 total += temp % 10 + floor(temp / 10)
             else:
                 total += temp
-        if rule['mod_exception'] == '1':
+        if rule.mod_exception == '1':
             total += 27
 
-        if rule['mod_rule'] == Rule.DOUBLE_ALT:
+        if rule.mod_rule == Rule.DOUBLE_ALT:
             remainder = total % 10
-            if rule['mod_exception'] == '5':
+            if rule.mod_exception == '5':
                 if remainder == 0 and account_number[7] == '0':
                     pass
                 elif remainder == 10 - int(account_number[7]):
@@ -115,14 +91,14 @@ class Validator:
                 else:
                     remainder = 999
 
-        elif rule['mod_rule'] == Rule.MODULUS_10:
+        elif rule.mod_rule == Rule.MODULUS_10:
             remainder = total % 10
 
-        elif rule['mod_rule'] == Rule.MODULUS_11:
+        elif rule.mod_rule == Rule.MODULUS_11:
             remainder = total % 11
-            if rule['mod_exception'] == '4' and remainder == int(account_number[6:8]):
+            if rule.mod_exception == '4' and remainder == int(account_number[6:8]):
                 remainder = 0
-            elif rule['mod_exception'] == '5':
+            elif rule.mod_exception == '5':
                 if remainder == 0 and account_number[6] == '0':
                     pass  # valid account
                 elif remainder == 11 - int(account_number[6]):
@@ -143,52 +119,52 @@ class Validator:
         """
         # Step 1 - Check sort code and account number are in correct format and adjust if possible
         self.message = None
-        (sort_code, account_number) = self._standardise(sort_code, account_number)
+        sort_code, account_number = self._standardise(sort_code, account_number)
         if self.message is not None:
             return False
 
         # Step 2 - Get the first and second applicable modulus templates
-        r_model = RuleModel(sort_code)
-        if r_model.message is not None:
-            self.message = r_model.message
-            return True  # if cant templates then must assume Bank Account is valid
+        rules = Rule.objects.filter(start_sort__lte=sort_code).filter(end_sort__gte=sort_code)
+        if not rules:
+            self.message = "Warning:No Rules Found"
+            return True # must assume ok if no applicable rules are found
 
         # Step 3 - Apply nasty exception handling overrides
-        if r_model.rule[0]['mod_exception'] in ('2', '9'):
+        if rules[0].mod_exception in ('2', '9'):
             if account_number[0] != '0' and account_number[6] != '9':
-                r_model.rule[0]['weight'] = r_model.rule[1]['weight'] = self.EXCEPTION5_OVERRIDE1
+                rules[0].weight = rules[1].weight = self.EXCEPTION5_OVERRIDE1
             if account_number[0] != '0' and account_number[6] == '9':
-                r_model.rule[0]['weight'] = r_model.rule[1]['weight'] = self.EXCEPTION5_OVERRIDE2
-        if r_model.rule[0]['mod_exception'] == '5':
+                rules[0].weight = rules[1].weight = self.EXCEPTION5_OVERRIDE2
+        if rules[0].mod_exception == '5':
             if sort_code in self.EXCEPTION5_TABLE:
                 sort_code = self.EXCEPTION5_TABLE[sort_code]
-        if r_model.rule[0]['mod_exception'] == '6' and account_number[6] == account_number[7] \
+        if rules[0].mod_exception == '6' and account_number[6] == account_number[7] \
                 and account_number[0] in ('4', '5', '6', '7', '8'):
             return True  # cant templates so return as successful
-        if r_model.rule[0]['mod_exception'] == '7' and account_number[6] == '9':
+        if rules[0].mod_exception == '7' and account_number[6] == '9':
             for i in range(0, 8):
-                r_model.rule[0]['weight'][i] = 0
-        if r_model.rule[0]['mod_exception'] == '8':
+                rules[0].weight[i] = 0
+        if rules[0].mod_exception == '8':
             sort_code = '090126'
-        if r_model.rule[0]['mod_exception'] == '10' and account_number[0:2] in ('09', '99') \
+        if rules[0].mod_exception == '10' and account_number[0:2] in ('09', '99') \
                 and account_number[6] == '9':
             for i in range(0, 8):
-                r_model.rule[0]['weight'][i] = 0
+                rules[0].weight[i] = 0
 
         # Step 4 - Perform 1st modulus check
-        first_remainder = self._modulus_check(sort_code, account_number, r_model.rule[0])
+        first_remainder = self._modulus_check(sort_code, account_number, rules[0])
         if first_remainder < 0:
             self.message = 'Invalid Modulus Rule'
             return False
         if first_remainder == 0:
-            if r_model.rule[0]['mod_exception'] in ('2', '9', '10', '11', '12', '13', '14'):
+            if rules[0].mod_exception in ('2', '9', '10', '11', '12', '13', '14'):
                 return True
-            if len(r_model.rule) == 1:
+            if len(rules) == 1:
                 return True
-            if r_model.rule[1]['mod_exception'] == '3' and account_number[2] in ('6', '9'):
+            if rules[1].mod_exception == '3' and account_number[2] in ('6', '9'):
                 return True
             # need to perform 2nd check for some exceptions even if first check was ok
-            second_remainder = self._modulus_check(sort_code, account_number, r_model.rule[1])
+            second_remainder = self._modulus_check(sort_code, account_number, rules[1])
             if second_remainder < 0:
                 self.message = 'Invalid Modulus Rule'
                 return False
@@ -200,28 +176,30 @@ class Validator:
 
         # Step 5 - if first check failed then see if second check may be required and perform it
         if first_remainder > 0:
-            if r_model.rule[0]['mod_exception'] not in ('2', '9', '10', '11', '12', '13', '14'):
+            if rules[0].mod_exception not in ('2', '9', '10', '11', '12', '13', '14'):
                 self.message = 'Failed 1st Mod Check and no exceptions are available'
                 return False
             else:
-                if r_model.rule[0]['mod_exception'] in ('2', '9'):
-                    sort_code = '309634'
-                    r_model = RuleModel(sort_code)
-                    if r_model.message is not None:
-                        self.message = r_model.message
-                        return True  # if cant templates then must assume Bank Account is valid
-                    r_model.rule.append(r_model.rule[0])
+                try:
+                    second_rule = rules[1]
+                except IndexError:
+                    second_rule = None
 
-                if r_model.rule[0]['mod_exception'] == '14':
+                if rules[0].mod_exception in ('2', '9'):
+                    sort_code = '309634'
+                    new_rules = Rule.objects.filter(start_sort__lte=sort_code).filter(end_sort__gte=sort_code)
+                    second_rule = new_rules[0]
+
+                if rules[0].mod_exception == '14':
                     if account_number[7] not in ('0', '1', '9'):
                         self.message = 'Failed Exception Rule 14'
                         return False
                     else:
                         account_number = '0' + account_number[0:7]
-                        r_model.rule.append(r_model.rule[0])
+                        second_rule = rules[0]
 
-                if len(r_model.rule) > 1:  # if there is a second check then perform it
-                    second_remainder = self._modulus_check(sort_code, account_number, r_model.rule[1])
+                if second_rule:  # if there is a second check then perform it
+                    second_remainder = self._modulus_check(sort_code, account_number, second_rule)
                     if second_remainder < 0:
                         self.message = 'Invalid Modulus Rule'
                         return False
@@ -232,6 +210,6 @@ class Validator:
                 if second_remainder == 0:
                     return True
                 else:
-                    self.message = 'Failed 2nd Mod Check after failing 1st with exceptions 2,9,10,11,12,13,14'
+                    self.message = 'Failed 2nd Mod Check after failing 1st - exceptions 2,9,10,11,12,13,14'
                     return False
         return True

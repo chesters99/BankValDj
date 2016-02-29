@@ -189,13 +189,17 @@ htmlhelp_basename = 'BankValDjdoc'
 
 latex_elements = {
 # The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
-
+    'papersize': 'a4paper',
 # The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    'pointsize': '11pt',
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': '',
+#     'preamble': r'''
+#         \usepackage{charter}
+#         \usepackage[defaultsans]{lato}
+#         \usepackage{inconsolata}
+#     ''',
+
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
@@ -205,6 +209,7 @@ latex_documents = [
   ('index', 'BankValDj.tex', 'BankValDj Documentation',
    'Graham Chester', 'manual'),
 ]
+
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -250,6 +255,12 @@ texinfo_documents = [
    'Graham Chester', 'BankValDj', 'One line description of project.',
    'Miscellaneous'),
 ]
+
+
+   # index - master document
+   # rst2pdf - name of the generated pdf
+   # Sample rst2pdf doc - title of the pdf
+   # Your Name - author name in the pdf
 
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []

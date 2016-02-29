@@ -21,7 +21,7 @@ class AccountValidation(TestCase):
         assert bv.validate('089999', '1234567890') is False
         assert bv.validate('086086', '1234567890') is True
         assert bv.validate('123123', '123123') is True
-        assert bv.message == 'Warning:No Rule Found'
+        assert bv.message == 'Warning:No Rules Found'
 
     def test_vocalink_supplied_tests(self):
         bv = Validator()
