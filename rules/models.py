@@ -20,6 +20,9 @@ def logged_in_message(user, request, **kwargs):
 
 user_logged_in.connect(logged_in_message)
 
+def weight_validator(weight):
+    if not (-255 <= weight <= 255):
+        raise ValidationError("Weight is -255 to 255")
 
 class SmallIntegerField(models.PositiveSmallIntegerField):
     def db_type(self, connection):
@@ -42,10 +45,6 @@ class CommonModel(models.Model):
 
 
 class Rule(CommonModel):
-    def weight_validator(weight):
-        if not (-255 <= weight <= 255):
-            raise ValidationError("Weight is -255 to 255")
-
     MODULUS_10 = 'MOD10'
     MODULUS_11 = 'MOD11'
     DOUBLE_ALT = 'DBLAL'
@@ -55,7 +54,7 @@ class Rule(CommonModel):
     end_sort = models.CharField(max_length=6, db_index=True, help_text=_('to this sort code'))
     mod_rule = models.CharField(max_length=255, choices=RULE_CHOICE, help_text=_('determine which algorithm to apply'))
     mod_exception = models.CharField(max_length=2, blank=True, help_text=_('exception rule'))
-    weight = ArrayField(models.SmallIntegerField(validators=[weight_validator]), blank=True, size=14)
+    weight = ArrayField(models.SmallIntegerField(validators=[weight_validator]), size=14, verbose_name='Weights')
     # objects manager accesses all records, site manager access only records for the current site
     objects = models.Manager()
     current = CurrentSiteManager('site')
