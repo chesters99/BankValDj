@@ -8,8 +8,8 @@
             <ul class="list-unstyled">
                 {% for field in form %}
                     <li class="col-xs-6" id="{{ field.auto_id }}_container">
-                        <span class="col-xs-4">{{ field.label_tag }}</span>
-                        <span class="col-xs-4" title="{{ field.help_text }}">{{ field }}</span>
+                        <span class="col-xs-2">{{ field.label_tag }}</span>
+                        <span class="col-xs-6" title="{{ field.help_text }}">{{ field }}</span>
                         <span class="col-xs-4 text-danger"><small>{{ field.errors.as_text }}</small></span>
                     </li>
                 {% endfor %}

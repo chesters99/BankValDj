@@ -5,8 +5,8 @@ After=syslog.target
 [Service]
 User={{ username }}
 Group=nginx
-#ExecStart=/usr/local/bin/uwsgi --ini /etc/uwsgi/vassals/uwsgi.ini
 ExecStart=/usr/local/bin/uwsgi --emperor /etc/uwsgi/vassals
+ExecRestart=/bin/kill -HUP $MAINPID
 # Requires systemd version 211 or newer
 RuntimeDirectory=uwsgi
 Restart=always

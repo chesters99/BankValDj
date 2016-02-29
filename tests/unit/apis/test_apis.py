@@ -11,12 +11,12 @@ class ApisTests(TestCase):
 
     def test_validate_api_valid(self):
         c = APIClient()
-        response = c.get(reverse('apis:validate', kwargs= {'bank_account': '500000-12312312'}))
+        response = c.get(reverse('apis:validate'), {'bank_account': '500000-12312312'})
         assert response.status_code == 200, response.status_code
 
     def test_validate_api_invalid(self):
         c = APIClient()
-        response = c.get(reverse('apis:validate', kwargs= {'bank_account': '500000-12312313'}))
+        response = c.get(reverse('apis:validate'), {'bank_account': '500000-12312313'})
         assert response.status_code == 406, response.status_code
 
     def test_get_rules_range(self):
@@ -46,10 +46,7 @@ class ApisTests(TestCase):
         c.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
         response = c.put(reverse('apis:rule', kwargs={'pk': rule_id}),
                          {'pk': rule_id, 'start_sort': '999999', 'end_sort': '999999', 'mod_rule': 'MOD10',
-                          'weight0': 1, 'weight1': 1, 'weight2': 1, 'weight3': 1, 'weight4': 1,
-                          'weight5': 1, 'weight6': 1, 'weight7': 1, 'weight8': 1, 'weight9': 1,
-                          'weight10': 1, 'weight11': 1, 'weight12': 1, 'weight13': 1,
-                          'mod_exception': ''})
+                          'weight': [0,1,2,3,4,5,6,7,8,9,10,11,12,13], 'mod_exception': ''})
         assert response.status_code == 200, response.status_code
         assert '999999' in response.content.decode()
 
@@ -60,10 +57,7 @@ class ApisTests(TestCase):
         c.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
         response = c.post(reverse('apis:rule', kwargs={'pk': '999999'}),
                             {'start_sort': '999999', 'end_sort': '999999', 'mod_rule': 'MOD10',
-                            'weight0': 1, 'weight1': 1, 'weight2': 1, 'weight3': 1, 'weight4': 1,
-                            'weight5': 1, 'weight6': 1, 'weight7': 1, 'weight8': 1, 'weight9': 1,
-                            'weight10': 1, 'weight11': 1, 'weight12': 1, 'weight13': 1,
-                            'mod_exception': ''})
+                            'weight': [0,1,2,3,4,5,6,7,8,9,10,11,12,13], 'mod_exception': ''})
         assert response.status_code == 201, response.status_code
         assert '999999' in response.content.decode()
 
@@ -81,9 +75,6 @@ class ApisTests(TestCase):
         c = APIClient()
         response = c.put(reverse('apis:rule', kwargs={'pk': rule_id}),
                                             {'start_sort': '999999', 'end_sort': '999999', 'mod_rule': 'MOD10',
-                                            'weight0': 1, 'weight1': 1, 'weight2': 1, 'weight3': 1, 'weight4': 1,
-                                            'weight5': 1, 'weight6': 1, 'weight7': 1, 'weight8': 1, 'weight9': 1,
-                                            'weight10': 1, 'weight11': 1, 'weight12': 1, 'weight13': 1,
-                                            'mod_exception': ''})
+                                            'weight': [0,1,2,3,4,5,6,7,8,9,10,11,12,13], 'mod_exception': ''})
         assert response.status_code == 401, response.status_code
         assert 'Authentication credentials were not provided' in response.content.decode(), response.content.decode()

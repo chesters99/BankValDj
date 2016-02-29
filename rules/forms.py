@@ -6,27 +6,16 @@ from .models import Rule
 class RuleForm(forms.ModelForm):
     class Meta:
         model = Rule
-        fields = ['start_sort', 'end_sort', 'mod_rule', 'mod_exception', 'weight0', 'weight1', 'weight2', 'weight3',
-                  'weight4', 'weight5', 'weight6', 'weight7', 'weight8', 'weight9', 'weight10', 'weight11', 'weight12',
-                  'weight13', 'active']
+        fields = ['start_sort', 'end_sort', 'mod_rule', 'mod_exception', 'weight', 'active']
         labels = {
             'start_sort': _('Start Sort'),
             'end_sort': _('End Sort'),
             'mod_exception': _('Mod Exception'),
-            'weight0': _('Weight 0'),
-            'weight1': _('Weight 1'),
-            'weight2': _('Weight 2'),
-            'weight3': _('Weight 3'),
-            'weight4': _('Weight 4'),
-            'weight5': _('Weight 5'),
-            'weight6': _('Weight 6'),
-            'weight7': _('Weight 7'),
-            'weight8': _('Weight 8'),
-            'weight9': _('Weight 9'),
-            'weight10': _('Weight 10'),
-            'weight11': _('Weight 11'),
-            'weight12': _('Weight 12'),
-            'weight13': _('Weight 13'),
+            'weight0': _('Weight 0'), 'weight1': _('Weight 1'), 'weight2': _('Weight 2'),
+            'weight3': _('Weight 3'), 'weight4': _('Weight 4'), 'weight5': _('Weight 5'),
+            'weight6': _('Weight 6'), 'weight7': _('Weight 7'), 'weight8': _('Weight 8'),
+            'weight9': _('Weight 9'), 'weight10': _('Weight 10'),'weight11': _('Weight 11'),
+            'weight12': _('Weight 12'),'weight13': _('Weight 13'),
             'active': _('Active'),
         }
 

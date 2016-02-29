@@ -28,10 +28,10 @@
                     <tr>
                         <td><a href="{%  url 'rules:detail' rule.id %}">{{ rule.id }}</a></td>
                         <td>{{ rule.start_sort }}</td><td>{{ rule.end_sort }}</td><td>{{ rule.mod_rule }}</td>
-                        <td>{{ rule.weight0 }}</td><td>{{ rule.weight1 }}</td><td>{{ rule.weight2 }}</td><td>{{ rule.weight3 }}</td>
-                        <td>{{ rule.weight4 }}</td><td>{{ rule.weight5 }}</td><td>{{ rule.weight6 }}</td><td>{{ rule.weight7 }}</td>
-                        <td>{{ rule.weight8 }}</td><td>{{ rule.weight9 }}</td><td>{{ rule.weight10 }}</td><td>{{ rule.weight11 }}</td>
-                        <td>{{ rule.weight12 }}</td><td>{{ rule.weight13 }}</td><td>{{ rule.mod_exception }}</td>
+                        <td>{{ rule.weight.0 }}</td><td>{{ rule.weight.1 }}</td><td>{{ rule.weight.2 }}</td><td>{{ rule.weight.3 }}</td>
+                        <td>{{ rule.weight.4 }}</td><td>{{ rule.weight.5 }}</td><td>{{ rule.weight.6 }}</td><td>{{ rule.weight.7 }}</td>
+                        <td>{{ rule.weight.8 }}</td><td>{{ rule.weight.9 }}</td><td>{{ rule.weight.10 }}</td><td>{{ rule.weight.11 }}</td>
+                        <td>{{ rule.weight.12 }}</td><td>{{ rule.weight.13 }}</td><td>{{ rule.mod_exception }}</td>
                         <td><a class="btn btn-xs btn-primary" href="{% url 'rules:detail' pk=rule.id %}">detail</a></td>
                         <td><a class="btn btn-xs btn-warning" href="{% url 'rules:update' pk=rule.id %}">edit</a></td>
                         <td><a class="btn btn-xs btn-danger"  href="{% url 'rules:delete' pk=rule.id %}">delete</a></td>
@@ -79,7 +79,7 @@
             $('#search').keyup(function() {
                 $.ajax({
                     type: "POST",
-                    url: {% url 'rules:ajax_search' %}, /* "/rules/ajax_search", */
+                    url: "{% url 'rules:ajax_search' %}",
                     data: {
                         'search_text': $('#search').val(),
                         'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()

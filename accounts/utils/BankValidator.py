@@ -23,9 +23,7 @@ class RuleModel:
         for count, rule in enumerate(rules):
             self.rule.append({'start_sort': rule.start_sort, 'end_sort': rule.end_sort,
                               'mod_rule': rule.mod_rule, 'weight': list(), 'mod_exception': rule.mod_exception})
-            self.rule[count]['weight'] = [rule.weight0, rule.weight1, rule.weight2, rule.weight3, rule.weight4,
-                                          rule.weight5, rule.weight6, rule.weight7, rule.weight8, rule.weight9,
-                                          rule.weight10, rule.weight11, rule.weight12, rule.weight13]
+            self.rule[count]['weight'] = rule.weight
 
 
 class BulkTestModel:

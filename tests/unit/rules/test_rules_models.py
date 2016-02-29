@@ -17,18 +17,16 @@ class RuleModelTests(TestCase):
         assert rules.values()[0]['mod_rule'] == 'MOD11'
 
     def test_add_rule(self):
-        rule = Rule(start_sort='100000', end_sort='100001', mod_rule='MOD10', weight0=0, weight1=1, weight2=2,
-                    weight3=3, weight4=4, weight5=5, weight6=6, weight7=7, weight8=8, weight9=9, weight10=10,
-                    weight11=11, weight12=12, weight13=13, mod_exception='')
+        rule = Rule(start_sort='100000', end_sort='100001', mod_rule='MOD10',
+                    weight=[0,1,2,3,4,5,6,7,8,9,10,11,12,13], mod_exception='')
         rule.save()
         record = Rule.objects.get(pk=rule.id)
         assert record == rule
         assert '/rules/detail/' in str(rule.get_absolute_url())
 
     def test_delete_rule(self):
-        rule = Rule(start_sort='100000', end_sort='100001', mod_rule='MOD10', weight0=0, weight1=1, weight2=2,
-                    weight3=3, weight4=4, weight5=5, weight6=6, weight7=7, weight8=8, weight9=9, weight10=10,
-                    weight11=11, weight12=12, weight13=13, mod_exception='')
+        rule = Rule(start_sort='100000', end_sort='100001', mod_rule='MOD10',
+                    weight=[0,1,2,3,4,5,6,7,8,9,10,11,12,13], mod_exception='')
         rule.save()
         rule.delete()
         record = Rule.objects.get(pk=rule.id)

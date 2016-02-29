@@ -1,5 +1,5 @@
 from rest_framework import serializers, status
-from rest_framework.exceptions import APIException, ParseError
+from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 from rest_framework.authentication import TokenAuthentication
@@ -38,7 +38,6 @@ class Validate(APIView):
             bank_account_split = self.request.query_params.get('bank_account', None).split('-')
         except AttributeError:
             return Response('bank account not specified- use /apis/validate?bank_account=XXXXXX-YYYYYYYY', status=status.HTTP_400_BAD_REQUEST)
-
         account = {'sort_code': bank_account_split[0], 'account_number': bank_account_split[1]}
         serializer = ValidateSerialiser(data=account)
         if serializer.is_valid():

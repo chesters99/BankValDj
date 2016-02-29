@@ -112,7 +112,7 @@ class RssFeed(Feed):
         return '%s-%s' % (rule.start_sort, rule.end_sort)
 
     def item_description(self, rule):
-        return '%s %s %s %s' % (rule.weight0, rule.weight1, rule.weight2, rule.weight3)
+        return '%s %s %s %s' % (rule.weight[0], rule.weight[1], rule.weight[2], rule.weight[3])
 
     def item_link(self, rule):
         return 'https://gchester.com/en/rules/detail/%s/' % rule.id

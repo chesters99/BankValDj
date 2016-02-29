@@ -36,7 +36,7 @@
 - name: restart nginx
   become: yes
   become_user: root
-  service: name=nginx state=restarted enabled=yes
+  service: name=nginx state=reloaded enabled=yes
   tags: deploy nginx
 
 ####################
