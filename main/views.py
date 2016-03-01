@@ -85,7 +85,7 @@ class LogoutUser(ActiveLoginRequiredMixin, RedirectView):
     query_string = True
 
     def get_redirect_url(self):
-        messages.success(self.request, "User '{0}' Logged Out Successfully".format(self.request.user.username))
+        messages.success(self.request, "User %s Logged Out Successfully" % self.request.user.username)
         auth.logout(self.request)
         return reverse('main:loginuser')
 

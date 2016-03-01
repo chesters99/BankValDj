@@ -29,6 +29,7 @@ INSTALLED_APPS = (
     'djcelery',
     'eventlog',
     'djstripe',
+    'cacheops',
 ) + LOCAL_APPS
 
 
@@ -193,4 +194,19 @@ CELERYBEAT_SCHEDULE = {
     #     'schedule': timedelta(seconds=10),
     #     'args': (3,),
     # },
+}
+
+CACHEOPS_REDIS = {
+    'host': 'localhost', # redis-server is on same machine
+    'port': 6379,        # default redis port
+    'db': 1,             # SELECT non-default redis database
+    'socket_timeout': 3,   # connection timeout in seconds, optional
+    # 'password': '...',     # optional
+    # 'unix_socket_path': '' # replaces host and port
+}
+
+CACHEOPS = {
+    'auth.*'    : {'ops': 'all', 'timeout': 60*60},
+    'site.*'    : {'ops': 'all', 'timeout': 60*60},
+    'rules.rule': {'ops': 'all', 'timeout': 60*60},
 }

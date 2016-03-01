@@ -1,11 +1,12 @@
-import os
+from os import path
 from django.contrib import messages
 from django.views.generic import FormView
+from django.conf import settings
 from .forms import ValidateAccountForm, BulkTestForm
 from .utils import Validator, BulkTestModel
-from django.conf import settings
 from .tasks import test_task
 # from debug_toolbar_line_profiler import profile_additional
+
 
 class ValidateAccount(FormView):
     """ Validate UK Bank Account """
@@ -17,9 +18,9 @@ class ValidateAccount(FormView):
         account_number = form.cleaned_data['account_number']
         bv = Validator()
         if bv.validate(sort_code, account_number):
-            messages.success(self.request, sort_code + "-" + account_number + " is a valid bank account")
+            messages.success(self.request, '%s-%s is a valid bank account' % (sort_code, account_number ))
         else:
-            messages.error(self.request, sort_code + "-" + account_number + " " + bv.message)
+            messages.error(self.request, '%s-%s %s' % (sort_code, account_number, bv.message))
         context = self.get_context_data(**kwargs)
         context['form'] = form
         return self.render_to_response(context)
@@ -34,25 +35,25 @@ class BulkTest(FormView):
     def form_valid(self, form, **kwargs):
         test_task.delay(4)  # test for batch process- runs an X seconds delay
         filename = form.cleaned_data['filename']
-        tests = BulkTestModel(os.path.join(settings.MEDIA_ROOT, filename).replace('..', ''))
+        tests = BulkTestModel(path.join(settings.MEDIA_ROOT, filename).replace('..', ''))
         if tests.message is None:
             bv = Validator()
             for sort_code, account_number in tests.test:
                 if bv.validate(sort_code, account_number):
-                    messages.success(self.request, sort_code + '-' + account_number + ' Valid=True')
+                    messages.success(self.request, '%s-%s Valid=True' % (sort_code, account_number))
                 else:
-                    messages.error(self.request, sort_code + '-' + account_number + ' Valid=False ' + bv.message)
+                    messages.error(self.request, '%s-%s Valid=False %s' % (sort_code, account_number, bv.message))
         else:
-            messages.error(self.request, "Error Opening:" + filename + '. ' + tests.message)
+            messages.error(self.request, "Error Opening: %s. %s" % (filename, tests.message))
         context = self.get_context_data(**kwargs)
         context['form'] = form  # use this pattern as it allows easy addition of other variables to pass to template
         return self.render_to_response(context)
 
-    # @profile_additional(Validator.validate)
+    # @profile_additional(Validator._get_rules)
     def dispatch(self, *args, **kwargs): # need dispatch here to collect line profile for Bank Validator
         return super(BulkTest, self).dispatch(*args, **kwargs)
 
-#
+
 # method-based equivalents to the above shown as best-practice examples
 #
 # def ValidateFormView(request, template_name = 'templates/validate_form_view.html'):
@@ -74,7 +75,7 @@ class BulkTest(FormView):
 #    form = BulkTestForm(request.POST if request.method == 'POST' else None)
 #    if form.is_valid():
 #        filename = form.cleaned_data['filename']
-#        tests = BulkTestModel(os.path.join(settings.MEDIA_ROOT, filename).replace('..', ''))
+#        tests = BulkTestModel(path.join(settings.MEDIA_ROOT, filename).replace('..', ''))
 #        if tests.message is None:
 #            bv = Validator()
 #            for sort_code, account_number in tests.test:

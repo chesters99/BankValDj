@@ -82,7 +82,7 @@ class Load(ActiveLoginRequiredMixin, FormView):
             records = load_rules(filename)
             messages.success(self.request, 'Rules loaded successfully with %s records' % records)
         except (IOError, IndexError, RuntimeError):
-            messages.error(self.request, 'Cant open file: ' + filename + ' or file is corrupt')
+            messages.error(self.request, 'Cant open file: %s or file is corrupt' % filename)
         return self.render_to_response(context)
 
 

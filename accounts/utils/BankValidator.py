@@ -1,5 +1,6 @@
 from math import floor
 from rules.models import Rule
+from django.core.cache import cache
 
 class BulkTestModel:
     """Class reads a list of test cases from a text file into a tuple called *test* """
@@ -105,6 +106,25 @@ class Validator:
             return -1  # invalid modulus rule - ie corrupt rule file
         return remainder
 
+
+    def _get_rules(self, sort_code ): # caching not enabled as was only 10% faster than postgres
+        # from django.core import serializers
+        # # cache.delete(sort_code)
+        # cached_rules = cache.get(sort_code)
+        # if cached_rules:
+        #     rules = {}
+        #     for i, obj in enumerate(serializers.deserialize("json", cached_rules)):
+        #         rules[i]=obj.object
+        #         print('cache get' + obj.object.start_sort)
+        # else:
+        #     rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
+        #     data = serializers.serialize("json", rules)
+        #     cache.set(sort_code, data)
+        #     print('db get' + rules[0].start_sort)
+        rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
+        return rules
+
+
     def validate(self, sort_code, account_number):
         """ Perform modulus-based UK Bank Account validations
 
@@ -120,7 +140,8 @@ class Validator:
             return False
 
         # Step 2 - Get the first and second applicable modulus templates
-        rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
+        # rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
+        rules = self._get_rules(sort_code)
         if not rules:
             self.message = "Warning:No Rules Found"
             return True # must assume ok if no applicable rules are found
@@ -178,12 +199,12 @@ class Validator:
             else:
                 try:
                     second_rule = rules[1]
-                except IndexError:
+                except (KeyError, IndexError):
                     second_rule = None
 
                 if rules[0].mod_exception in ('2', '9'):
                     sort_code = '309634'
-                    second_rule = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code).get()
+                    second_rule = self._get_rules(sort_code)[0]
 
                 if rules[0].mod_exception == '14':
                     if account_number[7] not in ('0', '1', '9'):
