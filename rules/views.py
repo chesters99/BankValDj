@@ -6,7 +6,6 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.decorators.csrf import csrf_exempt
-
 from .models import Rule, load_rules
 from .forms import RuleForm, LoadRulesForm
 from main.decorators import DeleteMessageMixin, ActiveLoginRequiredMixin

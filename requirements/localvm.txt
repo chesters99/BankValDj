@@ -15,4 +15,6 @@ pytest==2.8.7                   # python testing module
 pytest-django==2.9.1		    # use py.test with Django
 pytest-xdist==1.14              # parallel running of pytest "py.test -n 2"
 pyOpenSSL==0.15.1               # required for runserver_plus on SSL
+line-profiler==1.0              # for django debug toolbar line profiler
+django-debug-toolbar-line-profiler==0.5.0 # line level profiling for django views
 

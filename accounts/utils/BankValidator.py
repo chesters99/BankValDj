@@ -1,7 +1,6 @@
 from math import floor
 from rules.models import Rule
 
-
 class BulkTestModel:
     """Class reads a list of test cases from a text file into a tuple called *test* """
 
@@ -37,7 +36,6 @@ class Validator:
         :param account_number: account number
         :return: sort code and account number tuple
         """
-        account_number = account_number.replace('-', '')
         if not sort_code.isdigit():
             self.message = 'Sort Code must be numeric:' + sort_code
         elif len(sort_code) != 6:
@@ -45,19 +43,21 @@ class Validator:
         elif not account_number.isdigit():
             self.message = 'Account Number must be numeric:' + account_number
         else:
-            if len(account_number) == 6:
-                account_number = '00' + account_number
-            elif len(account_number) == 7:
-                account_number = '0' + account_number
-            elif len(account_number) == 8:
+            account_number_length = len(account_number)
+            if account_number_length == 8:
                 pass
-            elif len(account_number) == 9:
+            elif account_number_length == 6:
+                account_number = '00' + account_number
+            elif account_number_length == 7:
+                account_number = '0' + account_number
+            elif account_number_length == 9:
                 sort_code = sort_code[0:5] + account_number[0]
                 account_number = account_number[1:9]
-            elif len(account_number) == 10:
+            elif account_number_length == 10:
                 if sort_code == '086086':
-                    account_number = account_number[0:8]
+                    account_number = account_number[0:8]  # Co-op Bank
                 else:
+                    account_number = account_number.replace('-', '') # Natwest
                     account_number = account_number[2:10]
             else:
                 self.message = 'Invalid Account Number Length:' + str(len(account_number))
@@ -65,37 +65,14 @@ class Validator:
 
     def _modulus_check(self, sort_code, account_number, rule):
         """Calculates the modulus and returns the remainder (failed if > 0)
-
         :param sort_code: sort code
         :param account_number: account number
         :param rule: rule to be applied
         :return: remainder
         """
-        total = 0
-        for i in range(0, 14):
-            temp = int((sort_code + account_number)[i]) * int(rule.weight[i])
-            if rule.mod_rule == Rule.DOUBLE_ALT:
-                total += temp % 10 + floor(temp / 10)
-            else:
-                total += temp
-        if rule.mod_exception == '1':
-            total += 27
-
-        if rule.mod_rule == Rule.DOUBLE_ALT:
-            remainder = total % 10
-            if rule.mod_exception == '5':
-                if remainder == 0 and account_number[7] == '0':
-                    pass
-                elif remainder == 10 - int(account_number[7]):
-                    remainder = 0
-                else:
-                    remainder = 999
-
-        elif rule.mod_rule == Rule.MODULUS_10:
-            remainder = total % 10
-
-        elif rule.mod_rule == Rule.MODULUS_11:
-            remainder = total % 11
+        bank_account = sort_code + account_number
+        if rule.mod_rule == Rule.MODULUS_11:
+            remainder = sum([int(c) * rule.weight[i] for i, c in enumerate(bank_account)]) % 11
             if rule.mod_exception == '4' and remainder == int(account_number[6:8]):
                 remainder = 0
             elif rule.mod_exception == '5':
@@ -105,8 +82,27 @@ class Validator:
                     remainder = 0
                 else:
                     remainder = 999
+
+        elif rule.mod_rule == Rule.MODULUS_10:
+            remainder = sum([int(c) * rule.weight[i] for i, c in enumerate(bank_account)]) % 10
+
+        elif rule.mod_rule == Rule.DOUBLE_ALT:
+            total = 0
+            for i, c in enumerate(bank_account):
+                temp = int(c) * rule.weight[i]
+                total += temp % 10 + floor(temp / 10)
+            total += 27 if rule.mod_exception == '1' else 0
+            remainder = total % 10
+            if rule.mod_exception == '5':
+                if remainder == 0 and account_number[7] == '0':
+                    pass
+                elif remainder == 10 - int(account_number[7]):
+                    remainder = 0
+                else:
+                    remainder = 999
+
         else:
-            remainder = -1  # invalid modulus rule - ie corrupt rule file
+            return -1  # invalid modulus rule - ie corrupt rule file
         return remainder
 
     def validate(self, sort_code, account_number):
@@ -124,7 +120,7 @@ class Validator:
             return False
 
         # Step 2 - Get the first and second applicable modulus templates
-        rules = Rule.objects.filter(start_sort__lte=sort_code).filter(end_sort__gte=sort_code)
+        rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
         if not rules:
             self.message = "Warning:No Rules Found"
             return True # must assume ok if no applicable rules are found
@@ -212,3 +208,4 @@ class Validator:
                     self.message = 'Failed 2nd Mod Check after failing 1st - exceptions 2,9,10,11,12,13,14'
                     return False
         return True
+

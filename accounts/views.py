@@ -5,7 +5,7 @@ from .forms import ValidateAccountForm, BulkTestForm
 from .utils import Validator, BulkTestModel
 from django.conf import settings
 from .tasks import test_task
-
+from debug_toolbar_line_profiler import profile_additional
 
 class ValidateAccount(FormView):
     """ Validate UK Bank Account """
@@ -48,6 +48,10 @@ class BulkTest(FormView):
         context['form'] = form  # use this pattern as it allows easy addition of other variables to pass to template
         return self.render_to_response(context)
 
+    @profile_additional(Validator.validate)
+    def dispatch(self, *args, **kwargs): # need dispatch here to collect line profile for Bank Validator
+        return super(BulkTest, self).dispatch(*args, **kwargs)
+
 #
 # method-based equivalents to the above shown as best-practice examples
 #
@@ -63,19 +67,21 @@ class BulkTest(FormView):
 #            messages.error(request, sort_code+' '+account_number+' is not Valid: ' + bv.message)
 #    return render(request, template_name, {'form': form)
 #
-# def bulktest(request, template_name = 'templates/bulktest.html'):
-#    filename = './static/static/vocalinkTests.txt' # set default for display on form
-#    form = ValidateAccountForm(request.POST if request.method == 'POST' else None)
+#
+# @profile_additional(Validator.validate)
+# def bulktest(request, template_name = 'bulktest.html'):
+#    filename = 'vocalinkTests.txt' # set default for display on form
+#    form = BulkTestForm(request.POST if request.method == 'POST' else None)
 #    if form.is_valid():
 #        filename = form.cleaned_data['filename']
-#        tests = BulkTestModel(filename)
+#        tests = BulkTestModel(os.path.join(settings.MEDIA_ROOT, filename).replace('..', ''))
 #        if tests.message is None:
 #            bv = Validator()
 #            for sort_code, account_number in tests.test:
-#                if bv.templates(sort_code, account_number):
-#                    messages.success(request, sort_code+' '+account_number+' is Valid)
+#                if bv.validate(sort_code, account_number):
+#                    messages.success(request, sort_code+' '+account_number+' is Valid')
 #                else:
 #                    messages.error(request, sort_code+' '+account_number+' is not Valid: '+bv.message)
 #        else:
 #            messages.error(request, "Error Opening:" + filename + '. ' + tests.message)
-#    return render(request, template_name, {'form': form)
+#    return render(request, template_name, {'form': form} )
