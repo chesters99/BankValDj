@@ -10,11 +10,6 @@ SECRET_KEY = secrets["SECRET_KEY"]
 STRIPE_SECRET_KEY = secrets["STRIPE_SECRET_KEY"]
 STRIPE_PUBLIC_KEY = secrets["STRIPE_PUBLIC_KEY"]
 
-# to test emails, do the following
-#from django.core.mail import EmailMessage
-#email = EmailMessage('Mail Test', 'This is a test', to=['chesters99@yahoo.com'])
-#email.send()
-
 #email settings for google in localvm only
 # EMAIL_PORT = 465
 # EMAIL_USE_SSL = True # EMAIL_PORT = 465
@@ -92,6 +87,6 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.logging.LoggingPanel',
     # 'debug_toolbar.panels.profiling.ProfilingPanel',
     # 'template_timings_panel.panels.TemplateTimings.TemplateTimings',
-    'debug_toolbar.panels.redirects.RedirectsPanel',
     'debug_toolbar_line_profiler.panel.ProfilingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
 ]

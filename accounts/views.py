@@ -5,7 +5,7 @@ from .forms import ValidateAccountForm, BulkTestForm
 from .utils import Validator, BulkTestModel
 from django.conf import settings
 from .tasks import test_task
-from debug_toolbar_line_profiler import profile_additional
+# from debug_toolbar_line_profiler import profile_additional
 
 class ValidateAccount(FormView):
     """ Validate UK Bank Account """
@@ -48,7 +48,7 @@ class BulkTest(FormView):
         context['form'] = form  # use this pattern as it allows easy addition of other variables to pass to template
         return self.render_to_response(context)
 
-    @profile_additional(Validator.validate)
+    # @profile_additional(Validator.validate)
     def dispatch(self, *args, **kwargs): # need dispatch here to collect line profile for Bank Validator
         return super(BulkTest, self).dispatch(*args, **kwargs)
 
