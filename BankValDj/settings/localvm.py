@@ -1,4 +1,4 @@
-import json
+import json, sys
 from .base import *
 
 DEBUG = True
@@ -70,8 +70,10 @@ TEMPLATES = [
         },
     },
 ]
-# re-add the following line to enable debug toolbar
-# INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') # include virtualbox VM address
+
+if 'manage.py' in sys.argv[0]: # turn on django debug toolbar only under manage.py runserver, not uwsgi
+    INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') # include virtualbox VM address
+
 DEBUG_TOOLBAR_PATCH_SETTINGS = False
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',

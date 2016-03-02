@@ -1,6 +1,6 @@
 from math import floor
 from rules.models import Rule
-from django.core.cache import cache
+# from django.core.cache import cache
 
 class BulkTestModel:
     """Class reads a list of test cases from a text file into a tuple called *test* """
