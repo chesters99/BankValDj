@@ -107,7 +107,7 @@ class Validator:
         return remainder
 
 
-    def _get_rules(self, sort_code ): # caching not enabled as was only 10% faster than postgres
+    def _get_rules(self, sort_code ): # caching not active as was 10% faster than postgres (use django-cacheops instead)
         # from django.core import serializers
         # # cache.delete(sort_code)
         # cached_rules = cache.get(sort_code)

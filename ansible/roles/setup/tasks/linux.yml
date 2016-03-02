@@ -34,6 +34,7 @@
     - firewalld     # required for amazon ec2 redhat 7.2
     - htop
     - pg_top95
+    - ncurses-devel  # required for uwsgitop (includes curses in standard libary)
   tags: install linux
 
 - name: Change SELINUX to permissive permanently
@@ -58,7 +59,7 @@
 
 - name: Create {{ project_name }} directory if not localvm
   file: path={{ project_name }} state=directory mode=0750
-  when: "vm == 'no'"
+  when: "group_names[0] != 'localvm'"
   tags: install linux
 
 - name: Add exports/aliases to bash_profile

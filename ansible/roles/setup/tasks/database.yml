@@ -24,10 +24,10 @@
            creates=/var/lib/pgsql/9.5/data/postgresql.conf
   tags: install database
 
-- name: link pg_config for pip install psycopg2
+- name: add postgres bin path to system path
   become: yes
   become_user: root
-  file: src=/usr/pgsql-9.5/bin/pg_config dest=/usr/local/bin/pg_config state=link
+  shell: echo 'export PATH=$PATH:/usr/pgsql-9.5/bin' > '/etc/profile.d/postgres.sh'
   tags: install database
 
 - name: postgresql should listen on all ports
@@ -47,7 +47,7 @@
       fsync = off
       synchronous_commit = off
       full_page_writes = off
-  when: "vm == 'yes'"
+  when: "group_names[0] == 'localvm'"
   tags: install database
 
 - name: postgresql should allow access from anywhere

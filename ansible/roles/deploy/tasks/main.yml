@@ -5,13 +5,13 @@
 - name: Pull {{ project_name }} source from the repository if not localvm
   git: repo="{{ project_repo }}"
        dest="{{ project_path }}" version=master accept_hostkey=True force=yes
-  when: "vm == 'no'"
+  when: "group_names[0] != 'localvm'"
   tags: deploy code
 
 - name: Copy secrets file to host if not localvm
   copy: src="../{{ project_name }}/settings/secret/production_secrets.json"
         dest={{ project_path }}/{{ project_name }}/settings/secret/ force=yes
-  when: "vm == 'no'"
+  when: "group_names[0] != 'localvm'"
   tags: deploy code
 
 #################### setup nginx config and restart nginx

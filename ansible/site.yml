@@ -6,5 +6,5 @@
   remote_user: vagrant
 
   roles:
-    - { role: setup,  tags: full setup }
-    - { role: deploy, tags: full deploy }
+    - { role: setup,  tags: [ 'full setup',  'all'] }
+    - { role: deploy, tags: [ 'full deploy', 'all'] }

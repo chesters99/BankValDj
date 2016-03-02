@@ -71,7 +71,7 @@ TEMPLATES = [
     },
 ]
 # re-add the following line to enable debug toolbar
-INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') # include virtualbox VM address
+# INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') # include virtualbox VM address
 DEBUG_TOOLBAR_PATCH_SETTINGS = False
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',

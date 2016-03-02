@@ -15,7 +15,7 @@ Vagrant.configure(2) do |config|
     local.vm.provider "virtualbox" do |vb|
       vb.gui = false
       vb.memory = "2048"
-      vb.cpus = "2"
+      vb.cpus = "3"
       vb.customize ["modifyvm", :id, "--ioapic", "on"]
     end
     config.vm.provision :ansible do |ansible|
@@ -38,7 +38,7 @@ Vagrant.configure(2) do |config|
       aws.region = "us-east-1"
       aws.instance_type = "t2.micro"
       aws.security_groups = ['default']
-      aws.elastic_ip = "52.86.75.197"
+      aws.elastic_ip = "52.86.44.119"
       override.ssh.username = "ec2-user"
       override.ssh.private_key_path = ENV['AWS_KEYPATH']
     end
