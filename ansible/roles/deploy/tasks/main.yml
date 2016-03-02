@@ -76,7 +76,8 @@
     ./manage.py makemigrations &&
     ./manage.py migrate &&
     ./manage.py loaddata site &&
-    echo "from django.contrib.auth.models import User; User.objects.create_superuser('graham', 'chesters99@yahoo.com', 'testpass')" | python manage.py shell
+    echo "from django.contrib.auth.models import User; User.objects.create_superuser('graham', 'chesters99@yahoo.com', 'testpass')" | python manage.py shell &&
+    echo "/usr/local/bin/virtualenvwrapper.sh && workon {{ project_name }}" >> ~/.bash_profile
   args:
     executable: /bin/bash
     chdir: /{{ project_path }}
