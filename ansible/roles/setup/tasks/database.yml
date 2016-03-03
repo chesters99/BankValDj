@@ -60,7 +60,7 @@
       random_page_cost = 1.1             # RAID 10 = 3, SAN=2, Amazon EBS = 1
   tags: install database
 
-- name: postgresql should allow access from  anywhere
+- name: postgresql should allow access from anywhere
   become: yes
   become_user: postgres
   lineinfile: dest=/var/lib/pgsql/9.5/data/pg_hba.conf backup=yes
