@@ -1,25 +1,39 @@
-import json, sys
+import json, sys, os
+import psycopg2.extensions
 from .base import *
 
 DEBUG = True
-os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = '0.0.0.0:8080'
 
 with open(os.path.join(BASE_DIR, 'BankValDj', 'settings', 'secret/localvm_secrets.json')) as f:
     secrets = json.loads(f.read())
+
+
 SECRET_KEY = secrets["SECRET_KEY"]
 STRIPE_SECRET_KEY = secrets["STRIPE_SECRET_KEY"]
 STRIPE_PUBLIC_KEY = secrets["STRIPE_PUBLIC_KEY"]
 
 #email settings for google in localvm only
-# EMAIL_PORT = 465
-# EMAIL_USE_SSL = True # EMAIL_PORT = 465
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True # EMAIL_PORT = 465
+EMAIL_USE_TLS = True # or EMAIL_PORT = 465 and EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'gchester99@gmail.com'
 EMAIL_HOST_PASSWORD = 'hudson-99'
 DEFAULT_FROM_EMAIL = 'gchester99@gmail.com'
 SERVER_EMAIL = 'gchester99@gmail.com'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': secrets["DATABASE_NAME"],
+        'USER': secrets["DATABASE_USER"],
+        'PASSWORD': secrets["DATABASE_PASSWORD"],
+        'HOST': secrets["DATABASE_HOST"],  # Or an IP Address that your DB is hosted on
+        'PORT': secrets["DATABASE_PORT"],
+    },
+    'OPTIONS': {
+        'isolation_level': psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE,
+    },
+}
 
 INSTALLED_APPS += (
     'django_extensions',
@@ -31,42 +45,7 @@ MIDDLEWARE_CLASSES =  (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ) + MIDDLEWARE_CLASSES
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': secrets["DATABASE_NAME"],
-        'USER': secrets["DATABASE_USER"],
-        'PASSWORD': secrets["DATABASE_PASSWORD"],
-        'HOST': secrets["DATABASE_HOST"],  # Or an IP Address that your DB is hosted on
-        'PORT': secrets["DATABASE_PORT"],
-    }
-}
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'OPTIONS': {
-            'debug': False,
-            'context_processors': [
-                # 'djstripe.context_processors.djstripe_settings', # causes crash in template engine
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages',
-            ],
-            'loaders': [
-                ('django.template.loaders.cached.Loader', [
-                    'django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
-                ]),
-            ],
-        },
-    },
-]
+os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = '0.0.0.0:8080'
 
 if 'manage.py' in sys.argv[0]: # turn on django debug toolbar only under manage.py runserver, not uwsgi
     INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') # include virtualbox VM address
