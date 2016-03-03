@@ -5,10 +5,10 @@ from rules.models import load_rules
 
 
 class Command(BaseCommand):
-    help = "Rules file loader"
+    help = "generate bank accounts for validation with approx 5% invalids"
 
     def handle(self, *args, **options):
-        filename = input("Enter templates file to be loaded (hit enter for valacdos.txt in MEDIA_ROOT): ")
+        filename = input("Enter rules file to be loaded (hit enter for valacdos.txt in MEDIA_ROOT): ")
         if not filename:
             filename = os.path.join(settings.MEDIA_ROOT, 'valacdos.txt')
         try:

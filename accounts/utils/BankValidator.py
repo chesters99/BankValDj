@@ -1,17 +1,6 @@
 from math import floor
 from rules.models import Rule
-# from django.core.cache import cache
-
-class BulkTestModel:
-    """Class reads a list of test cases from a text file into a tuple called *test* """
-
-    def __init__(self, filename):
-        self.message = None
-        try:
-            self.test = [(line[0:6], line[7:15]) for line in open(filename, 'r')]
-        except IOError as err:
-            self.message = 'Cant open file. Error:' + str(err.strerror)
-            return
+from django.core.cache import cache
 
 
 class Validator:
@@ -109,18 +98,25 @@ class Validator:
 
     def _get_rules(self, sort_code ): # caching not active as was 10% faster than postgres (use django-cacheops instead)
         # from django.core import serializers
-        # # cache.delete(sort_code)
+        # DOES_NOT_EXIST = 'DoesNotExist'
         # cached_rules = cache.get(sort_code)
-        # if cached_rules:
+        # if cached_rules == DOES_NOT_EXIST:
+        #     print('cache get' + DOES_NOT_EXIST)
+        #     return {}
+        # elif cached_rules is not None:
         #     rules = {}
         #     for i, obj in enumerate(serializers.deserialize("json", cached_rules)):
         #         rules[i]=obj.object
-        #         print('cache get' + obj.object.start_sort)
+        #         print('cache get %s %s' % (obj.object.start_sort, obj.object.mod_exception))
         # else:
         #     rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
-        #     data = serializers.serialize("json", rules)
-        #     cache.set(sort_code, data)
-        #     print('db get' + rules[0].start_sort)
+        #     if rules:
+        #         data = serializers.serialize("json", rules)
+        #         cache.set(sort_code, data)
+        #         print('db get and cached' + rules[0].start_sort)
+        #     else:
+        #         cache.set(sort_code, DOES_NOT_EXIST)
+        #         print('db get doesnt exit - set cache does not exist')
         rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
         return rules
 

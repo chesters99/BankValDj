@@ -25,13 +25,10 @@ INSTALLED_APPS += (
     'django_extensions',
     'debug_toolbar',
     'debug_toolbar_line_profiler',
-    # 'template_timings_panel',  # for debug toolbar
-    #    'silk',
 )
 
 MIDDLEWARE_CLASSES =  (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    # 'silk.middleware.SilkyMiddleware',
 ) + MIDDLEWARE_CLASSES
 
 
@@ -52,7 +49,7 @@ TEMPLATES = [
         'OPTIONS': {
             'debug': False,
             'context_processors': [
-                # 'djstripe.context_processors.djstripe_settings',
+                # 'djstripe.context_processors.djstripe_settings', # causes crash in template engine
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
@@ -87,8 +84,7 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.cache.CachePanel',
     'debug_toolbar.panels.signals.SignalsPanel',
     'debug_toolbar.panels.logging.LoggingPanel',
-    # 'debug_toolbar.panels.profiling.ProfilingPanel',
-    # 'template_timings_panel.panels.TemplateTimings.TemplateTimings',
+    #'debug_toolbar.panels.profiling.ProfilingPanel',
     'debug_toolbar_line_profiler.panel.ProfilingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]

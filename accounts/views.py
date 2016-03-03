@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.views.generic import FormView
 from django.conf import settings
 from .forms import ValidateAccountForm, BulkTestForm
-from .utils import Validator, BulkTestModel
+from .utils import Validator
 from .tasks import test_task
 # from debug_toolbar_line_profiler import profile_additional
 
@@ -35,16 +35,16 @@ class BulkTest(FormView):
     def form_valid(self, form, **kwargs):
         test_task.delay(4)  # test for batch process- runs an X seconds delay
         filename = form.cleaned_data['filename']
-        tests = BulkTestModel(path.join(settings.MEDIA_ROOT, filename).replace('..', ''))
-        if tests.message is None:
-            bv = Validator()
-            for sort_code, account_number in tests.test:
+        try:
+            tests = [(line[0:6], line[7:15]) for line in open(path.join(settings.MEDIA_ROOT, filename), 'r')];
+            bv=Validator()
+            for sort_code, account_number in tests:
                 if bv.validate(sort_code, account_number):
                     messages.success(self.request, '%s-%s Valid=True' % (sort_code, account_number))
                 else:
                     messages.error(self.request, '%s-%s Valid=False %s' % (sort_code, account_number, bv.message))
-        else:
-            messages.error(self.request, "Error Opening: %s. %s" % (filename, tests.message))
+        except IOError as err:
+            messages.error(self.request, "Error Opening: %s. %s" % (filename, str(err.strerror)))
         context = self.get_context_data(**kwargs)
         context['form'] = form  # use this pattern as it allows easy addition of other variables to pass to template
         return self.render_to_response(context)

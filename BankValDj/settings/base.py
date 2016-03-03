@@ -46,7 +46,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',  # set site object on every request
     'django.middleware.locale.LocaleMiddleware',
-
     # 'django.middleware.cache.FetchFromCacheMiddleware', # use caching per page, not by whole site
 )
 
@@ -196,6 +195,7 @@ CELERYBEAT_SCHEDULE = {
     # },
 }
 
+# django cacheops ORM caching setup
 CACHEOPS_REDIS = {
     'host': 'localhost', # redis-server is on same machine
     'port': 6379,        # default redis port
