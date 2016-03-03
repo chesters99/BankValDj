@@ -86,7 +86,7 @@
   postgresql_db: name={{ db_name }} state=present
   tags: install database
 
-- name: Ensure user has access to the database
+- name: Ensure django user has access to the database
   become: yes
   become_user: postgres
   postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL role_attr_flags=CREATEDB state=present
