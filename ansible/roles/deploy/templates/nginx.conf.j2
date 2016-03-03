@@ -9,8 +9,8 @@ error_page              400 500 502 503 504 /500.html;
 
 upstream django {
     ip_hash;
-#    server                  unix:///tmp/{{ project_name }}.sock;
-    server                  127.0.0.1:8001;
+    server                  unix:///var/run/uwsgi/{{ project_name }}.sock;
+#    server                  127.0.0.1:8001;
 }
 
 server {
