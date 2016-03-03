@@ -30,15 +30,7 @@
   shell: echo 'export PATH=$PATH:/usr/pgsql-9.5/bin' > '/etc/profile.d/postgres.sh'
   tags: install database
 
-- name: postgresql should listen on all ports
-  become: yes
-  become_user: postgres
-  lineinfile: dest=/var/lib/pgsql/9.5/data/postgresql.conf
-              regexp="^listen_addresses"
-              line="listen_addresses = '*'" state=present
-  tags: install database
-
-- name: postgres performance tweaks for no logging in test
+- name: postgres performance tweaks
   become: yes
   become_user: postgres
   blockinfile:
@@ -66,8 +58,7 @@
       checkpoint_timeout = 20min         # should be 10-30m
       effective_io_concurrency = 1       # set to number of I/O channels
       random_page_cost = 2.0             # RAID 10 = 3, SAN=2, Amazon EBS = 1
-  when: "group_names[0] == 'localvm'"
-  tags: install database1
+  tags: install database
 
 - name: postgresql should allow access from anywhere
   become: yes
