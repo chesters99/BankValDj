@@ -49,7 +49,7 @@ class BulkTest(FormView):
         context['form'] = form  # use this pattern as it allows easy addition of other variables to pass to template
         return self.render_to_response(context)
 
-    # @profile_additional(Validator._get_rules)
+    # @profile_additional(Validator._modulus_check)
     def dispatch(self, *args, **kwargs): # need dispatch here to collect line profile for Bank Validator
         return super(BulkTest, self).dispatch(*args, **kwargs)
 

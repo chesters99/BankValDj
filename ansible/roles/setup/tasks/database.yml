@@ -44,11 +44,30 @@
   blockinfile:
     dest: /var/lib/pgsql/9.5/data/postgresql.conf
     block: |
-      fsync = off
-      synchronous_commit = off
-      full_page_writes = off
+      listen_addresses = '*'
+      log_destination = 'csvlog'
+      logging_collector = on
+      log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
+      log_rotation_age = 1d
+      log_rotation_size = 10MB
+      log_min_duration_statement = 50
+      log_checkpoints = on
+      log_connections = on
+      log_disconnections = on
+      log_lock_waits = on
+      log_temp_files = 0
+      shared_buffers = 128MB             # should be 25% of main memory (up to 8GB)
+      work_mem = 10MB                    # should be 2 * RAM / max_connections
+      maintenance_work_mem = 32MB        # should be RAM / 16
+      effective_cache_size = 256MB       # should be RAM / 2
+      max_connections = 100              # should be no more than 400
+      wal_buffers = 16MB                 # should be fixed at 16MB
+      checkpoint_completion_target = 0.9 # should be fixed at 0.9
+      checkpoint_timeout = 20min         # should be 10-30m
+      effective_io_concurrency = 1       # set to number of I/O channels
+      random_page_cost = 2.0             # RAID 10 = 3, SAN=2, Amazon EBS = 1
   when: "group_names[0] == 'localvm'"
-  tags: install database
+  tags: install database1
 
 - name: postgresql should allow access from anywhere
   become: yes
