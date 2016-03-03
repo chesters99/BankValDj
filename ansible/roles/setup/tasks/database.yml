@@ -17,10 +17,10 @@
     - python-psycopg2
   tags: install database
 
-- name: Initialise database
+- name: Initialise database with options
   become: yes
   become_user: root
-  command: /usr/pgsql-9.5/bin/postgresql95-setup initdb
+  shell: PGSETUP_INITDB_OPTIONS='--encoding=UTF8 --data-checksums' /usr/pgsql-9.5/bin/postgresql95-setup initdb
            creates=/var/lib/pgsql/9.5/data/postgresql.conf
   tags: install database
 
@@ -48,16 +48,16 @@
       log_disconnections = on
       log_lock_waits = on
       log_temp_files = 0
-      shared_buffers = 128MB             # should be 25% of main memory (up to 8GB)
-      work_mem = 10MB                    # should be 2 * RAM / max_connections
-      maintenance_work_mem = 32MB        # should be RAM / 16
+      shared_buffers = 128MB             # should be 25% of RAM (up to max of 8GB)
+      work_mem = 32MB                    # should be 2 * RAM / max_connections
+      maintenance_work_mem = 64MB        # should be 10% of RAM (up to max of 1GB)
       effective_cache_size = 256MB       # should be RAM / 2
-      max_connections = 100              # should be no more than 400
+      max_connections = 64               # should be no more than 400
       wal_buffers = 16MB                 # should be fixed at 16MB
       checkpoint_completion_target = 0.9 # should be fixed at 0.9
-      checkpoint_timeout = 20min         # should be 10-30m
+      checkpoint_timeout = 10min         # should be 10-30m (restart takes ~ 20% of this time)
       effective_io_concurrency = 1       # set to number of I/O channels
-      random_page_cost = 2.0             # RAID 10 = 3, SAN=2, Amazon EBS = 1
+      random_page_cost = 1.1             # RAID 10 = 3, SAN=2, Amazon EBS = 1
   tags: install database
 
 - name: postgresql should allow access from anywhere
@@ -65,7 +65,7 @@
   become_user: postgres
   lineinfile: dest=/var/lib/pgsql/9.5/data/pg_hba.conf backup=yes
               regexp="^0.0.0.0"
-              line="host    all           all           0.0.0.0/0     md5" state=present
+              line="host    all           all                0.0.0.0/0             md5" state=present
   tags: install database
 
 - name: postgresql should allow access via md5 not ident
