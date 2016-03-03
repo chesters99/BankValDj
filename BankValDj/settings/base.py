@@ -1,8 +1,7 @@
-import os
+import os.path
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SITE_ID = 1
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','.gchester.com']  # in case debug mode is turned off this is required
 ADMINS = (('Graham', 'chesters99@yahoo.com'),)
 
 LOCAL_APPS = (
@@ -88,6 +87,31 @@ LOGIN_URL = '/main/loginuser/'
 LOGIN_REDIRECT_URL = '/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static', 'source'), )
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'), )
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'OPTIONS': {
+            'debug': False,
+            'context_processors': [
+                # 'djstripe.context_processors.djstripe_settings',
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'loaders': [
+                ('django.template.loaders.cached.Loader', [
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                ]),
+            ],
+        },
+    },
+]
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -209,5 +233,5 @@ CACHEOPS = {
     'auth.*'    : {'ops': 'all', 'timeout': 24*60*60},
     'site.*'    : {'ops': 'all', 'timeout': 24*60*60},
     'rules.rule': {'ops': 'all', 'timeout': 24*60*60},
-    '*.*'       : {'ops': 'all', 'timeout': 24*60*60},
+    # '*.*'       : {'ops': 'all', 'timeout': 24*60*60}, # causes problems with django content types
 }
