@@ -44,6 +44,7 @@
     dest: /etc/selinux/config
     regexp: '^SELINUX=enforcing'
     line: "SELINUX=permissive"
+  ignore_errors: yes
   tags: install linux
 
 - name: Change SELINUX to permissive NOW
@@ -68,6 +69,7 @@
   blockinfile:
     dest: "{{ base_dir }}/.bash_profile"
     block: |
+      export PATH=/usr/local/bin:$PATH
       export WORKON_HOME=$HOME/.virtualenvs
       export PROJECT_HOME=$HOME
       source /usr/local/bin/virtualenvwrapper.sh

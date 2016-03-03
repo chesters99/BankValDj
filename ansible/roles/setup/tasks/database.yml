@@ -4,6 +4,7 @@
   become: yes
   become_user: root
   yum: name=http://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/pgdg-redhat95-9.5-2.noarch.rpm state=installed
+#  yum: name=https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-6-x86_64/pgdg-ami201503-95-9.5-2.noarch.rpm state=installed
   tags: install database
 
 - name: Install PostgreSQL 9.5 (install via yum as per advice on postgresql website)
@@ -17,17 +18,18 @@
     - python-psycopg2
   tags: install database
 
+- name: add postgres bin path to system path
+  become: yes
+  become_user: root
+  shell: echo 'export PATH=$PATH:/usr/pgsql-9.5/bin' > '/etc/profile.d/postgres.sh'
+  tags: install database
+
 - name: Initialise database with options
   become: yes
   become_user: root
   shell: PGSETUP_INITDB_OPTIONS='--encoding=UTF8 --data-checksums' /usr/pgsql-9.5/bin/postgresql95-setup initdb
            creates=/var/lib/pgsql/9.5/data/postgresql.conf
-  tags: install database
-
-- name: add postgres bin path to system path
-  become: yes
-  become_user: root
-  shell: echo 'export PATH=$PATH:/usr/pgsql-9.5/bin' > '/etc/profile.d/postgres.sh'
+#  shell: service postgresql-9.5 initdb
   tags: install database
 
 - name: postgres performance tweaks
@@ -48,10 +50,10 @@
       log_disconnections = on
       log_lock_waits = on
       log_temp_files = 0
-      shared_buffers = 128MB             # should be 25% of RAM (up to max of 8GB)
-      work_mem = 32MB                    # should be 2 * RAM / max_connections
-      maintenance_work_mem = 64MB        # should be 10% of RAM (up to max of 1GB)
-      effective_cache_size = 256MB       # should be RAM / 2
+      shared_buffers = 512MB             # should be 25% of RAM (up to max of 8GB)
+      work_mem = 64MB                    # should be 2 * RAM / max_connections (32 to 64mb)
+      maintenance_work_mem = 245MB        # should be 10% of RAM (up to max of 1GB)
+      effective_cache_size = 512MB       # should be RAM / 2
       max_connections = 64               # should be no more than 400
       wal_buffers = 16MB                 # should be fixed at 16MB
       checkpoint_completion_target = 0.9 # should be fixed at 0.9
@@ -80,7 +82,7 @@
   service: name=postgresql-9.5 state=started enabled=yes
   tags: install database
 
-- name: Ensure database is created
+- name: Create database
   become: yes
   become_user: postgres
   postgresql_db: name={{ db_name }} state=present

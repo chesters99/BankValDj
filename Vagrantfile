@@ -36,7 +36,7 @@ Vagrant.configure(2) do |config|
       aws.keypair_name = ENV['AWS_KEYNAME']
       aws.ami = "ami-2051294a" # redhat 7.2
       aws.region = "us-east-1"
-      aws.instance_type = "t2.micro"
+      aws.instance_type = "t2.medium"
       aws.security_groups = ['default']
       aws.elastic_ip = "52.86.44.119"
       override.ssh.username = "ec2-user"
