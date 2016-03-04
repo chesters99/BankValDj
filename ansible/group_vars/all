@@ -10,6 +10,6 @@ nginx_version: "1.9.5"
 domain_name: "gchester.com"
 
 # database settings
-db_name: "{{ project_name }}"
+db_name: "{{ project_name|lower }}"
 db_user: django
 db_password: django

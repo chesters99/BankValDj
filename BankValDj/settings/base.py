@@ -233,5 +233,6 @@ CACHEOPS = {
     'auth.*'    : {'ops': 'all', 'timeout': 24*60*60},
     'site.*'    : {'ops': 'all', 'timeout': 24*60*60},
     'rules.rule': {'ops': 'all', 'timeout': 24*60*60},
+    'eventlog.log': {'ops': 'all', 'timeout': 24*60*60},
     # '*.*'       : {'ops': 'all', 'timeout': 24*60*60}, # causes problems with django content types
 }

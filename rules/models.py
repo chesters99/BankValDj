@@ -63,7 +63,7 @@ class Rule(CommonModel):
 
     class Meta:
         ordering = ['id', ]
-        # index_together = [ ["start_sort", "end_sort"], ]
+        # index_together = [ ["start_sort", "end_sort"], ] # doesnt offer a performance advantage
 
     def __str__(self):
         return '%s %s-%s' % (self.id, self.start_sort, self.end_sort)
