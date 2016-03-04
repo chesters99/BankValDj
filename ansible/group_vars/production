@@ -1,4 +1,4 @@
 ---
 # Application settings.
-username: ec2-user
+username: "{{ ansible_user }}"
 project_repo: "https://chesters99:hudson-99@github.com/chesters99/{{ project_name }}.git"

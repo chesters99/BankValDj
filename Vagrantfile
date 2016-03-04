@@ -34,20 +34,23 @@ Vagrant.configure(2) do |config|
       aws.access_key_id = ENV['AWS_KEY']
       aws.secret_access_key = ENV['AWS_SECRET']
       aws.keypair_name = ENV['AWS_KEYNAME']
-      aws.ami = "ami-2051294a" # redhat 7.2 in us-east-1 zone
+      aws.ami = "ami-6d1c2007"  # centos 7.2 in us-east-1 zone
+      # "ami-2051294a" # redhat 7.2 in us-east-1 zone
       aws.region = "us-east-1"
       aws.instance_type = "t2.micro"
       aws.security_groups = ['default']
       aws.elastic_ip = "52.86.44.119"
-      override.ssh.username = "ec2-user"
+      config.ssh.insert_key = 'true'
+      config.ssh.username="centos"
+      override.ssh.username = "centos"
       override.ssh.private_key_path = ENV['AWS_KEYPATH']
     end
     config.vm.provision :ansible do |ansible|
-#      ansible.verbose = "vvvv"
+      ansible.verbose = "vvvv"
       ansible.playbook = "ansible/site.yml"
       ansible.inventory_path = "ansible/hosts"
       ansible.limit="production"
-      ansible_user="ec2-user"
+      ansible_user="centos"
       ansible_ssh_private_key_file="/Users/graham/Documents/Projects/BankValDj/BankValDj/settings/secret/USEast21Aug_secret.pem"
     end
   end

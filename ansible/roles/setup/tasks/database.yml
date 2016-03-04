@@ -7,7 +7,7 @@
 #  yum: name=https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-6-x86_64/pgdg-ami201503-95-9.5-2.noarch.rpm state=installed
   tags: install database
 
-- name: Install PostgreSQL 9.5 (install via yum as per advice on postgresql website)
+- name: Install PostgreSQL (install via yum as per advice on postgresql website)
   become: yes
   become_user: root
   yum: name={{ item }} state=installed

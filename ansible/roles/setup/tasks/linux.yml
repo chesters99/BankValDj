@@ -19,6 +19,12 @@
   yum: name=http://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/pgdg-redhat95-9.5-2.noarch.rpm state=present
   tags: install linux
 
+- name: Upgrade all existing packages
+  become: yes
+  become_user: root
+  yum: name=* state=latest
+  tags: install linux
+
 - name: Ensure key linux packages are installed and the latest versions
   become: yes
   become_user: root
@@ -58,9 +64,9 @@
   file: path={{ base_dir }} state=directory mode="g=rx"
   tags: install linux
 
-- name: Create {{ project_name }} directory if not localvm
+- name: Create {{ project_name }} directory if not localhost
   file: path={{ project_name }} state=directory mode=0750
-  when: "group_names[0] != 'localvm'"
+  when: inventory_hostname != "localhost.localdomain"
   tags: install linux
 
 - name: Add exports/aliases to bash_profile

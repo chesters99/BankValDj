@@ -2,16 +2,16 @@
 
 #################### get source code from git if not local machine
 
-- name: Pull {{ project_name }} source from the repository if not localvm
+- name: Pull {{ project_name }} source from the repository if not localhost
   git: repo="{{ project_repo }}"
        dest="{{ project_path }}" version=master accept_hostkey=True force=yes
-  when: "group_names[0] != 'localvm'"
+  when: inventory_hostname != "localhost.localdomain"
   tags: deploy code
 
-- name: Copy secrets file to host if not localvm
+- name: Copy secrets file to host if not localhost
   copy: src="../{{ project_name }}/settings/secret/production_secrets.json"
         dest={{ project_path }}/{{ project_name }}/settings/secret/ force=yes
-  when: "group_names[0] != 'localvm'"
+  when: inventory_hostname != "localhost.localdomain"
   tags: deploy code
 
 #################### setup nginx config and restart nginx
