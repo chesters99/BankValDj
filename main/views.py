@@ -11,7 +11,7 @@ from django.template.loader import render_to_string, get_template
 from django.views.decorators.cache import never_cache, cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.decorators.vary import vary_on_headers
+from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import TemplateView, FormView, RedirectView
 from django.db import IntegrityError, transaction
 from django.contrib import messages
@@ -34,19 +34,20 @@ class IndexView(TemplateView):
         return context
 
 
-@method_decorator(vary_on_headers('User-Agent'), name='dispatch')
+
+@method_decorator(vary_on_cookie, name='dispatch')
 @method_decorator(cache_page(60*15), name='dispatch')
 class AboutView(TemplateView):
     template_name = 'about.html'
 
 
-@method_decorator(vary_on_headers('User-Agent'), name='dispatch')
+@method_decorator(vary_on_cookie, name='dispatch')
 @method_decorator(cache_page(60*15), name='dispatch')
 class ContactView(TemplateView):
     template_name = 'contact.html'
 
 
-@method_decorator(vary_on_headers('User-Agent'), name='dispatch')
+@method_decorator(vary_on_cookie, name='dispatch')
 @method_decorator(cache_page(60*15), name='dispatch')
 class DocumentView(TemplateView):
     template_name = 'show_document.html'
