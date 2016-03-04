@@ -38,9 +38,12 @@
     - git
     - gcc           # required for amazon ec2 redhat 7.2
     - firewalld     # required for amazon ec2 redhat 7.2
-    - htop
-    - pg_top95
-    - ncurses-devel  # required for uwsgitop (includes curses in standard libary)
+    - htop          # system performance
+    - pg_top95      # database performance
+    - ncurses-devel # required for uwsgitop (includes curses in standard libary)
+    - sysstat       # system performance monitoring
+    - perl-App-cpanminus # for pgbadger perl MCPAN installs
+    - perl-CPAN     # for pgbadger perl MCPAN installs
   tags: install linux
 
 - name: Change SELINUX to permissive permanently

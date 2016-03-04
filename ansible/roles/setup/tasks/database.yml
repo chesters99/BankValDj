@@ -51,15 +51,15 @@
       log_lock_waits = on
       log_temp_files = 0
       shared_buffers = 512MB             # should be 25% of RAM (up to max of 8GB)
-      work_mem = 64MB                    # should be 2 * RAM / max_connections (32 to 64mb)
-      maintenance_work_mem = 245MB        # should be 10% of RAM (up to max of 1GB)
+      work_mem = 32MB                    # should be 2 * RAM / max_connections (32 to 64mb)
+      maintenance_work_mem = 256MB       # should be 10% of RAM (up to max of 1GB)
       effective_cache_size = 512MB       # should be RAM / 2
       max_connections = 64               # should be no more than 400
       wal_buffers = 16MB                 # should be fixed at 16MB
       checkpoint_completion_target = 0.9 # should be fixed at 0.9
       checkpoint_timeout = 10min         # should be 10-30m (restart takes ~ 20% of this time)
-      effective_io_concurrency = 1       # set to number of I/O channels
-      random_page_cost = 1.1             # RAID 10 = 3, SAN=2, Amazon EBS = 1
+      effective_io_concurrency = 4       # set to 4 for AWS, or no of channels/disks
+      random_page_cost = 1.5             # RAID 10 = 3, SAN=2, Amazon EBS = 1.5
   tags: install database
 
 - name: postgresql should allow access from anywhere
@@ -105,3 +105,46 @@
   become_user: root
   firewalld: port=5432/tcp zone=public immediate=yes permanent=true state=enabled
   tags: install database
+
+- name: Install pgbadger perl prerequisites
+  become: yes
+  become_user: root
+  cpanm: name=Text::CSV_XS system_lib=yes
+  tags: install pgbadger
+
+- name: Install pgbadger log analyzer - Create temp directory
+  file: path="{{ base_dir }}/pgbadger" state=directory
+  tags: install pgbadger
+
+- name: Install pgbadger log analyzer - get tarball
+  get_url: url=https://github.com/dalibo/pgbadger/archive/v8.0.tar.gz
+           dest="{{ base_dir }}/pgbadger/pgbadger-8.0.tar.gz" mode=0444
+  tags: install pgbadger
+
+- name: Install pgbadger log analyzer - Unarchive tarball
+  unarchive: src="{{ base_dir }}/pgbadger/pgbadger-8.0.tar.gz" dest="{{ base_dir }}/pgbadger/"
+             owner={{ username }} copy=no creates={{ base_dir }}/pgbadger/pgbadger-8.0
+  tags: install pgbadger
+
+- name: Install pgbadger - Configure makefile
+  command: perl Makefile.PL
+  args:
+    chdir: "{{ base_dir }}/pgbadger/pgbadger-8.0"
+    creates: "{{ base_dir }}/pgbadger/pgbadger-8.0/Makefile"
+  tags: install pgbadger
+
+- name: Install pgbadger - Make
+  command: make
+  args:
+    chdir: "{{ base_dir }}/pgbadger/pgbadger-8.0"
+    creates: "{{ base_dir }}/pgbadger/pgbadger-8.0/blib/script/pgbadger"
+  tags: install pgbadger
+
+- name: Install pgbadger - Make Install
+  become: yes
+  become_user: root
+  args:
+    chdir: "{{ base_dir }}/pgbadger/pgbadger-8.0"
+    creates: "/usr/local/bin/pgbadger"
+  command: make install
+  tags: install pgbadger

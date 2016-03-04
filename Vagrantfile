@@ -35,8 +35,9 @@ Vagrant.configure(2) do |config|
       aws.secret_access_key = ENV['AWS_SECRET']
       aws.keypair_name = ENV['AWS_KEYNAME']
       aws.ami = "ami-6d1c2007"  # centos 7.2 in us-east-1 zone
-      # "ami-2051294a" # redhat 7.2 in us-east-1 zone
+      # "ami-2051294a" # redhat 7.2 in us-east-1 zone - too expensive and doesnt match dev environment
       aws.region = "us-east-1"
+      aws.availability_zone = "us-east-1b" # should database replicate to diff zone
       aws.instance_type = "t2.micro"
       aws.security_groups = ['default']
       aws.elastic_ip = "52.86.44.119"
