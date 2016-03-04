@@ -34,4 +34,4 @@ DATABASES = {
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-#SECURE_SSL_REDIRECT = True # do in nginx instead
+SECURE_SSL_REDIRECT = True # but done in nginx before reaching django

@@ -47,7 +47,7 @@ Vagrant.configure(2) do |config|
       override.ssh.private_key_path = ENV['AWS_KEYPATH']
     end
     config.vm.provision :ansible do |ansible|
-      ansible.verbose = "vvvv"
+#      ansible.verbose = "vvvv"
       ansible.playbook = "ansible/site.yml"
       ansible.inventory_path = "ansible/hosts"
       ansible.limit="production"
