@@ -1,5 +1,5 @@
 psycopg2==2.6.1                 # postgresql connector. Must have postgresql installed and in PATH
-Django==1.9.2                   # latest Django is installed from tarball instead of pip
+Django==1.9.3                   # latest Django is installed from tarball instead of pip
 httplib2==0.9.2                 # best lib for http requests
 djangorestframework==3.3.2      # required for validation api
 celery==3.1.20                  # batch processing

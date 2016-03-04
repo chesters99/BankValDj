@@ -1,6 +1,6 @@
 ---
 
-- name: Install PostgreSQL (install via yum as per advice on postgresql website)
+- name: Install PostgreSQL yum repository
   become: yes
   become_user: root
   yum: name=http://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/pgdg-redhat95-9.5-2.noarch.rpm state=installed
