@@ -108,4 +108,4 @@
   become: yes
   become_user: root
   service: name=ntpd state=restarted enabled=yes
-  tags: install linux
+  tags: install linux1
