@@ -6,6 +6,8 @@
   git: repo="{{ project_repo }}"
        dest="{{ project_path }}" version=master accept_hostkey=True force=yes
   when: inventory_hostname != "localhost.localdomain"
+  notify:
+    - restart uwsgi
   tags: deploy code
 
 - name: Copy secrets file to host if not localhost
@@ -14,7 +16,7 @@
   when: inventory_hostname != "localhost.localdomain"
   tags: deploy code
 
-#################### setup nginx config and restart nginx
+#################### deploy nginx config and restart nginx
 
 - name: Create the Nginx configuration file
   become: yes
@@ -31,30 +33,22 @@
     - "../{{ project_name }}/settings/secret/{{ group_names[0] }}_cert.pem"
     - "../{{ project_name }}/settings/secret/{{ group_names[0] }}_key.pem"
     - "../{{ project_name }}/settings/secret/dhparams.pem"
+  notify:
+    - reload nginx
   tags: deploy nginx
 
-- name: restart nginx
-  become: yes
-  become_user: root
-  service: name=nginx state=reloaded enabled=yes
-  tags: deploy nginx
-
-####################
+#################### deploy redis config
 
 - name: Create the redis configuration file
   become: yes
   become_user: root
   template: src=redis.conf.j2 dest=/etc/redis.conf mode=0664
             owner=nginx group=nginx backup=yes force=yes
+  notify:
+    - restart redis
   tags: deploy redis
 
-- name: restart redis
-  become: yes
-  become_user: root
-  service: name=redis state=restarted enabled=yes
-  tags: deploy redis
-
-####################
+#################### deploy code and initialise django
 
 - name: Setup {{ project_name }} virtualenv site packages in {{ base_dir }}/.virtualenvs/{{ project_name }}
   pip: virtualenv={{ base_dir }}/.virtualenvs/{{ project_name }}
@@ -70,7 +64,7 @@
 
 - name: Initialise Django - makemigrations and migrate, and create superuser
   shell: . /usr/local/bin/virtualenvwrapper.sh && workon {{ project_name }} &&
-    export DJANGO_SETTINGS_MODULE={{ project_name }}.settings.{{ group_names[0] }} &&
+    export DJANGO_SETTINGS_MODULE={{ django_settings_module }} &&
     ./manage.py collectstatic --noinput &&
     ./manage.py makemigrations &&
     ./manage.py migrate &&
@@ -89,38 +83,18 @@
   command: find {{ project_path }}/static/root -type f -exec chmod 0644 {} \;
   tags: deploy django
 
-#################### setup uwsgi config and restart
+#################### deploy uwsgi config and restart
 
 - name: Create the uwsgi configuration file
   become: yes
   become_user: root
   template: src=uwsgi.ini.j2 dest=/etc/uwsgi/vassals/uwsgi.ini
             owner=nginx group=nginx force=yes
+  notify:
+    - restart uwsgi
   tags: deploy uwsgi
 
-- name: restart uwsgi
-  become: yes
-  become_user: root
-  service: name=uwsgi.service state=restarted enabled=yes
-  tags:
-    - deploy uwsgi
-    - deploy code
-
-####################
-
-- name: restart celery service
-  become: yes
-  become_user: root
-  service: name=celery state=restarted enabled=yes
-  tags: deploy celery
-
-- name: restart celerybeat service
-  become: yes
-  become_user: root
-  service: name=celerybeat state=restarted enabled=yes
-  tags: deploy celery
-
-####################
-
-#- name: Initialise Django - create superuser must be done from command line
-#- name: Initialise Django - m runserver 0.0.0.0:8000
+- name: restart celery services
+  notify:
+    - restart celery
+    - restart celerybeat

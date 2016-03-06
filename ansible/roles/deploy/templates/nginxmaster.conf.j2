@@ -1,6 +1,6 @@
 # custom master nginx config from various sources
 
-user  nginx {{ username }};
+user  nginx {{ ansible_user }};
 worker_processes  auto;
 
 events {

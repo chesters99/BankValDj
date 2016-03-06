@@ -63,7 +63,7 @@
   ignore_errors: yes
   tags: install linux
 
-- name: Set {{ username }} directory to be group executable (for nginx access)
+- name: Set {{ ansible_user }} directory to be group executable (for nginx access)
   file: path={{ base_dir }} state=directory mode="g=rx"
   tags: install linux
 
@@ -84,7 +84,7 @@
       source /usr/local/bin/virtualenvwrapper.sh
       alias m='./manage.py'
       alias celw='celery -A BankValDj worker --loglevel=INFO'
-      export DJANGO_SETTINGS_MODULE={{ project_name }}.settings.{{ group_names[0] }}
+      export DJANGO_SETTINGS_MODULE={{ django_settings_module }}
       export PYTHONPATH=PYTHONPATH:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib/python3.5/site-packages/:{{ base_dir }}/BankValDj/:
       workon {{ project_name }}
   tags: install linux
@@ -108,4 +108,4 @@
   become: yes
   become_user: root
   service: name=ntpd state=restarted enabled=yes
-  tags: install linux1
+  tags: install linux

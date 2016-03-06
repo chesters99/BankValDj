@@ -4,7 +4,7 @@ module          = wsgi
 home            = {{ project_path }}
 
 master          = true
-processes       = 4
+processes       = {{ ansible_processor_cores*3|int }}
 enable-threads  = true
 thunder-lock    = true
 socket          = /var/run/uwsgi/{{ project_name }}.sock

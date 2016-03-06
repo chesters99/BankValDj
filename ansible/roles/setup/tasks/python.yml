@@ -10,7 +10,7 @@
   tags: install python
 - name: Install Python3 - Unarchive Python3 tarball
   unarchive: src="{{ base_dir }}/python/python.tar.xz" dest="{{ base_dir }}/python"
-             owner={{ username }} copy=no creates={{ base_dir }}/python/Python-{{ python_version }}
+             owner={{ ansible_user }} copy=no creates={{ base_dir }}/python/Python-{{ python_version }}
   tags: install python
 - name: Install Python3 - Configure
   command: ./configure --with-ensurepip=install
@@ -32,6 +32,7 @@
     chdir: "{{ base_dir }}/python/Python-{{ python_version }}"
     creates: /usr/local/bin/python3
   tags: install python
+
 - name: Install Python3 - link python to python3
   become: yes
   become_user: root

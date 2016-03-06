@@ -9,7 +9,7 @@
   tags: install nginx
 - name: Install nginx - Unarchive nginx tarball
   unarchive: src="{{ base_dir }}/nginx/nginx.tar.gz" dest="{{ base_dir }}/nginx"
-             owner={{ username }} copy=no creates={{ base_dir }}/nginx/nginx-{{ nginx_version }}
+             owner={{ ansible_user }} copy=no creates={{ base_dir }}/nginx/nginx-{{ nginx_version }}
   tags: install nginx
 - name: Install nginx - Configure
   command: ./configure --user=nginx --group=nginx --prefix=/etc/nginx
@@ -33,7 +33,7 @@
   command: make install
   args:
     chdir: "{{ base_dir }}/nginx/nginx-{{ nginx_version }}"
-    creates: "/usr/local/bin/nginx"
+    creates: "/usr/sbin/nginx"
   tags: install nginx
 
 - name: Instal nginx - create group if not already there
@@ -44,7 +44,7 @@
 - name: Instal nginx - create user if not already there
   become: yes
   become_user: root
-  user: name=nginx group=nginx
+  user: name=nginx group=nginx state=present
   tags: install nginx
 
 - name: make nginx/conf.d directory if doenst already exist
@@ -65,11 +65,6 @@
   become_user: root
   template: src=roles/deploy/templates/nginx.service.j2 dest=/etc/systemd/system/nginx.service
             backup=yes owner=nginx group=nginx mode=0750
-  tags: install nginx
-- name: enable nginx
-  become: yes
-  become_user: root
-  service: name=nginx.service enabled=yes
   tags: install nginx
 
 - name: Allow port 80 through firewall
@@ -92,27 +87,3 @@
   become_user: root
   service: name=firewalld state=restarted
   tags: install nginx
-
-
-# old method using repository version (too outdated for http2)
-#- name: Install nginx repo
-#  become: yes
-#  become_user: root
-#  yum:
-#    name: http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
-#  tags: install nginx
-#- name: Install Nginx
-#  become: yes
-#  become_user: root
-#  yum: name=nginx state=installed
-#  tags: install nginx
-#- name: enable nginx
-#  become: yes
-#  become_user: root
-#  service: name=nginx enabled=yes
-#  tags: install nginx
-#- name: Install nginx - link nginx to /usr/local/bin
-#  become: yes
-#  become_user: root
-#  file: src=/usr/local/nginx/sbin/nginx dest=/usr/local/bin/nginx state=link force=yes
-#  tags: install nginx

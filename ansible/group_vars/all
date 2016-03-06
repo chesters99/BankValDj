@@ -2,7 +2,7 @@
 # Application settings.
 project_name: BankValDj
 timezone: "Europe/London"
-base_dir: /home/{{ username }}
+base_dir: /home/{{ ansible_user }}
 project_path: "{{ base_dir }}/{{ project_name }}"
 python_version: "3.5.0"
 redis_version: "3.0.7"
@@ -12,4 +12,4 @@ domain_name: "gchester.com"
 # database settings
 db_name: "{{ project_name|lower }}"
 db_user: django
-db_password: django
+db_password: bankvaldj

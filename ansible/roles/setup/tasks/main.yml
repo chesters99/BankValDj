@@ -1,5 +1,4 @@
 ---
-####################
 
 - include: linux.yml
 - include: python.yml

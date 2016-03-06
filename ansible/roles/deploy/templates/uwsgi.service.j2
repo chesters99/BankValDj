@@ -3,7 +3,7 @@ Description=uWSGI Emperor
 After=syslog.target
 
 [Service]
-User={{ username }}
+User={{ ansible_user }}
 Group=nginx
 ExecStart=/usr/local/bin/uwsgi --emperor /etc/uwsgi/vassals
 ExecRestart=/bin/kill -HUP $MAINPID

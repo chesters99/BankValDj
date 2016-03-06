@@ -1,6 +1,6 @@
 # Celeryd and celerybeat config
 CELERY_BIN="{{ base_dir }}/.virtualenvs/{{ project_name }}/bin/celery"
-CELERYD_USER="{{ username }}"
+CELERYD_USER="{{ ansible_user }}"
 CELERYD_GROUP="nginx"
 DJANGO_SETTINGS_MODULE="{{ project_name }}.settings.{{ group_names[0] }}"
 CELERY_APP="{{ project_name }}:celery_app"

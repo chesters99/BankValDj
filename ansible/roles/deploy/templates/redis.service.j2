@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-User={{ username }}
+User={{ ansible_user }}
 Group=nginx
 ExecStart=/usr/local/bin/redis-server /etc/redis.conf
 ExecStop=/bin/kill -15 $MAINPID

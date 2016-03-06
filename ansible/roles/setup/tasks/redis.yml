@@ -1,14 +1,5 @@
 ---
 
-#- name: install epel repo for redis REPLACE THIS WITH A DOWNLOAD OF LATEST VERSION FROM REDIS WEBSITE
-#  yum: name=epel-release state=installed
-#- name: Install redis
-#  yum: name=redis state=installed
-#- name: enable redis
-#  service: name=redis enabled=yes
-
-###################
-
 - name: Install redis - make temp redis directory
   file: path="{{ base_dir }}/redis" state=directory
   tags: install redis
@@ -18,7 +9,7 @@
   tags: install redis
 - name: Install redis - Unarchive redis tarball
   unarchive: src="{{ base_dir }}/redis/redis.tar.gz" dest="{{ base_dir }}/redis"
-             owner={{ username }} copy=no creates={{ base_dir }}/redis/redis-{{ redis_version }}
+             owner={{ ansible_user }} copy=no creates={{ base_dir }}/redis/redis-{{ redis_version }}
   tags: install redis
 - name: Install redis - make
   command: make
@@ -42,10 +33,3 @@
   template: src=roles/deploy/templates/redis.service.j2 dest=/etc/systemd/system/redis.service
             backup=yes owner=nginx group=nginx mode=0750
   tags: install redis
-
-- name: enable redis service
-  become: yes
-  become_user: root
-  service: name=redis.service enabled=yes
-  tags: install redis
-###################

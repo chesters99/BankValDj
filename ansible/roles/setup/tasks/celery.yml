@@ -5,19 +5,11 @@
        name=celery[redis]
   tags: install celery
 
-###################
-
 - name: Create the celery startup service
   become: yes
   become_user: root
   template: src=roles/deploy/templates/celery.service.j2 dest=/etc/systemd/system/celery.service
             backup=yes owner=nginx group=nginx mode=0750
-  tags: install celery
-
-- name: enable celery service
-  become: yes
-  become_user: root
-  service: name=celery.service enabled=yes
   tags: install celery
 
 - name: Create the celerybeat startup service
@@ -27,10 +19,3 @@
             backup=yes owner=nginx group=nginx mode=0750
   tags: install celery
 
-- name: enable celerybeat service
-  become: yes
-  become_user: root
-  service: name=celerybeat.service enabled=yes
-  tags: install celery
-
-###################
