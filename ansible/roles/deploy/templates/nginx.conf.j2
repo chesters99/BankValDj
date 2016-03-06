@@ -16,7 +16,7 @@ upstream django {
 server {
     listen                  80 default_server;
     server_name             {{ inventory_hostname }};
-    {% if group_names[0] == "production" %}
+    {% if inventory_hostname != "localhost.localdomain" %}
     return                  301 https://$server_name$request_uri;
     {% endif %}
     location /media         { alias {{ project_path }}/media; expires 1d;
@@ -42,8 +42,8 @@ server {
     server_name             {{ inventory_hostname }};
     client_max_body_size    1M;
     ssl                     on;
-    ssl_certificate         /etc/nginx/conf.d/{{ group_names[0] }}_cert.pem;
-    ssl_certificate_key     /etc/nginx/conf.d/{{ group_names[0] }}_key.pem;
+    ssl_certificate         /etc/nginx/conf.d/{{ inventory_hostname|replace(".", "_") }}_cert.pem;
+    ssl_certificate_key     /etc/nginx/conf.d/{{ inventory_hostname|replace(".", "_") }}_key.pem;
     ssl_session_timeout     5m;
     ssl_session_cache shared:SSL:10m;
     ssl_prefer_server_ciphers on;

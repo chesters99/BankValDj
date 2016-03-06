@@ -1,4 +1,0 @@
-#!/bin/bash
-# Run with:
-# ./apxxxx --tags=xxxxx
-/usr/bin/env ansible-playbook -i hosts --limit localvm "$@" site.yml

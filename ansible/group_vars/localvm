@@ -1,3 +1,5 @@
 ---
 # localvm settings
 django_settings_module: "BankValDj.settings.localvm"
+requirements_file: "{{ project_path }}/requirements/localvm.txt"
+postgresql_max_connections: 64

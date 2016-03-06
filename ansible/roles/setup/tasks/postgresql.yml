@@ -4,7 +4,7 @@
   become: yes
   become_user: root
   yum: name=http://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/pgdg-redhat95-9.5-2.noarch.rpm state=installed
-  tags: install database
+  tags: install postgresql
 
 - name: Install PostgreSQL (install via yum as per advice on postgresql website)
   become: yes
@@ -15,20 +15,20 @@
     - postgresql95-contrib
     - postgresql95-devel
     - python-psycopg2
-  tags: install database
+  tags: install postgresql
 
 - name: add postgres bin path to system path (create postgres.sh file)
   become: yes
   become_user: root
   shell: echo 'export PATH=$PATH:/usr/pgsql-9.5/bin' > '/etc/profile.d/postgres.sh'
-  tags: install database
+  tags: install postgresql
 
 - name: Initialise database with options
   become: yes
   become_user: root
   shell: PGSETUP_INITDB_OPTIONS='--encoding=UTF8 --data-checksums' /usr/pgsql-9.5/bin/postgresql95-setup initdb
            creates=/var/lib/pgsql/9.5/data/postgresql.conf
-  tags: install database
+  tags: install postgresql
 
 - name: add additional postgresql.conf file
   become: yes
@@ -36,14 +36,16 @@
   lineinfile:
     dest: /var/lib/pgsql/9.5/data/postgresql.conf
     line: "include = 'postgresql-custom.conf'"
-  tags: install database
+  tags: install postgresql
 
 - name: postgres performance and logging tweaks to postgresql.conf
   become: yes
   become_user: postgres
   template: src=../deploy/templates/postgresql-custom.conf.j2
             dest=/var/lib/pgsql/9.5/data/postgresql-custom.conf force=yes
-  tags: install database
+  notify:
+    - restart postgresql
+  tags: install postgresql
 
 - name: postgresql - setup security in pg_hba.conf (insertbefore to override default settings)
   become: yes
@@ -56,37 +58,39 @@
       local   all             {{ db_user }}                                md5
       host    all             all             0.0.0.0/0             md5
       host    all             all             ::1/128               md5
-  tags: install database
+  notify:
+    - restart postgresql
+  tags: install postgresql
 
 - name: Ensure the PostgreSQL service is running
   become: yes
   become_user: root
   service: name=postgresql-9.5 state=started enabled=yes
-  tags: install database
+  tags: install postgresql
 
 - name: Create database
   become: yes
   become_user: postgres
   postgresql_db: name={{ db_name }} state=present
-  tags: install database
+  tags: install postgresql
 
 - name: Ensure django user has access to the database with all privileges
   become: yes
   become_user: postgres
   postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL role_attr_flags=CREATEDB state=present
-  tags: install database
+  tags: install postgresql
 
 - name: Start firewalld to add new rules
   become: yes
   become_user: root
   service: name=firewalld enabled=yes state=restarted
-  tags: install database
+  tags: install postgresql
 
 - name: Allow port 5432 through firewall
   become: yes
   become_user: root
   firewalld: port=5432/tcp zone=public immediate=yes permanent=true state=enabled
-  tags: install database
+  tags: install postgresql
 
 
 - name: Install pgbadger perl prerequisites

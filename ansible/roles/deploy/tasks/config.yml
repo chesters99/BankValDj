@@ -1,0 +1,52 @@
+---
+
+- name: Create nginx configuration file
+  become: yes
+  become_user: root
+  template: src=nginx.conf.j2 dest=/etc/nginx/conf.d/nginx.conf
+            owner=nginx group=nginx backup=yes force=yes
+  tags: deploy config
+
+
+- name: copy SSL files to remote host nginx conf
+  become: yes
+  become_user: root
+  copy: src={{ item }} dest=/etc/nginx/conf.d owner=nginx group=nginx force=yes
+  with_items:
+    - "../{{ project_name }}/settings/secret/{{ inventory_hostname|replace('.', '_') }}_cert.pem"
+    - "../{{ project_name }}/settings/secret/{{ inventory_hostname|replace('.', '_') }}_key.pem"
+    - "../{{ project_name }}/settings/secret/dhparams.pem"
+  notify:
+    - reload nginx
+  tags: deploy config
+
+
+- name: Create uwsgi configuration file
+  become: yes
+  become_user: root
+  template: src=uwsgi.ini.j2 dest=/etc/uwsgi/vassals/uwsgi.ini
+            owner=nginx group=nginx force=yes
+  notify:
+    - restart uwsgi
+  tags: deploy config
+
+
+- name: Create the redis configuration file
+  become: yes
+  become_user: root
+  template: src=redis.conf.j2 dest=/etc/redis.conf mode=0664
+            owner=nginx group=nginx backup=yes force=yes
+  notify:
+    - restart redis
+  tags: deploy config
+
+
+- name: configure celery before django manage.py
+  become: yes
+  become_user: root
+  template: src=celery.conf.j2 dest=/etc/celery.conf mode=0664
+            owner=nginx group=nginx backup=yes force=yes
+  notify:
+    - restart celery
+    - restart celerybeat
+  tags: deploy config

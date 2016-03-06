@@ -1,6 +1,9 @@
 ---
 #################### Install linux packages, setup linux and user
 
+- debug: msg="inventory hostname={{ inventory_hostname }}, group_names[0]={{ group_names[0] }}"
+  tags: debug
+
 - name: Set hostname
   become: yes
   become_user: root
@@ -46,21 +49,10 @@
     - perl-CPAN     # for pgbadger perl MCPAN installs
   tags: install linux
 
-- name: Change SELINUX to permissive permanently
+- name: Change SELINUX to permissive
   become: yes
   become_user: root
-  lineinfile:
-    dest: /etc/selinux/config
-    regexp: '^SELINUX=enforcing'
-    line: "SELINUX=permissive"
-  ignore_errors: yes
-  tags: install linux
-
-- name: Change SELINUX to permissive NOW
-  become: yes
-  become_user: root
-  command: setenforce 0
-  ignore_errors: yes
+  selinux: policy=targeted state=permissive
   tags: install linux
 
 - name: Set {{ ansible_user }} directory to be group executable (for nginx access)

@@ -1,3 +1,7 @@
+- name: restart PostgreSQL
+  become: yes
+  become_user: root
+  service: name=postgresql-9.5 state=restarted enabled=yes
 
 - name: reload nginx
   become: yes
