@@ -1,4 +1,4 @@
-- name: restart PostgreSQL
+- name: restart postgresql
   become: yes
   become_user: root
   service: name=postgresql-9.5 state=restarted enabled=yes

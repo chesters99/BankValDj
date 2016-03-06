@@ -1,9 +1,6 @@
 ---
 #################### Install linux packages, setup linux and user
 
-- debug: msg="inventory hostname={{ inventory_hostname }}, group_names[0]={{ group_names[0] }}"
-  tags: debug
-
 - name: Set hostname
   become: yes
   become_user: root

@@ -3,4 +3,4 @@
 project_repo: "https://chesters99:hudson-99@github.com/chesters99/{{ project_name }}.git"
 django_settings_module: "BankValDj.settings.production"
 requirements_file: "{{ project_path }}/requirements/production.txt"
-postgresql_max_connections: 256
+postgresql_max_connections: 150

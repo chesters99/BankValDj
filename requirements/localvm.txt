@@ -1,18 +1,18 @@
 -r base.txt # include the base requirements file
 
-django-debug-toolbar==1.4       # debugging toolbar (use IP=127.0.0.1)
-django-debug-toolbar-template-timings>=0.6.4 # additional panel for debug toolbar
-Werkzeug==0.11.3                # html debugger works with manage.py runserver_plus
-Sphinx==1.3.5                   # documentation generator
+django-debug-toolbar==1.4                    # debugging toolbar
+django-debug-toolbar-template-timings==0.6.4 # additional panel for debug toolbar
+django-debug-toolbar-line-profiler==0.6.1    # line level profiling for django views
+Werkzeug==0.11.4                # html debugger works with manage.py runserver_plus
+Sphinx==1.3.6                   # documentation generator
 docutils==0.12                  # required by Sphinx
 Jinja2==2.8                     # required by Sphinx
-Pygments==2.1                   # required by Sphinx for coloring
+Pygments==2.1.3                 # required by Sphinx for coloring
 pylint==1.5.4                   # lint for python
 pytest-cov==2.2.1               # coverage reporting for py.test
 selenium==2.50.0		        # browser based testing package
-pytest==2.8.7                   # python testing module
+pytest==2.9.0                   # python testing module
 pytest-django==2.9.1		    # use py.test with Django
 pytest-xdist==1.14              # parallel running of pytest "py.test -n 2"
 pyOpenSSL==0.15.1               # required for runserver_plus on SSL
 line-profiler==1.0              # for django debug toolbar line profiler
-django-debug-toolbar-line-profiler==0.5.0 # line level profiling for django views

@@ -20,7 +20,8 @@
 - name: add postgres bin path to system path (create postgres.sh file)
   become: yes
   become_user: root
-  shell: echo 'export PATH=$PATH:/usr/pgsql-9.5/bin' > '/etc/profile.d/postgres.sh'
+  lineinfile: dest=/etc/profile.d/postgres.sh state=present create=yes
+              line='export PATH=$PATH:/usr/pgsql-9.5/bin'
   tags: install postgresql
 
 - name: Initialise database with options
@@ -38,7 +39,7 @@
     line: "include = 'postgresql-custom.conf'"
   tags: install postgresql
 
-- name: postgres performance and logging tweaks to postgresql.conf
+- name: postgres performance and logging config to postgresql-custom.conf
   become: yes
   become_user: postgres
   template: src=../deploy/templates/postgresql-custom.conf.j2
@@ -83,7 +84,7 @@
 - name: Start firewalld to add new rules
   become: yes
   become_user: root
-  service: name=firewalld enabled=yes state=restarted
+  service: name=firewalld enabled=yes state=started
   tags: install postgresql
 
 - name: Allow port 5432 through firewall
