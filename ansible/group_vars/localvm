@@ -3,3 +3,12 @@
 django_settings_module: "BankValDj.settings.localvm"
 requirements_file: "{{ project_path }}/requirements/localvm.txt"
 postgresql_max_connections: 64
+
+SECRET_KEY: "xr-^jzhr+!)+dztrm0p$n4)l@=x(tdh90ji%ep9cas=tq97d^#"
+DATABASE_NAME: "bankvaldj"
+DATABASE_USER: "django"
+DATABASE_PASSWORD: "bankvaldj"
+DATABASE_HOST: "127.0.0.1"
+DATABASE_PORT: "5432"
+STRIPE_SECRET_KEY: "sk_test_hU1rWuLJ2PvieJ0A3CWC3q8T"
+STRIPE_PUBLIC_KEY: "pk_test_6Gs6DynH9L867d0GVRh8Y18N"

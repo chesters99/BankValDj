@@ -5,6 +5,7 @@ After=syslog.target
 [Service]
 User={{ ansible_user }}
 Group=nginx
+EnvironmentFile=/home/{{ ansible_user }}/.{{ project_name }}.env
 ExecStart=/usr/local/bin/uwsgi --emperor /etc/uwsgi/vassals
 ExecRestart=/bin/kill -HUP $MAINPID
 # Requires systemd version 211 or newer

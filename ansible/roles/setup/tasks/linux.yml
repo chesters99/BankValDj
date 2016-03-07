@@ -61,20 +61,21 @@
   when: inventory_hostname != "localhost.localdomain"
   tags: install linux
 
+- name: install project environment file .{{ project_name }}.env
+  template: src=../deploy/templates/project.conf.j2
+            dest=/home/{{ ansible_user }}/.{{ project_name }}.env force=yes
+  tags: install linux
+
 - name: Add exports/aliases to bash_profile
   become: yes
   become_user: root
   blockinfile:
     dest: "{{ base_dir }}/.bash_profile"
     block: |
-      export PATH=/usr/local/bin:$PATH
-      export WORKON_HOME=$HOME/.virtualenvs
-      export PROJECT_HOME=$HOME
+      source /home/{{ ansible_user }}/.{{ project_name }}.env
       source /usr/local/bin/virtualenvwrapper.sh
       alias m='./manage.py'
       alias celw='celery -A BankValDj worker --loglevel=INFO'
-      export DJANGO_SETTINGS_MODULE={{ django_settings_module }}
-      export PYTHONPATH=PYTHONPATH:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib/python3.5/site-packages/:{{ base_dir }}/BankValDj/:
       workon {{ project_name }}
   tags: install linux
 

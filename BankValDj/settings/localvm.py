@@ -1,16 +1,8 @@
-import json, sys
 from .base import *
 
 DEBUG = True
 
-with open(os.path.join(BASE_DIR, 'BankValDj', 'settings', 'secret/localvm_secrets.json')) as f:
-    secrets = json.loads(f.read())
-
 ALLOWED_HOSTS = ['localhost', '127.0.0.1','.gchester.com']  # in case debug mode is turned off this is required
-
-SECRET_KEY = secrets["SECRET_KEY"]
-STRIPE_SECRET_KEY = secrets["STRIPE_SECRET_KEY"]
-STRIPE_PUBLIC_KEY = secrets["STRIPE_PUBLIC_KEY"]
 
 # email settings for google in localvm only
 EMAIL_HOST = 'smtp.gmail.com'
@@ -20,17 +12,6 @@ EMAIL_HOST_USER = 'gchester99@gmail.com'
 EMAIL_HOST_PASSWORD = 'hudson-99'
 DEFAULT_FROM_EMAIL = 'gchester99@gmail.com'
 SERVER_EMAIL = 'gchester99@gmail.com'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': secrets["DATABASE_NAME"],
-        'USER': secrets["DATABASE_USER"],
-        'PASSWORD': secrets["DATABASE_PASSWORD"],
-        'HOST': secrets["DATABASE_HOST"],  # Or an IP Address that your DB is hosted on
-        'PORT': secrets["DATABASE_PORT"],
-    }
-}
 
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = '0.0.0.0:8080'
 

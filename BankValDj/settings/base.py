@@ -1,8 +1,13 @@
-import os.path
+import os, sys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 SITE_ID = 1
 ADMINS = (('Graham', 'chesters99@yahoo.com'),)
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
 
 LOCAL_APPS = (
     'main',
@@ -31,6 +36,16 @@ INSTALLED_APPS = (
     'cacheops',
 ) + LOCAL_APPS
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get("DATABASE_NAME"),
+        'USER': os.environ.get("DATABASE_USER"),
+        'PASSWORD': os.environ.get("DATABASE_PASSWORD"),
+        'HOST': os.environ.get("DATABASE_HOST"),  # Or an IP Address that your DB is hosted on
+        'PORT': os.environ.get("DATABASE_PORT"),
+    }
+}
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.cache.UpdateCacheMiddleware',  # use caching per page, not by whole site
