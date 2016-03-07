@@ -27,7 +27,7 @@
 - name: Initialise database with options
   become: yes
   become_user: root
-  shell: PGSETUP_INITDB_OPTIONS='--encoding=UTF8 --data-checksums' /usr/pgsql-9.5/bin/postgresql95-setup initdb
+  shell: PGSETUP_INITDB_OPTIONS='--data-checksums' /usr/pgsql-9.5/bin/postgresql95-setup initdb
            creates=/var/lib/pgsql/9.5/data/postgresql.conf
   tags: install postgresql
 
