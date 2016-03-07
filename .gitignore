@@ -5,7 +5,6 @@ __pycache__
 *.py[cod]
 .cache
 .coverage
-
 .idea
 .vagrant
 
@@ -13,15 +12,13 @@ __pycache__
 static/root
 static/bootstrap
 docs/build
-rules.json
-users.json
 *.log
+bulktest*
+
 # secure stuff
 *.db
-*secret*
 *.pem
 
 # Sphinx Stuff
 _build
 _static
-_templates

@@ -1,4 +1,4 @@
-import os, sys
+import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -6,8 +6,6 @@ SITE_ID = 1
 ADMINS = (('Graham', 'chesters99@yahoo.com'),)
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
-STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
-STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
 
 LOCAL_APPS = (
     'main',
@@ -195,17 +193,6 @@ LOGGING = {
     }
 }
 
-DJSTRIPE_PLANS = {
-    'monthly': {
-        'stripe_plan_id': 'monthly_plan',
-        'name': 'Monthly Plan',
-        'description': 'Monthly Subscription Plan',
-        'price': 1000,
-        'currency': 'gbp',
-        'interval': 'month',
-    },
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework.authentication.BasicAuthentication',
@@ -250,4 +237,18 @@ CACHEOPS = {
     'rules.rule': {'ops': 'all', 'timeout': 24*60*60},
     'eventlog.log': {'ops': 'all', 'timeout': 24*60*60},
     # '*.*'       : {'ops': 'all', 'timeout': 24*60*60}, # causes problems with django content types
+}
+
+
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
+DJSTRIPE_PLANS = {
+    'monthly': {
+        'stripe_plan_id': 'monthly_plan',
+        'name': 'Monthly Plan',
+        'description': 'Monthly Subscription Plan',
+        'price': 1000,
+        'currency': 'gbp',
+        'interval': 'month',
+    },
 }

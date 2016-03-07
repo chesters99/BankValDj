@@ -1,12 +1,6 @@
 ---
 #################### Install linux packages, setup linux and user
 
-- name: Set hostname
-  become: yes
-  become_user: root
-  hostname: name="{{ inventory_hostname }}"
-  tags: install linux
-
 - name: Install RPM forge repo (for htop)
   become: yes
   become_user: root
@@ -66,7 +60,7 @@
             dest="{{ project_env }}" force=yes
   tags: install linux
 
-- name: Add exports/aliases to bashrc (not bash profile as pycharm etc doesnt login, just executes shell command)
+- name: Add environment variable to bashrc (not to bash profile as pycharm etc doesnt login)
   become: yes
   become_user: root
   blockinfile:
@@ -75,6 +69,14 @@
       set -a
       source /home/{{ ansible_user }}/.{{ project_name }}.env
       set +a
+  tags: install linux
+
+- name: Add shortcuts to bash_profile to save time on login
+  become: yes
+  become_user: root
+  blockinfile:
+    dest: "{{ base_dir }}/.bash_profile"
+    block: |
       source /usr/local/bin/virtualenvwrapper.sh
       alias m='./manage.py'
       workon {{ project_name }}
@@ -99,4 +101,10 @@
   become: yes
   become_user: root
   service: name=ntpd state=restarted enabled=yes
+  tags: install linux
+
+- name: Set hostname
+  become: yes
+  become_user: root
+  hostname: name="{{ inventory_hostname }}"
   tags: install linux
