@@ -6,45 +6,6 @@
 UK Bank Account Validation
 ==========================
 
-Contents:
-
-.. contents::
-
-Validator
----------
-.. code-block:: python
-   :linenos:
-
-   from accounts.utils.BankValidator import Validator
-   bv = Validator()
-   result = bv.validate(sort_code, account)
-   if not result:
-       print (bv.message)
-
-Models
-------
-.. automodule:: main.models
-    :members:
-
-.. automodule:: rules.models
-    :members:
-
-Views
------
-.. automodule:: main.views
-    :members:
-
-.. automodule:: rules.views
-    :members:
-
-
-Indices and Tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
 Overview
 --------
 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt
@@ -54,3 +15,15 @@ voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occa
 cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et
 commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris.
+
+.. toctree::
+   validator
+   models
+   views
+
+Indices and Tables
+------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

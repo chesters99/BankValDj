@@ -13,15 +13,12 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
-import os
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'BankValDj.settings.localvm'
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'BankValDj.settings.localvm'
 import django
 django.setup()
 # -- General configuration ------------------------------------------------
@@ -73,7 +70,7 @@ release = '0.1'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build','pdf']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
