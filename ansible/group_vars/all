@@ -4,6 +4,7 @@ project_name: BankValDj
 timezone: "Europe/London"
 base_dir: /home/{{ ansible_user }}
 project_path: "{{ base_dir }}/{{ project_name }}"
+project_env: "{{ base_dir }}/.{{ project_name }}.env"
 python_version: "3.5.1"
 redis_version: "3.0.7"
 nginx_version: "1.9.5"
