@@ -11,7 +11,6 @@ __pycache__
 # project stuff
 static/root
 static/bootstrap
-docs/build
 *.log
 bulktest*
 
@@ -20,5 +19,6 @@ bulktest*
 *.pem
 
 # Sphinx Stuff
-_build
-_static
+docs/_build
+docs/_static
+docs/pdf

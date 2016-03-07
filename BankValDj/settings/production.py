@@ -15,4 +15,4 @@ SERVER_EMAIL = 'djadmin@gchester.com'
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True # but done in nginx before reaching django
+#SECURE_SSL_REDIRECT = True # use nginx redirect instead (if True causes test failures in prod)
