@@ -3,7 +3,7 @@ Test Django Application
 
 UK Bank Account validation website, built as a learning exercise for Django
 
-The site is completely pointless....
+The site is completely pointless...
 
 .. code-block:: python
     :linenos:
