@@ -22,6 +22,5 @@ daemonize       = /var/log/nginx/{{ project_name }}_uwsgi.log
 pidfile         = /tmp/uwsgi.pid
 touch-reload    = /tmp/uwsgi.touch
 
-env = DJANGO_SETTINGS_MODULE={{ django_settings_module }}
 env = PYTHONPATH={{ project_path }}:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib/python3.5:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib/python3.5/site-packages:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib:{{ base_dir }}/.virtualenvs/{{ project_name }}/lib/python3.5/lib-dynload
 env = PYTHONHASHSEED=random

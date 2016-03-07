@@ -63,21 +63,20 @@
 
 - name: install project environment file .{{ project_name }}.env
   template: src=../deploy/templates/project.conf.j2
-            dest="{{ project_env }} force=yes
+            dest="{{ project_env }}" force=yes
   tags: install linux
 
-- name: Add exports/aliases to bash_profile
+- name: Add exports/aliases to bashrc (not bash profile as pycharm etc doesnt login, just executes shell command)
   become: yes
   become_user: root
   blockinfile:
-    dest: "/home/{{ ansible_user }}/.bash_profile"
+    dest: "{{ base_dir }}/.bashrc"
     block: |
       set -a
       source /home/{{ ansible_user }}/.{{ project_name }}.env
       set +a
       source /usr/local/bin/virtualenvwrapper.sh
       alias m='./manage.py'
-      alias celw='celery -A BankValDj worker --loglevel=INFO'
       workon {{ project_name }}
   tags: install linux
 

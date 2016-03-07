@@ -8,14 +8,6 @@
     - restart uwsgi
   tags: deploy django
 
-- name: Copy secrets file to host if not localhost
-  copy: src="../{{ project_name }}/settings/secret/production_secrets.json"
-        dest={{ project_path }}/{{ project_name }}/settings/secret/ force=yes
-  when: inventory_hostname != "localhost.localdomain"
-  notify:
-    - restart uwsgi
-  tags: deploy django
-
 #################### setup python packages from requirements file
 - name: Setup {{ project_name }} virtualenv site packages in {{ base_dir }}/.virtualenvs/{{ project_name }}
   pip: virtualenv={{ base_dir }}/.virtualenvs/{{ project_name }}
@@ -42,8 +34,7 @@
   tags: deploy django
 
 - name: Initialise Django - makemigrations and migrate, and create superuser
-  shell: set -a && . {{ project_env }} && set +a &&
-    . /usr/local/bin/virtualenvwrapper.sh && workon {{ project_name }} &&
+  shell: . /usr/local/bin/virtualenvwrapper.sh && workon {{ project_name }} &&
     ./manage.py collectstatic --noinput &&
     ./manage.py makemigrations &&
     ./manage.py migrate &&
@@ -52,7 +43,7 @@
   args:
     executable: /bin/bash
     chdir: /{{ project_path }}
-  tags: deploy django1
+  tags: deploy django
 
 - name: Ensure static directories are 0755 for nginx (after collectstatic)
   command: find {{ project_path }}/static/root -type d -exec chmod 0755 {} \;
