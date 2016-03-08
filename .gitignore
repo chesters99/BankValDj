@@ -1,6 +1,5 @@
 # Mac & IDE stuff
 .DS_Store
-
 __pycache__
 *.py[cod]
 .cache
@@ -11,7 +10,6 @@ __pycache__
 # project stuff
 static/root
 static/bootstrap
-*.log
 bulktest*
 
 # secure stuff

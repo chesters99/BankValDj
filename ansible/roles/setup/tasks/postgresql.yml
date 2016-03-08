@@ -2,13 +2,11 @@
 
 - name: Install PostgreSQL yum repository
   become: yes
-  become_user: root
   yum: name=http://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/pgdg-redhat95-9.5-2.noarch.rpm state=installed
   tags: install postgresql
 
 - name: Install PostgreSQL (install via yum as per advice on postgresql website)
   become: yes
-  become_user: root
   yum: name={{ item }} state=installed
   with_items:
     - postgresql95-server
@@ -19,14 +17,12 @@
 
 - name: add postgres bin path to system path (create postgres.sh file)
   become: yes
-  become_user: root
   lineinfile: dest=/etc/profile.d/postgres.sh state=present create=yes
               line='export PATH=$PATH:/usr/pgsql-9.5/bin'
   tags: install postgresql
 
 - name: Initialise database with options
   become: yes
-  become_user: root
   shell: PGSETUP_INITDB_OPTIONS='--data-checksums' /usr/pgsql-9.5/bin/postgresql95-setup initdb
            creates=/var/lib/pgsql/9.5/data/postgresql.conf
   tags: install postgresql
@@ -65,7 +61,6 @@
 
 - name: Ensure the PostgreSQL service is running
   become: yes
-  become_user: root
   service: name=postgresql-9.5 state=started enabled=yes
   tags: install postgresql
 
@@ -83,20 +78,17 @@
 
 - name: Start firewalld to add new rules
   become: yes
-  become_user: root
   service: name=firewalld enabled=yes state=started
   tags: install postgresql
 
 - name: Allow port 5432 through firewall
   become: yes
-  become_user: root
   firewalld: port=5432/tcp zone=public immediate=yes permanent=true state=enabled
   tags: install postgresql
 
 
 - name: Install pgbadger perl prerequisites
   become: yes
-  become_user: root
   cpanm: name=Text::CSV_XS system_lib=yes
   tags: install pgbadger
 
@@ -130,7 +122,6 @@
 
 - name: Install pgbadger - Make Install
   become: yes
-  become_user: root
   args:
     chdir: "{{ base_dir }}/pgbadger/pgbadger-8.0"
     creates: "/usr/local/bin/pgbadger"

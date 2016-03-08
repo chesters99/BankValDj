@@ -3,25 +3,21 @@
 
 - name: Install RPM forge repo (for htop)
   become: yes
-  become_user: root
   yum: name=http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm state=present
   tags: install linux
 
 - name: install the pg_top rpm from a remote repo
   become: yes
-  become_user: root
   yum: name=http://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/pgdg-redhat95-9.5-2.noarch.rpm state=present
   tags: install linux
 
 - name: Upgrade all existing packages
   become: yes
-  become_user: root
   yum: name=* state=latest
   tags: install linux
 
 - name: Ensure key linux packages are installed and the latest versions
   become: yes
-  become_user: root
   yum: name={{ item }} state=latest
   with_items:
     - bash
@@ -42,7 +38,6 @@
 
 - name: Change SELINUX to permissive
   become: yes
-  become_user: root
   selinux: policy=targeted state=permissive
   tags: install linux
 
@@ -62,7 +57,6 @@
 
 - name: Add environment variable to bashrc (not to bash profile as pycharm etc doesnt login)
   become: yes
-  become_user: root
   blockinfile:
     dest: "{{ base_dir }}/.bashrc"
     block: |
@@ -73,7 +67,6 @@
 
 - name: Add shortcuts to bash_profile to save time on login
   become: yes
-  become_user: root
   blockinfile:
     dest: "{{ base_dir }}/.bash_profile"
     block: |
@@ -84,7 +77,6 @@
 
 - name: Check current timezone
   become: yes
-  become_user: root
   shell: ll /etc/localtime | rev| cut -f1 -d"/" | rev
   register: current_zone
   changed_when: False
@@ -92,19 +84,16 @@
 
 - name: Set Europe/London timezone
   become: yes
-  become_user: root
   file: src=/usr/share/zoneinfo/{{ timezone }}  dest=/etc/localtime state=link force=yes
   when: current_zone.stdout != '{{ timezone }}'
   tags: install linux
 
 - name: restart ntp daemon
   become: yes
-  become_user: root
   service: name=ntpd state=restarted enabled=yes
   tags: install linux
 
 - name: Set hostname
   become: yes
-  become_user: root
   hostname: name="{{ inventory_hostname }}"
   tags: install linux

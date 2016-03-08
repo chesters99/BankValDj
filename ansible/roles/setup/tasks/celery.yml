@@ -7,14 +7,12 @@
 
 - name: Create the celery startup service
   become: yes
-  become_user: root
   template: src=roles/deploy/templates/celery.service.j2 dest=/etc/systemd/system/celery.service
             backup=yes owner=nginx group=nginx mode=0750
   tags: install celery
 
 - name: Create the celerybeat startup service
   become: yes
-  become_user: root
   template: src=roles/deploy/templates/celerybeat.service.j2 dest=/etc/systemd/system/celerybeat.service
             backup=yes owner=nginx group=nginx mode=0750
   tags: install celery

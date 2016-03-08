@@ -20,7 +20,6 @@
 
 - name: ensure all services are started (final check)
   become: yes
-  become_user: root
   service: name={{ item }} state=started enabled=yes
   with_items:
     - ntpd

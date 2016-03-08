@@ -3,6 +3,7 @@
 - name: Create website
   hosts: all
   become_method: sudo
+  become_user: root
   roles:
     - { role: setup,  tags: [ 'full setup',  'all'] }
     - { role: deploy, tags: [ 'full deploy', 'all'] }

@@ -26,7 +26,6 @@
   tags: install python
 - name: Install Python3 - Make Install
   become: yes
-  become_user: root
   command: make install
   args:
     chdir: "{{ base_dir }}/python/Python-{{ python_version }}"
@@ -35,28 +34,23 @@
 
 - name: Install Python3 - link python to python3
   become: yes
-  become_user: root
   file: src=/usr/local/bin/python3 dest=/usr/local/bin/python state=link force=yes
   tags: install python
 - name: Install Python3 - link pip to pip3
   become: yes
-  become_user: root
   file: src=/usr/local/bin/pip3 dest=/usr/local/bin/pip state=link force=yes
   tags: install python
 
 - name: ensure pip is latest version
   become: yes
-  become_user: root
   pip: name=pip executable=/usr/local/bin/pip3 state=latest
   tags: install python
 - name: Install virtualenv
   become: yes
-  become_user: root
   pip: name=virtualenv executable=/usr/local/bin/pip3
   tags: install python
 - name: Install virtualenvwrapper
   become: yes
-  become_user: root
   pip: name=virtualenvwrapper executable=/usr/local/bin/pip3
   tags: install python
 - name: Make a virtualenv in {{ base_dir }}/.virtualenvs/{{ project_name }} and assign to project

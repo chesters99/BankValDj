@@ -20,7 +20,6 @@
 
 - name: Install redis - make Install
   become: yes
-  become_user: root
   command: make install
   args:
     chdir: "{{ base_dir }}/redis/redis-{{ redis_version }}"
@@ -29,7 +28,6 @@
 
 - name: Create the redis startup service
   become: yes
-  become_user: root
   template: src=roles/deploy/templates/redis.service.j2 dest=/etc/systemd/system/redis.service
             backup=yes owner=nginx group=nginx mode=0750
   tags: install redis
