@@ -26,6 +26,12 @@
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+
+
+# django settings module must be loaded to allow automodules in models.rst and views.rst
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BankValDj.settings.localvm')
+
 extensions = [
     'sphinx.ext.autodoc',
 ]
@@ -259,9 +265,3 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
 
-
-# django must be loaded to allow automodules in models.rst and views.rst
-import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BankValDj.settings.localvm')
-# import django
-# django.setup()
