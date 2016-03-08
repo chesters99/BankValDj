@@ -247,11 +247,6 @@ texinfo_documents = [
 ]
 
 
-   # index - master document
-   # rst2pdf - name of the generated pdf
-   # Sample rst2pdf doc - title of the pdf
-   # Your Name - author name in the pdf
-
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []
 
@@ -263,6 +258,9 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+
+# django must be loaded to allow automodules in models.rst and views.rst
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BankValDj.settings.localvm')
 import django
