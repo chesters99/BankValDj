@@ -32,7 +32,7 @@
 import os
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BankValDj.settings.production')
-os.environ.setdefault('SECRET_KEY', 'xxxx')
+os.environ.setdefault('SECRET_KEY', 'xxxx') # dummy key to keep readthedocs build process happy
 django.setup()
 
 
