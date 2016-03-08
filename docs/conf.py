@@ -31,9 +31,10 @@
 # django settings module must be loaded to allow automodules in models.rst and views.rst
 import os
 import django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BankValDj.settings.localvm')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BankValDj.settings.production')
 os.environ.setdefault('SECRET_KEY', 'xxxx')
 django.setup()
+
 
 extensions = [
     'sphinx.ext.autodoc',
