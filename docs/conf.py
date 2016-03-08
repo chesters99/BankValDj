@@ -199,10 +199,6 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-  ('index', 'BankValDj.tex', 'BankValDj Documentation',
-   'Graham Chester', 'manual'),
-]
 
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -268,3 +264,5 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
 
+import django
+django.setup()

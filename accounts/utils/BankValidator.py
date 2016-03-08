@@ -1,5 +1,6 @@
 from math import floor
 # from django.core.cache import cache
+# from django.core import serializers
 
 try: # setup database access either via Django or if run in batch then via psycopg2
     from rules.models import Rule # running under django
@@ -8,7 +9,9 @@ except ImportError:
 
 
 class Validator:
-    """ Contains all the logic and data to modulus check UK Bank Accounts"""
+    """ Contains all the logic and data to modulus check UK Bank Accounts
+    """
+    CACHE = False # caching not active as was only 10% faster than postgres (use django-cacheops instead)
     MODULUS_10 = 'MOD10'
     MODULUS_11 = 'MOD11'
     DOUBLE_ALT = 'DBLAL'
@@ -23,12 +26,10 @@ class Validator:
         '938651': '938335', '938613': '938017', '938653': '938424'}
 
     def __init__(self):
-        """constructor initialises empty object"""
         self.message = None
 
     def _standardise(self, sort_code, account_number):
         """This function adjusts the sort code and account number formats
-
         :param sort_code: sort code
         :param account_number: account number
         :return: sort code and account number tuple
@@ -62,9 +63,9 @@ class Validator:
 
     def _modulus_check(self, sort_code, account_number, rule):
         """Calculates the modulus and returns the remainder (failed if > 0)
-        :param sort_code: sort code
-        :param account_number: account number
-        :param rule: rule to be applied
+        :param sort_code: str - 6 chars
+        :param account_number: str - 8 chars
+        :param rule: dict - rule to be applied
         :return: remainder
         """
         bank_account = sort_code + account_number
@@ -103,40 +104,52 @@ class Validator:
         return remainder
 
 
-    def _get_rules(self, sort_code ): # caching not active as was 10% faster than postgres (use django-cacheops instead)
-        # from django.core import serializers
-        # DOES_NOT_EXIST = 'DoesNotExist'
-        # cached_rules = cache.get(sort_code)
-        # if cached_rules == DOES_NOT_EXIST:
-        #     print('cache get DOES_NOT_EXIST')
-        #     return {}
-        # elif cached_rules is not None:
-        #     rules = {}
-        #     for i, obj in enumerate(serializers.deserialize("json", cached_rules)):
-        #         rules[i]=obj.object
-        #         print('cache get {start} {end}'.format(start=obj.object.start_sort, end=bj.object.mod_exception))
-        # else:
-        #     rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
-        #     if rules:
-        #         data = serializers.serialize("json", rules)
-        #         cache.set(sort_code, data)
-        #         print('db get and cached {start}'.format(start=rules[0].start_sort)
-        #     else:
-        #         cache.set(sort_code, DOES_NOT_EXIST)
-        #         print('db get doesnt exit - set cache does not exist')
-        if Rule: # running under Django so use Django ORM
-            rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code).values()
+    def _get_rules(self, sort_code ):
+        """ get rules from database or cache depending on class variable
+        :param sort_code: str
+        :return: rules - list of dicts
+        """
+        def _get_rules_from_database(sort_code):
+            """ get rules from Django ORM or psycopg depending if run from command line or Django
+            :param sort_code: str
+            :return:
+            """
+            if Rule: # running under Django so use Django ORM, otherwise use psycopg2 direct access
+                rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code).values()
+            else:
+                rules = []
+                cursor.execute('SELECT * from rules_rule where start_sort <=%s and end_sort >=%s', (sort_code, sort_code))
+                for row in cursor:
+                    rules.append(row)
+            return rules
+
+        if self.CACHE:
+            rule_does_not_exist = 'DoesNotExist'
+            cached_rules = cache.get(sort_code)
+            if cached_rules == rule_does_not_exist:
+                print('cache get DOES_NOT_EXIST')
+                return None
+            elif cached_rules is not None:
+                rules = {}
+                for i, obj in enumerate(serializers.deserialize("json", cached_rules)):
+                    rules[i]=obj.object
+                    print('cache get {start} {end}'.format(start=obj.object['start_sort'], end=obj.object['end_sort']))
+            else:
+                rules = _get_rules_from_database(sort_code)
+                if rules:
+                    data = serializers.serialize("json", rules)
+                    cache.set(sort_code, data)
+                    print('db get and cached {start}'.format(start=rules[0]['start_sort']))
+                else:
+                    cache.set(sort_code, does_not_exist)
+                    print('db get doesnt exit - set cache does not exist')
         else:
-            rules = []
-            cursor.execute('SELECT * from rules_rule where start_sort <=%s and end_sort >=%s', (sort_code, sort_code))
-            for row in cursor:
-                rules.append(row)
+            rules = _get_rules_from_database(sort_code)
         return rules
 
 
     def validate(self, sort_code, account_number):
         """ Perform modulus-based UK Bank Account validations
-
         :param sort_code: (*str*) : 6 characters
         :param account_number: (*str*) : 6-11 Characters
         :return: if account is valid then returns *True* and *self.message* = None (unless there is a warning).
@@ -240,14 +253,14 @@ class Validator:
         return True
 
 if __name__ == '__main__':
-    import sys
+    # import sys
     if len(sys.argv) != 3:
         exit(sys.exit('must specify sort code and account number parameters'))
     p_sort_code = sys.argv[1]
     p_account_number = sys.argv[2]
 
-    import psycopg2
-    import psycopg2.extras
+    # import psycopg2
+    # import psycopg2.extras
     try:
         database = psycopg2.connect("dbname='bankvaldj' user='django' host='localhost' password='bankvaldj'")
         cursor = database.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
