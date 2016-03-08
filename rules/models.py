@@ -18,18 +18,18 @@ from django.db import transaction
 
 def logged_in_message(user, request, **kwargs):
     """Add a welcome message when the user logs in """
-    messages.success(request, "User '%s' successfully logged in" % user.username)
+    messages.success(request, 'User {user} successfully logged in'.format(user=user.username))
 
 user_logged_in.connect(logged_in_message)
 
 def weight_validator(weight):
     if not (-255 <= weight <= 255):
-        raise ValidationError("Weight is -255 to 255")
+        raise ValidationError('Weight is -255 to 255')
 
 class SmallIntegerField(models.PositiveSmallIntegerField):
     def db_type(self, connection):
         if 'mysql' in connection.settings_dict['ENGINE']:
-            return "smallint"
+            return 'smallint'
         else:
             return super(SmallIntegerField, self).db_type(connection)
 

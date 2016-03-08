@@ -18,9 +18,11 @@ class ValidateAccount(FormView):
         account_number = form.cleaned_data['account_number']
         bv = Validator()
         if bv.validate(sort_code, account_number):
-            messages.success(self.request, '%s-%s is a valid bank account' % (sort_code, account_number ))
+            messages.success(self.request, '{sort}-{account} is a valid bank account'.format(
+                                             sort=sort_code, account=account_number ))
         else:
-            messages.error(self.request, '%s-%s %s' % (sort_code, account_number, bv.message))
+            messages.error(self.request, '{sort}-{account} {message}'.format(
+                                           sort=sort_code, account=account_number, message=bv.message))
         context = self.get_context_data(**kwargs)
         context['form'] = form
         return self.render_to_response(context)
@@ -36,15 +38,17 @@ class BulkTest(FormView):
         test_task.delay(4)  # test for batch process- runs an X seconds delay
         filename = form.cleaned_data['filename']
         try:
-            tests = [(line[0:6], line[7:15]) for line in open(path.join(settings.MEDIA_ROOT, filename), 'r')];
+            tests = [(line[0:6], line[7:15]) for line in open(path.join(settings.MEDIA_ROOT, filename), 'r')]
             bv=Validator()
             for sort_code, account_number in tests:
                 if bv.validate(sort_code, account_number):
-                    messages.success(self.request, '%s-%s Valid=True' % (sort_code, account_number))
+                    messages.success(self.request, '{sort}-{account} Valid=True'.format(
+                                                    sort=sort_code, account=account_number))
                 else:
-                    messages.error(self.request, '%s-%s Valid=False %s' % (sort_code, account_number, bv.message))
+                    messages.error(self.request, '{sort}-{account} Valid=False {message}'.format(
+                                                  sort=sort_code, account=account_number, message=bv.message))
         except IOError as err:
-            messages.error(self.request, "Error Opening: %s. %s" % (filename, str(err.strerror)))
+            messages.error(self.request, "Error Opening: {file}. {error}".format(file=filename, error=str(err.strerror)))
         context = self.get_context_data(**kwargs)
         context['form'] = form  # use this pattern as it allows easy addition of other variables to pass to template
         return self.render_to_response(context)

@@ -1,10 +1,17 @@
 from math import floor
-from rules.models import Rule
-from django.core.cache import cache
+# from django.core.cache import cache
+
+try: # setup database access either via Django or if run in batch then via psycopg2
+    from rules.models import Rule # running under django
+except ImportError:
+    Rule=None # flag NOT running under django
 
 
 class Validator:
     """ Contains all the logic and data to modulus check UK Bank Accounts"""
+    MODULUS_10 = 'MOD10'
+    MODULUS_11 = 'MOD11'
+    DOUBLE_ALT = 'DBLAL'
     EXCEPTION5_OVERRIDE1 = (0, 0, 1, 2, 5, 3, 6, 4, 8, 7, 10, 9, 3, 1)
     EXCEPTION5_OVERRIDE2 = (0, 0, 0, 0, 0, 0, 0, 0, 8, 7, 10, 9, 3, 1)
     EXCEPTION5_TABLE = {
@@ -61,11 +68,11 @@ class Validator:
         :return: remainder
         """
         bank_account = sort_code + account_number
-        if rule.mod_rule == Rule.MODULUS_11:
-            remainder = sum([int(c) * rule.weight[i] for i, c in enumerate(bank_account)]) % 11
-            if rule.mod_exception == '4' and remainder == int(account_number[6:8]):
+        if rule['mod_rule'] == self.MODULUS_11:
+            remainder = sum([int(c) * rule['weight'][i] for i, c in enumerate(bank_account)]) % 11
+            if rule['mod_exception'] == '4' and remainder == int(account_number[6:8]):
                 remainder = 0
-            elif rule.mod_exception == '5':
+            elif rule['mod_exception'] == '5':
                 if remainder == 0 and account_number[6] == '0':
                     pass  # valid account
                 elif remainder == 11 - int(account_number[6]):
@@ -73,17 +80,17 @@ class Validator:
                 else:
                     remainder = 999
 
-        elif rule.mod_rule == Rule.MODULUS_10:
-            remainder = sum([int(c) * rule.weight[i] for i, c in enumerate(bank_account)]) % 10
+        elif rule['mod_rule'] == self.MODULUS_10:
+            remainder = sum([int(c) * rule['weight'][i] for i, c in enumerate(bank_account)]) % 10
 
-        elif rule.mod_rule == Rule.DOUBLE_ALT:
+        elif rule['mod_rule'] == self.DOUBLE_ALT:
             total = 0
             for i, c in enumerate(bank_account):
-                temp = int(c) * rule.weight[i]
+                temp = int(c) * rule['weight'][i]
                 total += temp % 10 + floor(temp / 10)
-            total += 27 if rule.mod_exception == '1' else 0
+            total += 27 if rule['mod_exception'] == '1' else 0
             remainder = total % 10
-            if rule.mod_exception == '5':
+            if rule['mod_exception'] == '5':
                 if remainder == 0 and account_number[7] == '0':
                     pass
                 elif remainder == 10 - int(account_number[7]):
@@ -101,23 +108,29 @@ class Validator:
         # DOES_NOT_EXIST = 'DoesNotExist'
         # cached_rules = cache.get(sort_code)
         # if cached_rules == DOES_NOT_EXIST:
-        #     print('cache get' + DOES_NOT_EXIST)
+        #     print('cache get DOES_NOT_EXIST')
         #     return {}
         # elif cached_rules is not None:
         #     rules = {}
         #     for i, obj in enumerate(serializers.deserialize("json", cached_rules)):
         #         rules[i]=obj.object
-        #         print('cache get %s %s' % (obj.object.start_sort, obj.object.mod_exception))
+        #         print('cache get {start} {end}'.format(start=obj.object.start_sort, end=bj.object.mod_exception))
         # else:
         #     rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
         #     if rules:
         #         data = serializers.serialize("json", rules)
         #         cache.set(sort_code, data)
-        #         print('db get and cached' + rules[0].start_sort)
+        #         print('db get and cached {start}'.format(start=rules[0].start_sort)
         #     else:
         #         cache.set(sort_code, DOES_NOT_EXIST)
         #         print('db get doesnt exit - set cache does not exist')
-        rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
+        if Rule: # running under Django so use Django ORM
+            rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code).values()
+        else:
+            rules = []
+            cursor.execute('SELECT * from rules_rule where start_sort <=%s and end_sort >=%s', (sort_code, sort_code))
+            for row in cursor:
+                rules.append(row)
         return rules
 
 
@@ -143,26 +156,26 @@ class Validator:
             return True # must assume ok if no applicable rules are found
 
         # Step 3 - Apply nasty exception handling overrides
-        if rules[0].mod_exception in ('2', '9'):
+        if rules[0]['mod_exception'] in ('2', '9'):
             if account_number[0] != '0' and account_number[6] != '9':
-                rules[0].weight = rules[1].weight = self.EXCEPTION5_OVERRIDE1
+                rules[0]['weight'] = rules[1]['weight'] = self.EXCEPTION5_OVERRIDE1
             if account_number[0] != '0' and account_number[6] == '9':
-                rules[0].weight = rules[1].weight = self.EXCEPTION5_OVERRIDE2
-        if rules[0].mod_exception == '5':
+                rules[0]['weight'] = rules[1]['weight'] = self.EXCEPTION5_OVERRIDE2
+        if rules[0]['mod_exception'] == '5':
             if sort_code in self.EXCEPTION5_TABLE:
                 sort_code = self.EXCEPTION5_TABLE[sort_code]
-        if rules[0].mod_exception == '6' and account_number[6] == account_number[7] \
+        if rules[0]['mod_exception'] == '6' and account_number[6] == account_number[7] \
                 and account_number[0] in ('4', '5', '6', '7', '8'):
             return True  # cant templates so return as successful
-        if rules[0].mod_exception == '7' and account_number[6] == '9':
+        if rules[0]['mod_exception'] == '7' and account_number[6] == '9':
             for i in range(0, 8):
-                rules[0].weight[i] = 0
-        if rules[0].mod_exception == '8':
+                rules[0]['weight'][i] = 0
+        if rules[0]['mod_exception'] == '8':
             sort_code = '090126'
-        if rules[0].mod_exception == '10' and account_number[0:2] in ('09', '99') \
+        if rules[0]['mod_exception'] == '10' and account_number[0:2] in ('09', '99') \
                 and account_number[6] == '9':
             for i in range(0, 8):
-                rules[0].weight[i] = 0
+                rules[0]['weight'][i] = 0
 
         # Step 4 - Perform 1st modulus check
         first_remainder = self._modulus_check(sort_code, account_number, rules[0])
@@ -170,11 +183,11 @@ class Validator:
             self.message = 'Invalid Modulus Rule'
             return False
         if first_remainder == 0:
-            if rules[0].mod_exception in ('2', '9', '10', '11', '12', '13', '14'):
+            if rules[0]['mod_exception'] in ('2', '9', '10', '11', '12', '13', '14'):
                 return True
             if len(rules) == 1:
                 return True
-            if rules[1].mod_exception == '3' and account_number[2] in ('6', '9'):
+            if rules[1]['mod_exception'] == '3' and account_number[2] in ('6', '9'):
                 return True
             # need to perform 2nd check for some exceptions even if first check was ok
             second_remainder = self._modulus_check(sort_code, account_number, rules[1])
@@ -189,7 +202,7 @@ class Validator:
 
         # Step 5 - if first check failed then see if second check may be required and perform it
         if first_remainder > 0:
-            if rules[0].mod_exception not in ('2', '9', '10', '11', '12', '13', '14'):
+            if rules[0]['mod_exception'] not in ('2', '9', '10', '11', '12', '13', '14'):
                 self.message = 'Failed 1st Mod Check and no exceptions are available'
                 return False
             else:
@@ -198,11 +211,11 @@ class Validator:
                 except (KeyError, IndexError):
                     second_rule = None
 
-                if rules[0].mod_exception in ('2', '9'):
+                if rules[0]['mod_exception'] in ('2', '9'):
                     sort_code = '309634'
                     second_rule = self._get_rules(sort_code)[0]
 
-                if rules[0].mod_exception == '14':
+                if rules[0]['mod_exception'] == '14':
                     if account_number[7] not in ('0', '1', '9'):
                         self.message = 'Failed Exception Rule 14'
                         return False
@@ -226,3 +239,25 @@ class Validator:
                     return False
         return True
 
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) != 3:
+        exit(sys.exit('must specify sort code and account number parameters'))
+    p_sort_code = sys.argv[1]
+    p_account_number = sys.argv[2]
+
+    import psycopg2
+    import psycopg2.extras
+    try:
+        database = psycopg2.connect("dbname='bankvaldj' user='django' host='localhost' password='bankvaldj'")
+        cursor = database.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+    except psycopg2.OperationalError:
+        exit(sys.exit('psycopg2: Unable to connect to the database with rules table'))
+
+    bv=Validator()
+    result=bv.validate(p_sort_code, p_account_number)
+    print('{sort}-{account} {result}'.format(sort=p_sort_code, account=p_account_number,
+        result='Invalid Account - ' + bv.message if bv.message else 'Valid Account' ))
+    if database:
+        database.close()
+    exit(sys.exit(0))

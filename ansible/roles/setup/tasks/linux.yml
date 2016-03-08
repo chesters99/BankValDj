@@ -70,6 +70,7 @@
   blockinfile:
     dest: "{{ base_dir }}/.bash_profile"
     block: |
+      export PS1='\[\e]0;\w\a\]\[\e[36m\]\u@\h: \[\e[36m\]\w\[\e[0m\]\n\$ '
       source /usr/local/bin/virtualenvwrapper.sh
       alias m='./manage.py'
       workon {{ project_name }}

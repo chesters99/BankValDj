@@ -1,7 +1,6 @@
 # Mac & IDE stuff
 .DS_Store
 __pycache__
-*.py[cod]
 .cache
 .coverage
 .idea
@@ -13,7 +12,6 @@ static/bootstrap
 bulktest*
 
 # secure stuff
-*.db
 *.pem
 
 # Sphinx Stuff

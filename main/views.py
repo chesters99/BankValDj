@@ -84,9 +84,10 @@ class CreateUser(ActiveLoginRequiredMixin, FormView):
                 with transaction.atomic():  # needed to ensure User and UserProfile are in sync
                     get_user_model().objects.create_user(form.cleaned_data['username'], None,
                                                          form.cleaned_data['password'], **kwargs)
-                    messages.success(self.request, "User Created Successfully")
+                    messages.success(self.request, 'User Created Successfully')
             except IntegrityError:
-                messages.error(self.request, "Cant create user %s. User already exists" % form.cleaned_data['username'])
+                messages.error(self.request, 'Cant create user {user}. User already exists'.format(
+                                              user=form.cleaned_data['username']))
         else:
             messages.error(self.request, "Must be superuser to view/maintain users")
         return self.render_to_response(context)
@@ -105,7 +106,8 @@ class LogoutUser(ActiveLoginRequiredMixin, RedirectView):
     query_string = True
 
     def get_redirect_url(self):
-        messages.success(self.request, "User %s Logged Out Successfully" % self.request.user.username)
+        messages.success(self.request, "User {user} Logged Out Successfully".format(
+                                        user=self.request.user.username))
         auth.logout(self.request)
         return reverse('main:loginuser')
 

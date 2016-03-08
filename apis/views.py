@@ -78,4 +78,4 @@ class RuleList(ListAPIView):
             if start_sort is not None and end_sort is not None:
                 return Rule.objects.filter(start_sort__gt=start_sort, end_sort__lt=end_sort)
             else:
-                raise ParseError("Call API as /apis/rulelist/?start_sort=XXXXXX&end_sort=YYYYYY")
+                raise ParseError('Call API as /apis/rulelist/?start_sort=XXXXXX&end_sort=YYYYYY')
