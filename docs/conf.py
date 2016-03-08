@@ -263,5 +263,5 @@ texinfo_documents = [
 # django must be loaded to allow automodules in models.rst and views.rst
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BankValDj.settings.localvm')
-import django
-django.setup()
+# import django
+# django.setup()
