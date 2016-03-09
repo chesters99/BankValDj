@@ -7,7 +7,7 @@ class RulesViewTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        load_test_rules(sort_code='400000')
+        load_test_rules()
 
     def login_as_superuser(self, client):
         response = client.post('/main/loginuser/', {'username': 'graham', 'password': 'testpass'})

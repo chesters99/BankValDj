@@ -1,6 +1,6 @@
 from math import floor
-# from django.core.cache import cache
-# from django.core import serializers
+from django.core.cache import cache
+from django.core import serializers
 
 try: # setup database access either via Django or if run in batch then via psycopg2
     from rules.models import Rule # running under django
@@ -141,7 +141,7 @@ class Validator:
                     cache.set(sort_code, data)
                     print('db get and cached {start}'.format(start=rules[0]['start_sort']))
                 else:
-                    cache.set(sort_code, does_not_exist)
+                    cache.set(sort_code, rule_does_not_exist)
                     print('db get doesnt exit - set cache does not exist')
         else:
             rules = _get_rules_from_database(sort_code)
@@ -253,14 +253,14 @@ class Validator:
         return True
 
 if __name__ == '__main__':
-    # import sys
+    import sys
     if len(sys.argv) != 3:
         exit(sys.exit('must specify sort code and account number parameters'))
     p_sort_code = sys.argv[1]
     p_account_number = sys.argv[2]
 
-    # import psycopg2
-    # import psycopg2.extras
+    import psycopg2
+    import psycopg2.extras
     try:
         database = psycopg2.connect("dbname='bankvaldj' user='django' host='localhost' password='bankvaldj'")
         cursor = database.cursor(cursor_factory = psycopg2.extras.RealDictCursor)

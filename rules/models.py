@@ -94,7 +94,7 @@ class Rule(CommonModel):
         return reverse('rules:detail', kwargs={'pk': self.id})
 
 
-def load_rules(filename: str, sort_code=None):
+def load_rules(filename: str, sort_codes=None):
     if 'https:' in filename:
         response, content = httplib2.Http('.cache').request(filename)
         if response.status not in (200, 301):
@@ -106,7 +106,7 @@ def load_rules(filename: str, sort_code=None):
     with transaction.atomic():
         Rule.objects.all().delete(); Rule.objects.all().delete() # once to inactivate, then to delete inactive
         for counter, line in enumerate(f):
-            if line and line[0:5] <= (sort_code or line[0:5]) <= line[7:12]:
+            if line and (sort_codes is None or any(line[0:6] <= sort_code <= line[7:13] for sort_code in sort_codes)):
                 items = [item for item in line.strip().split()]
                 try:
                     mod_exception = items[17]

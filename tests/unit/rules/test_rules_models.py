@@ -36,6 +36,3 @@ class RuleModelTests(TestCase):
         record = Rule.objects.get(pk=rule.id)
         assert record.active is False
 
-    def test_get_and_load_rules(self):
-        count = load_rules(path.join(settings.MEDIA_ROOT, 'valacdos.txt'))
-        assert count > 900
