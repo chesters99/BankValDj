@@ -20,15 +20,14 @@ class RulesViewTests(TestCase):
         assert 'DBLAL' in response.content.decode(), response.content.decode()
 
     def test_detail_view(self):
-        self.login_as_superuser(self.client)
-        rule = Rule.objects.filter(start_sort='400000')[:1].get()
+        rule = Rule.objects.filter(start_sort='400000').first()
         response = self.client.get('/rules/detail/%s/' % rule.id)
         assert response.status_code == 200
         assert 'Rule Detail' in response.content.decode(), response.content.decode()
         assert 'MOD11' in response.content.decode(), response.content.decode()
 
     def test_update_view(self):
-        rule = Rule.objects.filter(start_sort='400000')[:1].get()
+        rule = Rule.objects.filter(start_sort='400000').first()
         self.login_as_superuser(self.client)
 
         response1 = self.client.post('/rules/update/%s/' % rule.id, {'mod_rule': 'DBLAL'})
@@ -42,7 +41,7 @@ class RulesViewTests(TestCase):
         assert 'DBLAL' in response2.content.decode(), response2.content.decode()
 
     def test_delete_view(self):
-        rule = Rule.objects.filter(start_sort='400000')[:1].get()
+        rule = Rule.objects.filter(start_sort='400000').first()
         self.login_as_superuser(self.client)
 
         response1 = self.client.get('/rules/delete/%s/' % rule.id)

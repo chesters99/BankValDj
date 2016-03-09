@@ -35,4 +35,3 @@ class RuleModelTests(TestCase):
         rule.delete()
         record = Rule.objects.get(pk=rule.id)
         assert record.active is False
-
