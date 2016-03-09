@@ -1,11 +1,15 @@
-import os
+from os import path
 from django.conf import settings
 from django.test import TestCase
+from django.contrib.auth.models import User
 from rules.models import Rule, load_rules
 
 
 class RuleModelTests(TestCase):
-    fixtures = ['users.json','rules.json']
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create_superuser('graham', 'chesters99@yahoo.com', 'testpass')
+        load_rules(path.join(settings.MEDIA_ROOT, 'valacdos.txt'))
 
     def test_get_all_rules(self):
         rules = Rule.objects.all()
@@ -33,6 +37,5 @@ class RuleModelTests(TestCase):
         assert record.active is False
 
     def test_get_and_load_rules(self):
-        count = load_rules(os.path.join(settings.MEDIA_ROOT, 'valacdos.txt'))
+        count = load_rules(path.join(settings.MEDIA_ROOT, 'valacdos.txt'))
         assert count > 900
-

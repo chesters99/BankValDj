@@ -1,8 +1,13 @@
 from django.test import RequestFactory, TestCase
 from main.views import Graph
+from tests.initialise import load_test_user
+
 
 class MainViews(TestCase):
-    fixtures = ['users.json']
+    @classmethod
+    def setUpTestData(cls):
+        load_test_user()
+
     def login_as_superuser(self, client):
         response = client.post('/main/loginuser/', {'username': 'graham', 'password': 'testpass'})
         assert response.status_code == 302, response.status_code

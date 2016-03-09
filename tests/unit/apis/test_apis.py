@@ -5,9 +5,14 @@ from rest_framework.authtoken.models import Token
 from django.test import TestCase
 from django.contrib.auth.models import User
 
+from tests.initialise import load_test_rules
+
+
 class ApisTests(TestCase):
     """Test APIs"""
-    fixtures = ['users.json','rules.json']
+    @classmethod
+    def setUpTestData(cls):
+        load_test_rules()
 
     def test_validate_api_valid(self):
         c = APIClient()

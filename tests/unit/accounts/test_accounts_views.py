@@ -1,8 +1,13 @@
 from django.test import TestCase
+from tests.initialise import load_test_rules
+
 
 class ValidateViews(TestCase):
     """Test templates Views"""
-    fixtures = ['users.json','rules.json']
+    @classmethod
+    def setUpTestData(cls):
+        load_test_rules()
+    
     def test_validate_account_view_valid(self):
         response = self.client.post('/accounts/validate/', {'sort_code': '500000', 'account_number': '12312312'})
         assert response.status_code == 200

@@ -2,10 +2,13 @@ from random import randint
 from os import environ
 from django.test import LiveServerTestCase
 from selenium import webdriver
+from tests.initialise import load_test_rules
 
 
 class MainTests(LiveServerTestCase):
-    fixtures = ['users.json','rules.json']
+    @classmethod
+    def setUpTestData(cls):
+        load_test_rules()
 
     def setUp(self):
         self.browser = webdriver.Remote(

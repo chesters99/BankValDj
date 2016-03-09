@@ -1,9 +1,12 @@
 from django.test import TestCase
 from accounts.utils.BankValidator import Validator
+from tests.initialise import load_test_rules
 
 
 class AccountValidation(TestCase):
-    fixtures = ['users.json','rules.json']
+    @classmethod
+    def setUpTestData(cls):
+        load_test_rules()
 
     def test_general_account_validation(self):
         bv = Validator()
