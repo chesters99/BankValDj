@@ -1,11 +1,13 @@
 from os import path
+
+from django.conf import settings
 from django.contrib import messages
 from django.views.generic import FormView
-from django.conf import settings
-from .forms import ValidateAccountForm, BulkTestForm
-from .utils import Validator
-from .tasks import test_task
 # from debug_toolbar_line_profiler import profile_additional
+
+from .forms import ValidateAccountForm, BulkTestForm
+from .tasks import test_task
+from .utils import Validator
 
 
 class ValidateAccount(FormView):

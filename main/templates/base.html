@@ -1,4 +1,6 @@
 {% load i18n %}
+{% load cache %}
+{% cache 3600 header user.username %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,6 +54,7 @@
             <li class="visible-xs"><a href="{% url 'main:about' %}">{% trans 'About' %}</a></li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+
                     {{ user.username|default:"Login"}}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                     <li><a href="{% url 'main:loginuser' %}">{% trans 'Login' %}</a></li>
@@ -61,6 +64,7 @@
         </ul>
     </nav>
 </header>
+{% endcache %}
 
 <section class="container">
     <div class="well col-xs-12 row">
@@ -82,6 +86,7 @@
     </div>
 </section>
 
+{% cache 3600 footer %}
 <footer class="container">
     <div class="col-xs-12">
         <a class="col-xs-3" href="{% url 'main:about' %}">About</a>
@@ -104,3 +109,4 @@
 {% block javascript %}{% endblock %}
 </body>
 </html>
+{% endcache %}

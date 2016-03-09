@@ -1,24 +1,25 @@
 """ documentation from views.py for application "**main**" (for sphinx) """
 from time import sleep
-from django.contrib import auth
-from django.contrib.auth import user_login_failed, get_user_model
+
+from django.contrib import messages
+from django.contrib.auth import user_login_failed, get_user_model, logout
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
+from django.db import IntegrityError, transaction
 from django.dispatch import receiver
 from django.http import HttpResponse
 from django.template import Context
 from django.template.loader import render_to_string, get_template
-from django.views.decorators.cache import never_cache, cache_page
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import TemplateView, FormView, RedirectView
-from django.db import IntegrityError, transaction
-from django.contrib import messages
 from eventlog.models import Log
-from .forms import CreateUserForm
+
 from main.decorators import ActiveLoginRequiredMixin
-from django.utils.decorators import method_decorator
+from .forms import CreateUserForm
+
 
 @receiver(user_login_failed)
 def delay_next_login(*args, **kwargs):
@@ -34,21 +35,14 @@ class IndexView(TemplateView):
         return context
 
 
-
-@method_decorator(vary_on_cookie, name='dispatch')
-@method_decorator(cache_page(60*15), name='dispatch')
 class AboutView(TemplateView):
     template_name = 'about.html'
 
 
-@method_decorator(vary_on_cookie, name='dispatch')
-@method_decorator(cache_page(60*15), name='dispatch')
 class ContactView(TemplateView):
     template_name = 'contact.html'
 
 
-@method_decorator(vary_on_cookie, name='dispatch')
-@method_decorator(cache_page(60*15), name='dispatch')
 class DocumentView(TemplateView):
     template_name = 'show_document.html'
 
@@ -108,7 +102,7 @@ class LogoutUser(ActiveLoginRequiredMixin, RedirectView):
     def get_redirect_url(self):
         messages.success(self.request, "User {user} Logged Out Successfully".format(
                                         user=self.request.user.username))
-        auth.logout(self.request)
+        logout(self.request)
         return reverse('main:loginuser')
 
 @csrf_exempt

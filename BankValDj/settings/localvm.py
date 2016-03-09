@@ -19,6 +19,7 @@ INSTALLED_APPS += (
     'django_extensions',
     'debug_toolbar',
     'debug_toolbar_line_profiler',
+    #'template_timings_panel', commented out due to bug with django 1.9 (being fixed)
 )
 
 MIDDLEWARE_CLASSES =  (
@@ -41,6 +42,7 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.cache.CachePanel',
     'debug_toolbar.panels.signals.SignalsPanel',
     'debug_toolbar.panels.logging.LoggingPanel',
+    # 'template_timings_panel.panels.TemplateTimings.TemplateTimings',
     #'debug_toolbar.panels.profiling.ProfilingPanel',
     'debug_toolbar_line_profiler.panel.ProfilingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
