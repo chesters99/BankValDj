@@ -1,31 +1,28 @@
 from random import randint
-from os import environ
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from tests.initialise import load_test_rules
 
 
-class MainTests(LiveServerTestCase):
+class FunctionalTests(LiveServerTestCase):
     @classmethod
     def setUpTestData(cls):
         load_test_rules()
 
-    def setUp(self):
-        self.browser = webdriver.Remote(
+    @classmethod
+    def setUpClass(cls):
+        super(FunctionalTests, cls).setUpClass()
+        cls.browser = webdriver.Remote(
             command_executor='http://%s:%s/wd/hub' %('10.0.2.2', 4444),
             desired_capabilities=webdriver.DesiredCapabilities.CHROME)
-        self.username = 'graham'
-        self.password = 'testpass'
-        self.hostname = environ.get('TEST_HOST') or ''
-        self.production = self.hostname in ['http://gchester.com', 'http://www.gchester.com' ]
-        if self.hostname and 'http://' in self.hostname:
-            self.my_server_url = self.hostname
-        else:
-            self.my_server_url = self.live_server_url
-#        print('\nServer=' + self.my_server_url + '  Production=' + str(self.production))
+        cls.username = 'graham'
+        cls.password = 'testpass'
+        cls.my_server_url = cls.live_server_url
 
-    def tearDown(self):
-        self.browser.quit()
+    @classmethod
+    def tearDownClass(cls):
+        super(FunctionalTests, cls).tearDownClass()
+        cls.browser.quit()
 
     def login(self):
         self.browser.get(self.my_server_url + '/main/loginuser/')

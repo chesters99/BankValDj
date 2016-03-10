@@ -94,6 +94,18 @@
   service: name=ntpd state=restarted enabled=yes
   tags: install linux
 
+- name: Shell script to update virtualbox guest additions (need to 'insert' cd via virtualbox first)
+  blockinfile:
+    dest: "{{ base_dir }}/VirtualBoxGuestAdditions.sh"
+    create: yes
+    mode: 0755
+    block: |
+      mkdir -p /media/cdrom
+      mount /dev/cdrom /media/cdrom
+      sh /media/cdrom/VBoxLinuxAdditions.run
+  when: inventory_hostname == "localhost.localdomain"
+  tags: install linux
+
 - name: Set hostname
   become: yes
   hostname: name="{{ inventory_hostname }}"

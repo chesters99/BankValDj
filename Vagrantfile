@@ -3,7 +3,7 @@
 
 Vagrant.configure(2) do |config|
   config.vm.define :localvm do |local|
-    local.vm.box = "puppetlabs/centos-7.2-64-nocm"
+    local.vm.box = "my-centos-7.2-64-nocm"
     local.vm.network "forwarded_port", guest: 8000, host: 8000 # django runserver
     local.vm.network "forwarded_port", guest: 5555, host: 5555 # celery flower task monitor
     local.vm.network "forwarded_port", guest: 443, host: 8443   # nginx https
@@ -16,6 +16,8 @@ Vagrant.configure(2) do |config|
       vb.memory = "2048"
       vb.cpus = "3"
       vb.customize ["modifyvm", :id, "--ioapic", "on"]
+      # add cdrom to enable Virtualbox guest additions update
+      vb.customize ["storageattach", :id, "--storagectl", "IDE Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", "emptydrive"]
     end
     config.vm.provision :ansible do |ansible|
       ansible.playbook = "ansible/site.yml"
@@ -65,7 +67,7 @@ Vagrant.configure(2) do |config|
       # "ami-2051294a" # redhat 7.2 in us-east-1 zone - too expensive and doesnt match dev environment
       aws.region = "us-east-1"
       aws.availability_zone = "us-east-1b" # should database replicate to diff zone
-      aws.instance_type = "t2.medium"
+      aws.instance_type = "t2.micro" # t2.medium=2CPU/4GB RAM, t2.micro=1CPU/1GB RAM
       aws.security_groups = ['default']
       aws.elastic_ip = "52.86.54.28"
       config.ssh.insert_key = 'true'
