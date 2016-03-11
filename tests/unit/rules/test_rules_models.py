@@ -33,5 +33,4 @@ class RuleModelTests(TestCase):
                     weight=[0,1,2,3,4,5,6,7,8,9,10,11,12,13], mod_exception='')
         rule.save()
         rule.delete()
-        record = Rule.objects.get(pk=rule.id)
-        assert record.active is False
+        assert rule.id is None

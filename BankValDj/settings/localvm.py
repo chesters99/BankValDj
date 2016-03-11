@@ -27,7 +27,8 @@ MIDDLEWARE_CLASSES =  (
 ) + MIDDLEWARE_CLASSES
 
 import sys
-if len(sys.argv) >= 2 and 'runserver' in sys.argv[1]: # django debug toolbar only under runserver, not uwsgi
+if len(sys.argv) >= 2 and 'runserver' in sys.argv[1] and 'pydevd' not in sys.modules:
+    # enable django debug toolbar only under runserver (not uwsgi) and not if running under debugger
     INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') # include virtualbox VM address
 
 DEBUG_TOOLBAR_PATCH_SETTINGS = False

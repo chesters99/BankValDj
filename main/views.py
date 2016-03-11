@@ -52,12 +52,10 @@ class Graph(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(Graph, self).get_context_data(**kwargs)
-        x_labels = []
-        y_values = []
-        for i in range(1, 101):
-            if i % 10 == 0:
-                x_labels.append(i)
-                y_values.append(i * i / 10)
+        x_labels, y_values = ([], [])
+        for i in range(10, 101, 5):
+            x_labels.append(i)
+            y_values.append(i * i / 10)
         context['x_labels'] = x_labels
         context['y_values'] = y_values
         return context

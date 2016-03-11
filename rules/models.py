@@ -68,12 +68,12 @@ class Rule(CommonModel):
     def __str__(self):
         return '%s %s-%s' % (self.id, self.start_sort, self.end_sort)
 
-    def delete(self, using=None, keep_parents=None):  # turn physical delete requests into logical deletes
-        if self.active:
-            self.active = False
-            self.save()
-        else:
-            super(Rule, self).delete()
+    # def delete(self, using=None, keep_parents=None):  # turn physical delete requests into logical deletes
+    #     if self.active:
+    #         self.active = False
+    #         self.save()
+    #     else:
+    #         super(Rule, self).delete()
 
     def save(self, *args, **kwargs):
         if not hasattr(self, 'site'):
@@ -93,7 +93,7 @@ class Rule(CommonModel):
     def get_absolute_url(self):  # this is not working so not used - gets a NoReverseMatch exception
         return reverse('rules:detail', kwargs={'pk': self.id})
 
-
+@transaction.atomic()
 def load_rules(filename: str, sort_codes=None):
     if 'https:' in filename:
         response, content = httplib2.Http('.cache').request(filename)
@@ -103,15 +103,20 @@ def load_rules(filename: str, sort_codes=None):
     else:
         filename = path.join(settings.MEDIA_ROOT, filename).replace('..', '')
         f = open(filename, "r")
-    with transaction.atomic():
-        Rule.objects.all().delete(); Rule.objects.all().delete() # once to inactivate, then to delete inactive
-        for counter, line in enumerate(f):
-            if line and (sort_codes is None or any(line[0:6] <= sort_code <= line[7:13] for sort_code in sort_codes)):
-                items = [item for item in line.strip().split()]
-                try:
-                    mod_exception = items[17]
-                except IndexError:
-                    mod_exception = ''
-                Rule.objects.create(start_sort=items[0], end_sort=items[1], mod_rule=items[2],
-                                    weight=[items[w] for w in range(3,17)], mod_exception=mod_exception )
+    Rule.objects.all().delete()
+    user_model = get_user_model()
+    user = user_model.objects.first()
+    site = Site.objects.get_current()
+    insert_list = []
+    for counter, line in enumerate(f):
+        if line and (sort_codes is None or any(line[0:6] <= sort_code <= line[7:13] for sort_code in sort_codes)):
+            items = [item for item in line.strip().split()]
+            try:
+                mod_exception = items[17]
+            except IndexError:
+                mod_exception = ''
+            insert_list.append(Rule(start_sort=items[0], end_sort=items[1], mod_rule=items[2],
+                                    weight=[items[w] for w in range(3,17)], mod_exception=mod_exception,
+                                    created_by = user, updated_by = user, site=site))
+    Rule.objects.bulk_create(insert_list)
     return counter

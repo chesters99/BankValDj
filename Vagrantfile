@@ -3,7 +3,7 @@
 
 Vagrant.configure(2) do |config|
   config.vm.define :localvm do |local|
-    local.vm.box = "my-centos-7.2-64-nocm"
+    local.vm.box = "my-centos-7.2-64-nocm" # my fully configured version of "puppet/centos-7.2-64-nocm"
     local.vm.network "forwarded_port", guest: 8000, host: 8000 # django runserver
     local.vm.network "forwarded_port", guest: 5555, host: 5555 # celery flower task monitor
     local.vm.network "forwarded_port", guest: 443, host: 8443   # nginx https
@@ -12,6 +12,7 @@ Vagrant.configure(2) do |config|
     local.vm.synced_folder '.', '/vagrant', disabled: true
     local.vm.synced_folder "/Users/graham/Documents/Projects/BankValDj", "/home/vagrant/BankValDj"
     local.vm.provider "virtualbox" do |vb|
+      vb.name = "localvm_BankValDj"
       vb.gui = false
       vb.memory = "2048"
       vb.cpus = "3"
@@ -31,20 +32,22 @@ Vagrant.configure(2) do |config|
     prod.vm.box = "dummy"
     prod.vm.synced_folder '.', '/vagrant', disabled: true
     prod.vm.provider :aws do |aws, override|
+      aws.tags["Name"] = "production"
       aws.access_key_id = ENV['AWS_KEY']
       aws.secret_access_key = ENV['AWS_SECRET']
       aws.keypair_name = ENV['AWS_KEYNAME']
-      aws.ami = "ami-6d1c2007"  # centos 7.2 in us-east-1 zone
-      # "ami-2051294a" # redhat 7.2 in us-east-1 zone - too expensive and doesnt match dev environment
+      # aws.ami = "ami-6d1c2007"  # centos 7.2 in us-east-1 zone
+      aws.ami = "ami-979e9afd" # my saved fully configured production instance version
       aws.region = "us-east-1"
       aws.availability_zone = "us-east-1b" # should database replicate to diff zone
-      aws.instance_type = "t2.medium"
+      aws.instance_type = "t2.micro"
       aws.security_groups = ['default']
       aws.elastic_ip = "52.86.44.119"
       config.ssh.insert_key = 'true'
       config.ssh.username="centos"
       override.ssh.username = "centos"
       override.ssh.private_key_path = ENV['AWS_KEYPATH']
+
     end
     config.vm.provision :ansible do |ansible|
       ansible.playbook = "ansible/site.yml"
@@ -60,11 +63,11 @@ Vagrant.configure(2) do |config|
     staging.vm.box = "dummy"
     staging.vm.synced_folder '.', '/vagrant', disabled: true
     staging.vm.provider :aws do |aws, override|
+      aws.tags["Name"] = "staging"
       aws.access_key_id = ENV['AWS_KEY']
       aws.secret_access_key = ENV['AWS_SECRET']
       aws.keypair_name = ENV['AWS_KEYNAME']
-      aws.ami = "ami-6d1c2007"  # centos 7.2 in us-east-1 zone
-      # "ami-2051294a" # redhat 7.2 in us-east-1 zone - too expensive and doesnt match dev environment
+      aws.ami = "ami-6d333707"
       aws.region = "us-east-1"
       aws.availability_zone = "us-east-1b" # should database replicate to diff zone
       aws.instance_type = "t2.micro" # t2.medium=2CPU/4GB RAM, t2.micro=1CPU/1GB RAM

@@ -15,11 +15,8 @@ TIME_ZONE_CHOICES = [(tz, tz) for tz in all_timezones]
 def create_user_profile(sender, instance=None, created=False, **kwargs):
     if created:
         UserProfile.objects.get_or_create(user=instance)
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
         Token.objects.create(user=instance)
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE, related_name='profile')

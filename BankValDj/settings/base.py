@@ -42,7 +42,8 @@ DATABASES = {
         'PASSWORD': os.environ.get("DATABASE_PASSWORD"),
         'HOST': os.environ.get("DATABASE_HOST"),  # Or an IP Address that your DB is hosted on
         'PORT': os.environ.get("DATABASE_PORT"),
-    }
+        'CONN_MAX_AGE': 600,
+    },
 }
 
 MIDDLEWARE_CLASSES = (
@@ -77,8 +78,6 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365
 X_FRAME_OPTIONS = 'SAMEORIGIN'
-
-CONN_MAX_AGE = 300  # database pooling
 
 ROOT_URLCONF = '%s.urls' % os.path.basename(BASE_DIR)
 WSGI_APPLICATION = '%s.wsgi.application' % os.path.basename(BASE_DIR)
