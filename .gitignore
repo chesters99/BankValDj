@@ -9,7 +9,7 @@ __pycache__
 # project stuff
 static/root
 static/bootstrap
-bulktest*
+bulktests*.txt
 
 # secure stuff
 *.pem

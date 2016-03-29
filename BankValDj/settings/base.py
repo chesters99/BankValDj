@@ -103,6 +103,7 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'), )
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': os.path.join(BASE_DIR, 'templates'),
         'OPTIONS': {
             'debug': False,
             'context_processors': [

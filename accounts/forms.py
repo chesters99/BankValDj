@@ -10,8 +10,8 @@ class ValidateAccountForm(forms.Form):
 
     def clean_sort_code(self):
         sort_code = self.cleaned_data.get('sort_code')
-        if not sort_code.isdigit():
-            raise forms.ValidationError(_('Sort Code must be numeric'), code='invalid')
+        # if not sort_code.isdigit():
+        #     raise forms.ValidationError(_('Sort Code must be numeric'), code='invalid')
         if len(sort_code) != 6:
             raise forms.ValidationError(_('Sort code must be 6 digits'), code='invalid')
         return sort_code

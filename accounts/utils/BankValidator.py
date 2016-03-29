@@ -1,12 +1,15 @@
 from math import floor
 from django.core.cache import cache
 from django.core import serializers
+from django.core.exceptions import AppRegistryNotReady
 
 try: # setup database access either via Django or if run in batch then via psycopg2
     from rules.models import Rule # running under django
-except ImportError:
+except (ImportError, AppRegistryNotReady):
     Rule=None # flag NOT running under django
 
+class BankValidationException(Exception):
+    pass
 
 class Validator:
     """ Contains all the logic and data to modulus check UK Bank Accounts
@@ -18,15 +21,13 @@ class Validator:
     EXCEPTION5_OVERRIDE1 = (0, 0, 1, 2, 5, 3, 6, 4, 8, 7, 10, 9, 3, 1)
     EXCEPTION5_OVERRIDE2 = (0, 0, 0, 0, 0, 0, 0, 0, 8, 7, 10, 9, 3, 1)
     EXCEPTION5_TABLE = {
-        '938173': '938017', '938620': '938343', '938289': '938068',
-        '938622': '938130', '938297': '938076', '938628': '938181',
-        '938600': '938611', '938643': '938246', '938602': '938343',
-        '938647': '938611', '938604': '938603', '938648': '938246',
-        '938608': '938408', '938649': '938394', '938609': '938424',
+        '938173': '938017', '938620': '938343', '938289': '938068', '938622': '938130', '938297': '938076',
+        '938628': '938181', '938600': '938611', '938643': '938246', '938602': '938343', '938647': '938611',
+        '938604': '938603', '938648': '938246', '938608': '938408', '938649': '938394', '938609': '938424',
         '938651': '938335', '938613': '938017', '938653': '938424'}
 
     def __init__(self):
-        self.message = None
+        pass
 
     def _standardise(self, sort_code, account_number):
         """This function adjusts the sort code and account number formats
@@ -35,11 +36,11 @@ class Validator:
         :return: sort code and account number tuple
         """
         if not sort_code.isdigit():
-            self.message = 'Sort Code must be numeric:' + sort_code
+            raise BankValidationException('Sort Code must be numeric')
         elif len(sort_code) != 6:
-            self.message = 'Sort Code must be 6 digits:' + sort_code
+            raise BankValidationException('Sort Code must be 6 digits')
         elif not account_number.isdigit():
-            self.message = 'Account Number must be numeric:' + account_number
+            raise BankValidationException('Account Number must be numeric')
         else:
             account_number_length = len(account_number)
             if account_number_length == 8:
@@ -58,7 +59,7 @@ class Validator:
                     account_number = account_number.replace('-', '') # Natwest
                     account_number = account_number[2:10]
             else:
-                self.message = 'Invalid Account Number Length:' + str(len(account_number))
+                raise BankValidationException('Invalid Account Number Length:{0}'.format(len(account_number)))
         return sort_code, account_number
 
     def _modulus_check(self, sort_code, account_number, rule):
@@ -152,21 +153,17 @@ class Validator:
         """ Perform modulus-based UK Bank Account validations
         :param sort_code: (*str*) : 6 characters
         :param account_number: (*str*) : 6-11 Characters
-        :return: if account is valid then returns *True* and *self.message* = None (unless there is a warning).
-                 if account is not valid then returns *False* and description in *self.message*
+        :return: if account is valid then returns *True*, if account cant be checked then returns *False*).
+                 if account is not valid then raises BankValidation Exception
         """
         # Step 1 - Check sort code and account number are in correct format and adjust if possible
-        self.message = None
         sort_code, account_number = self._standardise(sort_code, account_number)
-        if self.message is not None:
-            return False
 
         # Step 2 - Get the first and second applicable modulus templates
         # rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
         rules = self._get_rules(sort_code)
         if not rules:
-            self.message = "Warning:No Rules Found"
-            return True # must assume ok if no applicable rules are found
+            return False # must assume ok if no applicable rules are found, return False as a warning
 
         # Step 3 - Apply nasty exception handling overrides
         if rules[0]['mod_exception'] in ('2', '9'):
@@ -179,7 +176,7 @@ class Validator:
                 sort_code = self.EXCEPTION5_TABLE[sort_code]
         if rules[0]['mod_exception'] == '6' and account_number[6] == account_number[7] \
                 and account_number[0] in ('4', '5', '6', '7', '8'):
-            return True  # cant templates so return as successful
+            return True  # cant validate so return as successful
         if rules[0]['mod_exception'] == '7' and account_number[6] == '9':
             for i in range(0, 8):
                 rules[0]['weight'][i] = 0
@@ -193,8 +190,7 @@ class Validator:
         # Step 4 - Perform 1st modulus check
         first_remainder = self._modulus_check(sort_code, account_number, rules[0])
         if first_remainder < 0:
-            self.message = 'Invalid Modulus Rule'
-            return False
+            raise BankValidationException('Invalid Modulus Rule')
         if first_remainder == 0:
             if rules[0]['mod_exception'] in ('2', '9', '10', '11', '12', '13', '14'):
                 return True
@@ -205,19 +201,16 @@ class Validator:
             # need to perform 2nd check for some exceptions even if first check was ok
             second_remainder = self._modulus_check(sort_code, account_number, rules[1])
             if second_remainder < 0:
-                self.message = 'Invalid Modulus Rule'
-                return False
+                raise BankValidationException('Invalid Modulus Rule')
             if second_remainder == 0:
                 return True
             else:
-                self.message = 'Failed 2nd Mod Check after passing 1st'
-                return False
+                raise BankValidationException('Failed 2nd Mod Check after passing 1st')
 
         # Step 5 - if first check failed then see if second check may be required and perform it
         if first_remainder > 0:
             if rules[0]['mod_exception'] not in ('2', '9', '10', '11', '12', '13', '14'):
-                self.message = 'Failed 1st Mod Check and no exceptions are available'
-                return False
+                raise BankValidationException('Failed 1st Mod Check and no exceptions are available')
             else:
                 try:
                     second_rule = rules[1]
@@ -230,8 +223,7 @@ class Validator:
 
                 if rules[0]['mod_exception'] == '14':
                     if account_number[7] not in ('0', '1', '9'):
-                        self.message = 'Failed Exception Rule 14'
-                        return False
+                        raise BankValidationException('Failed Exception Rule 14')
                     else:
                         account_number = '0' + account_number[0:7]
                         second_rule = rules[0]
@@ -239,17 +231,14 @@ class Validator:
                 if second_rule:  # if there is a second check then perform it
                     second_remainder = self._modulus_check(sort_code, account_number, second_rule)
                     if second_remainder < 0:
-                        self.message = 'Invalid Modulus Rule'
-                        return False
+                        raise BankValidationException('Invalid Modulus Rule')
                 else:
-                    self.message = '2nd test required but no rule exists'
-                    return False
+                    raise BankValidationException('2nd test required but no rule exists')
 
                 if second_remainder == 0:
                     return True
                 else:
-                    self.message = 'Failed 2nd Mod Check after failing 1st - exceptions 2,9,10,11,12,13,14'
-                    return False
+                    raise BankValidationException('Failed 2nd Mod Check after failing 1st - exceptions 2,9,10,11,12,13,14')
         return True
 
 if __name__ == '__main__':
@@ -268,9 +257,11 @@ if __name__ == '__main__':
         exit(sys.exit('psycopg2: Unable to connect to the database with rules table'))
 
     bv=Validator()
-    result=bv.validate(p_sort_code, p_account_number)
-    print('{sort}-{account} {result}'.format(sort=p_sort_code, account=p_account_number,
-        result='Invalid Account - ' + bv.message if bv.message else 'Valid Account' ))
+    try:
+        bv.validate(p_sort_code, p_account_number)
+        print('Valid Account')
+    except BankValidationException as e:
+        print('{sort}-{account} Invalid Bank Account- {result}'.format(sort=p_sort_code, account=p_account_number, result=e ))
     if database:
         database.close()
     exit(sys.exit(0))

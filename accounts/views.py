@@ -7,7 +7,7 @@ from django.views.generic import FormView
 
 from .forms import ValidateAccountForm, BulkTestForm
 from .tasks import test_task
-from .utils import Validator
+from .utils import Validator, BankValidationException
 
 
 class ValidateAccount(FormView):
@@ -19,12 +19,13 @@ class ValidateAccount(FormView):
         sort_code = form.cleaned_data['sort_code']
         account_number = form.cleaned_data['account_number']
         bv = Validator()
-        if bv.validate(sort_code, account_number):
+        try:
+            bv.validate(sort_code, account_number)
             messages.success(self.request, '{sort}-{account} is a valid bank account'.format(
-                                             sort=sort_code, account=account_number ))
-        else:
-            messages.error(self.request, '{sort}-{account} {message}'.format(
-                                           sort=sort_code, account=account_number, message=bv.message))
+                sort=sort_code, account=account_number))
+        except BankValidationException as e:
+            messages.error(self.request, '{sort}-{account} Error: {message}'.format(
+                                           sort=sort_code, account=account_number, message=e))
         context = self.get_context_data(**kwargs)
         context['form'] = form
         return self.render_to_response(context)
@@ -43,19 +44,20 @@ class BulkTest(FormView):
             tests = [(line[0:6], line[7:15]) for line in open(path.join(settings.MEDIA_ROOT, filename), 'r')]
             bv=Validator()
             for sort_code, account_number in tests:
-                if bv.validate(sort_code, account_number):
+                try:
+                    bv.validate(sort_code, account_number)
                     messages.success(self.request, '{sort}-{account} Valid=True'.format(
-                                                    sort=sort_code, account=account_number))
-                else:
+                        sort=sort_code, account=account_number))
+                except BankValidationException as e:
                     messages.error(self.request, '{sort}-{account} Valid=False {message}'.format(
-                                                  sort=sort_code, account=account_number, message=bv.message))
+                                                  sort=sort_code, account=account_number, message=e))
         except IOError as err:
             messages.error(self.request, "Error Opening: {file}. {error}".format(file=filename, error=str(err.strerror)))
         context = self.get_context_data(**kwargs)
         context['form'] = form  # use this pattern as it allows easy addition of other variables to pass to template
         return self.render_to_response(context)
 
-    # @profile_additional(Validatomodulus_check)
+    # @profile_additional(Validator.modulus_check)
     def dispatch(self, *args, **kwargs): # need dispatch here to collect line profile for Bank Validator
         return super(BulkTest, self).dispatch(*args, **kwargs)
 
