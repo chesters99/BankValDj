@@ -6,7 +6,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from accounts.utils.BankValidator import Validator
+from accounts.utils.BankValidator import Validator, BankValidationException
 from rules.models import Rule
 
 
@@ -33,7 +33,7 @@ class Validate(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = [AllowAny,]
 
-    def get(self, request):
+    def get(self, _):
         try:
             bank_account_split = self.request.query_params.get('bank_account', None).split('-')
         except AttributeError:
@@ -42,12 +42,13 @@ class Validate(APIView):
         serializer = ValidateSerialiser(data=account)
         if serializer.is_valid():
             bv = Validator()
-            if bv.validate(sort_code=serializer.validated_data['sort_code'],
-                           account_number=serializer.validated_data['account_number']):
+            try:
+                bv.validate(sort_code=serializer.validated_data['sort_code'],
+                            account_number=serializer.validated_data['account_number'])
                 serializer.validated_data['message']= 'Valid Account'
                 return Response(serializer.validated_data, status=status.HTTP_200_OK)
-            else:
-                serializer.validated_data['message']= bv.message
+            except (BankValidationException, TypeError) as e:
+                serializer.validated_data['message']= str(e)
                 return Response(serializer.validated_data, status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -22,10 +22,10 @@ class ValidateAccount(FormView):
         try:
             bv.validate(sort_code, account_number)
             messages.success(self.request, '{sort}-{account} is a valid bank account'.format(
-                sort=sort_code, account=account_number))
+                                            sort=sort_code, account=account_number))
         except BankValidationException as e:
             messages.error(self.request, '{sort}-{account} Error: {message}'.format(
-                                           sort=sort_code, account=account_number, message=e))
+                                           sort=sort_code, account=account_number, message=str(e)))
         context = self.get_context_data(**kwargs)
         context['form'] = form
         return self.render_to_response(context)
@@ -47,10 +47,10 @@ class BulkTest(FormView):
                 try:
                     bv.validate(sort_code, account_number)
                     messages.success(self.request, '{sort}-{account} Valid=True'.format(
-                        sort=sort_code, account=account_number))
+                                                   sort=sort_code, account=account_number))
                 except BankValidationException as e:
                     messages.error(self.request, '{sort}-{account} Valid=False {message}'.format(
-                                                  sort=sort_code, account=account_number, message=e))
+                                                  sort=sort_code, account=account_number, message=str(e)))
         except IOError as err:
             messages.error(self.request, "Error Opening: {file}. {error}".format(file=filename, error=str(err.strerror)))
         context = self.get_context_data(**kwargs)

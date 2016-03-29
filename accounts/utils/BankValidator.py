@@ -41,25 +41,25 @@ class Validator:
             raise BankValidationException('Sort Code must be 6 digits')
         elif not account_number.isdigit():
             raise BankValidationException('Account Number must be numeric')
-        else:
-            account_number_length = len(account_number)
-            if account_number_length == 8:
-                pass
-            elif account_number_length == 6:
-                account_number = '00' + account_number
-            elif account_number_length == 7:
-                account_number = '0' + account_number
-            elif account_number_length == 9:
-                sort_code = sort_code[0:5] + account_number[0]
-                account_number = account_number[1:9]
-            elif account_number_length == 10:
-                if sort_code == '086086':
-                    account_number = account_number[0:8]  # Co-op Bank
-                else:
-                    account_number = account_number.replace('-', '') # Natwest
-                    account_number = account_number[2:10]
+
+        account_number_length = len(account_number)
+        if account_number_length == 8:
+            pass
+        elif account_number_length == 6:
+            account_number = '00' + account_number
+        elif account_number_length == 7:
+            account_number = '0' + account_number
+        elif account_number_length == 9:
+            sort_code = sort_code[0:5] + account_number[0]
+            account_number = account_number[1:9]
+        elif account_number_length == 10:
+            if sort_code == '086086':
+                account_number = account_number[0:8]  # Co-op Bank
             else:
-                raise BankValidationException('Invalid Account Number Length:{0}'.format(len(account_number)))
+                account_number = account_number.replace('-', '') # Natwest
+                account_number = account_number[2:10]
+        else:
+            raise BankValidationException('Invalid Account Number Length:{0}'.format(len(account_number)))
         return sort_code, account_number
 
     def _modulus_check(self, sort_code, account_number, rule):
@@ -73,14 +73,14 @@ class Validator:
         if rule['mod_rule'] == self.MODULUS_11:
             remainder = sum([int(c) * rule['weight'][i] for i, c in enumerate(bank_account)]) % 11
             if rule['mod_exception'] == '4' and remainder == int(account_number[6:8]):
-                remainder = 0
+                return 0
             elif rule['mod_exception'] == '5':
                 if remainder == 0 and account_number[6] == '0':
-                    pass  # valid account
+                    return 0
                 elif remainder == 11 - int(account_number[6]):
-                    remainder = 0
+                    return 0
                 else:
-                    remainder = 999
+                    return 999
 
         elif rule['mod_rule'] == self.MODULUS_10:
             remainder = sum([int(c) * rule['weight'][i] for i, c in enumerate(bank_account)]) % 10
@@ -94,14 +94,14 @@ class Validator:
             remainder = total % 10
             if rule['mod_exception'] == '5':
                 if remainder == 0 and account_number[7] == '0':
-                    pass
+                    return 0
                 elif remainder == 10 - int(account_number[7]):
-                    remainder = 0
+                    return 0
                 else:
-                    remainder = 999
+                    return 999
 
         else:
-            return -1  # invalid modulus rule - ie corrupt rule file
+            raise BankValidationException('Invalid Modulus Rule')  # ie corrupt rule file
         return remainder
 
 
@@ -124,7 +124,9 @@ class Validator:
                     rules.append(row)
             return rules
 
-        if self.CACHE:
+        if not self.CACHE:
+            return _get_rules_from_database(sort_code)
+        else:
             rule_does_not_exist = 'DoesNotExist'
             cached_rules = cache.get(sort_code)
             if cached_rules == rule_does_not_exist:
@@ -144,9 +146,7 @@ class Validator:
                 else:
                     cache.set(sort_code, rule_does_not_exist)
                     print('db get doesnt exit - set cache does not exist')
-        else:
-            rules = _get_rules_from_database(sort_code)
-        return rules
+            return rules
 
 
     def validate(self, sort_code, account_number):
@@ -160,7 +160,6 @@ class Validator:
         sort_code, account_number = self._standardise(sort_code, account_number)
 
         # Step 2 - Get the first and second applicable modulus templates
-        # rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code)
         rules = self._get_rules(sort_code)
         if not rules:
             return False # must assume ok if no applicable rules are found, return False as a warning
@@ -174,71 +173,46 @@ class Validator:
         if rules[0]['mod_exception'] == '5':
             if sort_code in self.EXCEPTION5_TABLE:
                 sort_code = self.EXCEPTION5_TABLE[sort_code]
-        if rules[0]['mod_exception'] == '6' and account_number[6] == account_number[7] \
-                and account_number[0] in ('4', '5', '6', '7', '8'):
+        if rules[0]['mod_exception'] == '6' and account_number[6] == account_number[7] and '4' <= account_number[0] <= '8':
             return True  # cant validate so return as successful
         if rules[0]['mod_exception'] == '7' and account_number[6] == '9':
-            for i in range(0, 8):
-                rules[0]['weight'][i] = 0
+            rules[0]['weight'][:8] = [0] * 8
         if rules[0]['mod_exception'] == '8':
             sort_code = '090126'
-        if rules[0]['mod_exception'] == '10' and account_number[0:2] in ('09', '99') \
-                and account_number[6] == '9':
-            for i in range(0, 8):
-                rules[0]['weight'][i] = 0
+        if rules[0]['mod_exception'] == '10' and account_number[0:2] in ('09', '99') and account_number[6] == '9':
+            rules[0]['weight'][:8] = [0] * 8
 
         # Step 4 - Perform 1st modulus check
-        first_remainder = self._modulus_check(sort_code, account_number, rules[0])
-        if first_remainder < 0:
-            raise BankValidationException('Invalid Modulus Rule')
-        if first_remainder == 0:
-            if rules[0]['mod_exception'] in ('2', '9', '10', '11', '12', '13', '14'):
+        if self._modulus_check(sort_code, account_number, rules[0]) == 0:
+            if (rules[0]['mod_exception'] in ('2', '9', '10', '11', '12', '13', '14')) or \
+               (len(rules) == 1) or \
+               (rules[1]['mod_exception'] == '3' and account_number[2] in ('6', '9')):
                 return True
-            if len(rules) == 1:
-                return True
-            if rules[1]['mod_exception'] == '3' and account_number[2] in ('6', '9'):
-                return True
-            # need to perform 2nd check for some exceptions even if first check was ok
-            second_remainder = self._modulus_check(sort_code, account_number, rules[1])
-            if second_remainder < 0:
-                raise BankValidationException('Invalid Modulus Rule')
-            if second_remainder == 0:
-                return True
-            else:
+            if self._modulus_check(sort_code, account_number, rules[1]) > 0: # need to perform 2nd check for some exceptions even if first check was ok
                 raise BankValidationException('Failed 2nd Mod Check after passing 1st')
+            return True
 
         # Step 5 - if first check failed then see if second check may be required and perform it
-        if first_remainder > 0:
+        else:
             if rules[0]['mod_exception'] not in ('2', '9', '10', '11', '12', '13', '14'):
                 raise BankValidationException('Failed 1st Mod Check and no exceptions are available')
             else:
-                try:
-                    second_rule = rules[1]
-                except (KeyError, IndexError):
-                    second_rule = None
-
                 if rules[0]['mod_exception'] in ('2', '9'):
                     sort_code = '309634'
                     second_rule = self._get_rules(sort_code)[0]
-
-                if rules[0]['mod_exception'] == '14':
+                elif rules[0]['mod_exception'] == '14':
                     if account_number[7] not in ('0', '1', '9'):
                         raise BankValidationException('Failed Exception Rule 14')
                     else:
                         account_number = '0' + account_number[0:7]
                         second_rule = rules[0]
-
-                if second_rule:  # if there is a second check then perform it
-                    second_remainder = self._modulus_check(sort_code, account_number, second_rule)
-                    if second_remainder < 0:
-                        raise BankValidationException('Invalid Modulus Rule')
                 else:
-                    raise BankValidationException('2nd test required but no rule exists')
-
-                if second_remainder == 0:
-                    return True
-                else:
-                    raise BankValidationException('Failed 2nd Mod Check after failing 1st - exceptions 2,9,10,11,12,13,14')
+                    try:
+                        second_rule = rules[1]
+                    except (KeyError, IndexError):
+                        raise BankValidationException('2nd test required but no rule exists')
+                if self._modulus_check(sort_code, account_number, second_rule) > 0:
+                    raise BankValidationException('Failed 2nd Mod Check after failing 1st - exceps 2,9,10,11,12,13,14')
         return True
 
 if __name__ == '__main__':
@@ -262,6 +236,7 @@ if __name__ == '__main__':
         print('Valid Account')
     except BankValidationException as e:
         print('{sort}-{account} Invalid Bank Account- {result}'.format(sort=p_sort_code, account=p_account_number, result=e ))
+
     if database:
         database.close()
     exit(sys.exit(0))
