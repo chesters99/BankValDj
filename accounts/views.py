@@ -21,11 +21,10 @@ class ValidateAccount(FormView):
         bv = Validator()
         try:
             bv.validate(sort_code, account_number)
-            messages.success(self.request, '{sort}-{account} is a valid bank account'.format(
-                                            sort=sort_code, account=account_number))
         except BankValidationException as e:
-            messages.error(self.request, '{sort}-{account} Error: {message}'.format(
-                                           sort=sort_code, account=account_number, message=str(e)))
+            messages.error(self.request, '{sort}-{account} Invalid: {message}'.format(sort=sort_code, account=account_number, message=str(e)))
+        else:
+            messages.success(self.request, '{sort}-{account} is a valid bank account'.format(sort=sort_code, account=account_number))
         context = self.get_context_data(**kwargs)
         context['form'] = form
         return self.render_to_response(context)
@@ -46,11 +45,10 @@ class BulkTest(FormView):
             for sort_code, account_number in tests:
                 try:
                     bv.validate(sort_code, account_number)
-                    messages.success(self.request, '{sort}-{account} Valid=True'.format(
-                                                   sort=sort_code, account=account_number))
                 except BankValidationException as e:
-                    messages.error(self.request, '{sort}-{account} Valid=False {message}'.format(
-                                                  sort=sort_code, account=account_number, message=str(e)))
+                    messages.error(self.request, '{sort}-{account} Valid=False {message}'.format(sort=sort_code, account=account_number, message=str(e)))
+                else:
+                    messages.success(self.request, '{sort}-{account} Valid=True'.format(sort=sort_code, account=account_number))
         except IOError as err:
             messages.error(self.request, "Error Opening: {file}. {error}".format(file=filename, error=str(err.strerror)))
         context = self.get_context_data(**kwargs)
@@ -58,8 +56,8 @@ class BulkTest(FormView):
         return self.render_to_response(context)
 
     # @profile_additional(Validator.modulus_check)
-    def dispatch(self, *args, **kwargs): # need dispatch here to collect line profile for Bank Validator
-        return super(BulkTest, self).dispatch(*args, **kwargs)
+    # def dispatch(self, *args, **kwargs): # need dispatch here to collect line profile for Bank Validator
+    #     return super(BulkTest, self).dispatch(*args, **kwargs)
 
 
 # method-based equivalents to the above shown as best-practice examples

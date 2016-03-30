@@ -26,8 +26,6 @@ class Validator:
         '938604': '938603', '938648': '938246', '938608': '938408', '938649': '938394', '938609': '938424',
         '938651': '938335', '938613': '938017', '938653': '938424'}
 
-    def __init__(self):
-        pass
 
     def _standardise(self, sort_code, account_number):
         """This function adjusts the sort code and account number formats
@@ -37,9 +35,9 @@ class Validator:
         """
         if not sort_code.isdigit():
             raise BankValidationException('Sort Code must be numeric')
-        elif len(sort_code) != 6:
+        if len(sort_code) != 6:
             raise BankValidationException('Sort Code must be 6 digits')
-        elif not account_number.isdigit():
+        if not account_number.isdigit():
             raise BankValidationException('Account Number must be numeric')
 
         account_number_length = len(account_number)
@@ -153,7 +151,7 @@ class Validator:
         """ Perform modulus-based UK Bank Account validations
         :param sort_code: (*str*) : 6 characters
         :param account_number: (*str*) : 6-11 Characters
-        :return: if account is valid then returns *True*, if account cant be checked then returns *False*).
+        :return: if account is valid then returns *True*, if account cant be checked then returns *False* (ie still ok)
                  if account is not valid then raises BankValidation Exception
         """
         # Step 1 - Check sort code and account number are in correct format and adjust if possible
@@ -164,22 +162,21 @@ class Validator:
         if not rules:
             return False # must assume ok if no applicable rules are found, return False as a warning
 
-        # Step 3 - Apply nasty exception handling overrides
+        # Step 3 - Apply lots of nasty exception handling overrides
         if rules[0]['mod_exception'] in ('2', '9'):
             if account_number[0] != '0' and account_number[6] != '9':
                 rules[0]['weight'] = rules[1]['weight'] = self.EXCEPTION5_OVERRIDE1
             if account_number[0] != '0' and account_number[6] == '9':
                 rules[0]['weight'] = rules[1]['weight'] = self.EXCEPTION5_OVERRIDE2
-        if rules[0]['mod_exception'] == '5':
-            if sort_code in self.EXCEPTION5_TABLE:
-                sort_code = self.EXCEPTION5_TABLE[sort_code]
-        if rules[0]['mod_exception'] == '6' and account_number[6] == account_number[7] and '4' <= account_number[0] <= '8':
+        elif rules[0]['mod_exception'] == '5':
+            sort_code = self.EXCEPTION5_TABLE.get(sort_code, sort_code)
+        elif rules[0]['mod_exception'] == '6' and account_number[6] == account_number[7] and '4' <= account_number[0] <= '8':
             return True  # cant validate so return as successful
-        if rules[0]['mod_exception'] == '7' and account_number[6] == '9':
+        elif rules[0]['mod_exception'] == '7' and account_number[6] == '9':
             rules[0]['weight'][:8] = [0] * 8
-        if rules[0]['mod_exception'] == '8':
+        elif rules[0]['mod_exception'] == '8':
             sort_code = '090126'
-        if rules[0]['mod_exception'] == '10' and account_number[0:2] in ('09', '99') and account_number[6] == '9':
+        elif rules[0]['mod_exception'] == '10' and account_number[0:2] in ('09', '99') and account_number[6] == '9':
             rules[0]['weight'][:8] = [0] * 8
 
         # Step 4 - Perform 1st modulus check
@@ -222,8 +219,7 @@ if __name__ == '__main__':
     p_sort_code = sys.argv[1]
     p_account_number = sys.argv[2]
 
-    import psycopg2
-    import psycopg2.extras
+    import psycopg2, psycopg2.extras
     try:
         database = psycopg2.connect("dbname='bankvaldj' user='django' host='localhost' password='bankvaldj'")
         cursor = database.cursor(cursor_factory = psycopg2.extras.RealDictCursor)

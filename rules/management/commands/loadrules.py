@@ -13,6 +13,7 @@ class Command(BaseCommand):
             filename = os.path.join(settings.MEDIA_ROOT, 'valacdos.txt')
         try:
             records = load_rules(filename)
-            self.stdout.write("Records Loaded %s " % records)
         except (IOError, RuntimeError):
             self.stdout.write('Cant open file: %s - or file is corrupt' % filename)
+        else:
+            self.stdout.write("Records Loaded %s " % records)

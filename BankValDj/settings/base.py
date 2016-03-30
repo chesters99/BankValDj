@@ -239,7 +239,6 @@ CACHEOPS = {
     # '*.*'       : {'ops': 'all', 'timeout': 24*60*60}, # causes problems with django content types
 }
 
-
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
 DJSTRIPE_PLANS = {

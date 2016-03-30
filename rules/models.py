@@ -1,4 +1,5 @@
 import httplib2
+from django.dispatch import receiver
 from os import path
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -15,12 +16,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import ArrayField
 from django.db import transaction
 
-
+@receiver(user_logged_in)
 def logged_in_message(user, request, **kwargs):
     """Add a welcome message when the user logs in """
     messages.success(request, 'User {user} successfully logged in'.format(user=user.username))
 
-user_logged_in.connect(logged_in_message)
 
 def weight_validator(weight):
     if not (-255 <= weight <= 255):
@@ -35,6 +35,10 @@ class SmallIntegerField(models.PositiveSmallIntegerField):
 
 
 class CommonModel(models.Model):
+
+    class Meta:
+        abstract = True
+
     created = models.DateTimeField(auto_now_add=True, editable=False)
     updated = models.DateTimeField(auto_now=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='+', editable=False)
@@ -42,11 +46,13 @@ class CommonModel(models.Model):
     active = models.BooleanField(default=True)
     site = models.ForeignKey(Site, editable=False)
 
-    class Meta:
-        abstract = True
-
 
 class Rule(CommonModel):
+
+    class Meta:
+        ordering = ['id', ]
+        # index_together = [ ["start_sort", "end_sort"], ] # doesnt offer a performance advantage
+
     MODULUS_10 = 'MOD10'
     MODULUS_11 = 'MOD11'
     DOUBLE_ALT = 'DBLAL'
@@ -57,16 +63,13 @@ class Rule(CommonModel):
     mod_rule = models.CharField(max_length=255, choices=RULE_CHOICE, help_text=_('determine which algorithm to apply'))
     mod_exception = models.CharField(max_length=2, blank=True, help_text=_('exception rule'))
     weight = ArrayField(models.SmallIntegerField(validators=[weight_validator]), size=14, verbose_name='Weights')
-    # objects manager accesses all records, site manager access only records for the current site
-    objects = models.Manager()
+
+    objects = models.Manager()  # objects manager accesses all, site manager access rows for current site
     current = CurrentSiteManager('site')
 
-    class Meta:
-        ordering = ['id', ]
-        # index_together = [ ["start_sort", "end_sort"], ] # doesnt offer a performance advantage
 
     def __str__(self):
-        return '%s %s-%s' % (self.id, self.start_sort, self.end_sort)
+        return 'id={0} {1}-{2} {3}'.format(self.id, self.start_sort, self.end_sort, self.mod_rule)
 
     # def delete(self, using=None, keep_parents=None):  # turn physical delete requests into logical deletes
     #     if self.active:
@@ -95,7 +98,7 @@ class Rule(CommonModel):
 
 @transaction.atomic()
 def load_rules(filename: str, sort_codes=None):
-    if 'https:' in filename:
+    if 'http' in filename:
         response, content = httplib2.Http('.cache').request(filename)
         if response.status not in (200, 301):
             raise RuntimeError('%s %s' % (response.status, response.reason))

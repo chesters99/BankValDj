@@ -43,13 +43,13 @@ class Validate(APIView):
         if serializer.is_valid():
             bv = Validator()
             try:
-                bv.validate(sort_code=serializer.validated_data['sort_code'],
-                            account_number=serializer.validated_data['account_number'])
-                serializer.validated_data['message']= 'Valid Account'
-                return Response(serializer.validated_data, status=status.HTTP_200_OK)
+                bv.validate(sort_code=serializer.validated_data['sort_code'], account_number=serializer.validated_data['account_number'])
             except (BankValidationException, TypeError) as e:
                 serializer.validated_data['message']= str(e)
                 return Response(serializer.validated_data, status=status.HTTP_406_NOT_ACCEPTABLE)
+            else:
+                serializer.validated_data['message']= 'Valid Account'
+                return Response(serializer.validated_data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
