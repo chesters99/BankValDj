@@ -53,10 +53,7 @@ class Rule(CommonModel):
         ordering = ['id', ]
         # index_together = [ ["start_sort", "end_sort"], ] # doesnt offer a performance advantage
 
-    MODULUS_10 = 'MOD10'
-    MODULUS_11 = 'MOD11'
-    DOUBLE_ALT = 'DBLAL'
-    RULE_CHOICE = ((MODULUS_10, MODULUS_10), (MODULUS_11, MODULUS_11), (DOUBLE_ALT, DOUBLE_ALT))
+    RULE_CHOICE = (('MOD10', 'MOD10'), ('MOD11', 'MOD11'), ('DBLAL', 'DBLAL'))
 
     start_sort = models.CharField(max_length=6, db_index=True, help_text=_('from this sort code'))
     end_sort = models.CharField(max_length=6, db_index=True, help_text=_('to this sort code'))

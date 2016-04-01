@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Rule, load_rules
 from .forms import RuleForm, LoadRulesForm
 from main.decorators import DeleteMessageMixin, ActiveLoginRequiredMixin
-from debug_toolbar_line_profiler import profile_additional
+#from debug_toolbar_line_profiler import profile_additional
 
 @csrf_exempt
 def ajax_search(request):
@@ -85,9 +85,9 @@ class Load(ActiveLoginRequiredMixin, FormView):
             messages.error(self.request, 'Cant open file: {file} or file is corrupt'.format(file=filename))
         return self.render_to_response(context)
 
-    @profile_additional(load_rules)
-    def dispatch(self, *args, **kwargs): # need dispatch here to collect line profile for Bank Validator
-        return super(Load, self).dispatch(*args, **kwargs)
+    # @profile_additional(load_rules)
+    # def dispatch(self, *args, **kwargs): # need dispatch here to collect line profile for Bank Validator
+    #     return super(Load, self).dispatch(*args, **kwargs)
 
 class RssFeed(Feed):
     title = 'UK Bank Validation Rules Feed'
