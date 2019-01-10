@@ -14,13 +14,13 @@ class BankValidationException(Exception):
 class Validator:
     """ Contains all the logic and data to modulus check UK Bank Accounts
     """
-    CACHE = False # caching not active as was only 10% faster than postgres (use django-cacheops instead)
-    MODULUS_10 = 'MOD10'
-    MODULUS_11 = 'MOD11'
-    DOUBLE_ALT = 'DBLAL'
-    EXCEPTION5_OVERRIDE1 = (0, 0, 1, 2, 5, 3, 6, 4, 8, 7, 10, 9, 3, 1)
-    EXCEPTION5_OVERRIDE2 = (0, 0, 0, 0, 0, 0, 0, 0, 8, 7, 10, 9, 3, 1)
-    EXCEPTION5_TABLE = {
+    _CACHE = False # caching not active as was only 10% faster than postgres (use django-cacheops instead)
+    _MODULUS_10 = 'MOD10'
+    _MODULUS_11 = 'MOD11'
+    _DOUBLE_ALT = 'DBLAL'
+    _EXCEPTION5_OVERRIDE1 = (0, 0, 1, 2, 5, 3, 6, 4, 8, 7, 10, 9, 3, 1)
+    _EXCEPTION5_OVERRIDE2 = (0, 0, 0, 0, 0, 0, 0, 0, 8, 7, 10, 9, 3, 1)
+    _EXCEPTION5_TABLE = {
         '938173': '938017', '938620': '938343', '938289': '938068', '938622': '938130', '938297': '938076',
         '938628': '938181', '938600': '938611', '938643': '938246', '938602': '938343', '938647': '938611',
         '938604': '938603', '938648': '938246', '938608': '938408', '938649': '938394', '938609': '938424',
@@ -68,7 +68,7 @@ class Validator:
         :return: remainder
         """
         bank_account = sort_code + account_number
-        if rule['mod_rule'] == self.MODULUS_11:
+        if rule['mod_rule'] == self._MODULUS_11:
             remainder = sum([int(c) * rule['weight'][i] for i, c in enumerate(bank_account)]) % 11
             if rule['mod_exception'] == '4' and remainder == int(account_number[6:8]):
                 return 0
@@ -80,10 +80,10 @@ class Validator:
                 else:
                     return 999
 
-        elif rule['mod_rule'] == self.MODULUS_10:
+        elif rule['mod_rule'] == self._MODULUS_10:
             remainder = sum([int(c) * rule['weight'][i] for i, c in enumerate(bank_account)]) % 10
 
-        elif rule['mod_rule'] == self.DOUBLE_ALT:
+        elif rule['mod_rule'] == self._DOUBLE_ALT:
             total = 0
             for i, c in enumerate(bank_account):
                 temp = int(c) * rule['weight'][i]
@@ -106,45 +106,45 @@ class Validator:
     def _get_rules(self, sort_code ):
         """ get rules from database or cache depending on class variable
         :param sort_code: str
-        :return: rules - list of dicts
+        :rtype: rules as list[int][str]
         """
-        def _get_rules_from_database(sort_code):
+        def _get_rules_from_database(fsort_code):
             """ get rules from Django ORM or psycopg depending if run from command line or Django
-            :param sort_code: str
-            :return:
+            :param fsort_code: str
+            :rtype: rules as list[int][str]
             """
             if Rule: # running under Django so use Django ORM, otherwise use psycopg2 direct access
-                rules = Rule.objects.filter(start_sort__lte=sort_code, end_sort__gte=sort_code).values()
+                dbrules = Rule.objects.filter(start_sort__lte=fsort_code, end_sort__gte=fsort_code).values()
             else:
-                rules = []
-                cursor.execute('SELECT * from rules_rule where start_sort <=%s and end_sort >=%s', (sort_code, sort_code))
+                dbrules = []
+                cursor.execute('SELECT * from rules_rule where start_sort <=%s and end_sort >=%s', (fsort_code, fsort_code))
                 for row in cursor:
                     rules.append(row)
-            return rules
+            return dbrules
 
-        if not self.CACHE:
+        if not self._CACHE:
             return _get_rules_from_database(sort_code)
+
+        rule_does_not_exist = 'DoesNotExist'
+        cached_rules = cache.get(sort_code)
+        if cached_rules == rule_does_not_exist:
+            print('cache get DOES_NOT_EXIST')
+            return None
+        elif cached_rules is not None:
+            rules = {}
+            for i, obj in enumerate(serializers.deserialize("json", cached_rules)):
+                rules[i]=obj.object
+                print('cache get {start} {end}'.format(start=obj.object['start_sort'], end=obj.object['end_sort']))
         else:
-            rule_does_not_exist = 'DoesNotExist'
-            cached_rules = cache.get(sort_code)
-            if cached_rules == rule_does_not_exist:
-                print('cache get DOES_NOT_EXIST')
-                return None
-            elif cached_rules is not None:
-                rules = {}
-                for i, obj in enumerate(serializers.deserialize("json", cached_rules)):
-                    rules[i]=obj.object
-                    print('cache get {start} {end}'.format(start=obj.object['start_sort'], end=obj.object['end_sort']))
+            rules = _get_rules_from_database(sort_code)
+            if rules:
+                data = serializers.serialize("json", rules)
+                cache.set(sort_code, data)
+                print('db get and cached {start}'.format(start=rules[0]['start_sort']))
             else:
-                rules = _get_rules_from_database(sort_code)
-                if rules:
-                    data = serializers.serialize("json", rules)
-                    cache.set(sort_code, data)
-                    print('db get and cached {start}'.format(start=rules[0]['start_sort']))
-                else:
-                    cache.set(sort_code, rule_does_not_exist)
-                    print('db get doesnt exit - set cache does not exist')
-            return rules
+                cache.set(sort_code, rule_does_not_exist)
+                print('db get doesnt exit - set cache does not exist')
+        return rules
 
 
     def validate(self, sort_code, account_number):
@@ -165,11 +165,11 @@ class Validator:
         # Step 3 - Apply lots of nasty exception handling overrides
         if rules[0]['mod_exception'] in ('2', '9'):
             if account_number[0] != '0' and account_number[6] != '9':
-                rules[0]['weight'] = rules[1]['weight'] = self.EXCEPTION5_OVERRIDE1
+                rules[0]['weight'] = rules[1]['weight'] = self._EXCEPTION5_OVERRIDE1
             if account_number[0] != '0' and account_number[6] == '9':
-                rules[0]['weight'] = rules[1]['weight'] = self.EXCEPTION5_OVERRIDE2
+                rules[0]['weight'] = rules[1]['weight'] = self._EXCEPTION5_OVERRIDE2
         elif rules[0]['mod_exception'] == '5':
-            sort_code = self.EXCEPTION5_TABLE.get(sort_code, sort_code)
+            sort_code = self._EXCEPTION5_TABLE.get(sort_code, sort_code)
         elif rules[0]['mod_exception'] == '6' and account_number[6] == account_number[7] and '4' <= account_number[0] <= '8':
             return True  # cant validate so return as successful
         elif rules[0]['mod_exception'] == '7' and account_number[6] == '9':

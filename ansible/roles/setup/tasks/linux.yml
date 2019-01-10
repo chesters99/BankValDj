@@ -1,10 +1,10 @@
 ---
 #################### Install linux packages, setup linux and user
 
-- name: Install RPM forge repo (for htop)
-  become: yes
-  yum: name=http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm state=present
-  tags: install linux
+#- name: Install RPM forge repo (for htop)
+#  become: yes
+#  yum: name=http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm state=present
+#  tags: install linux
 
 - name: install the pg_top rpm from a remote repo
   become: yes
@@ -28,7 +28,7 @@
     - git
     - gcc           # required for amazon ec2 redhat 7.2
     - firewalld     # required for amazon ec2 redhat 7.2
-    - htop          # system performance
+#    - htop          # system performance
     - pg_top95      # database performance
     - ncurses-devel # required for uwsgitop (includes curses in standard libary)
     - sysstat       # system performance monitoring

@@ -21,7 +21,6 @@ def logged_in_message(user, request, **kwargs):
     """Add a welcome message when the user logs in """
     messages.success(request, 'User {user} successfully logged in'.format(user=user.username))
 
-
 def weight_validator(weight):
     if not (-255 <= weight <= 255):
         raise ValidationError('Weight is -255 to 255')
@@ -117,6 +116,6 @@ def load_rules(filename: str, sort_codes=None):
                 mod_exception = ''
             insert_list.append(Rule(start_sort=items[0], end_sort=items[1], mod_rule=items[2],
                                     weight=[items[w] for w in range(3,17)], mod_exception=mod_exception,
-                                    created_by = user, updated_by = user, site=site))
+                                    created_by=user, updated_by=user, site=site))
     Rule.objects.bulk_create(insert_list)
     return counter

@@ -32,6 +32,24 @@
     - uwsgi
   tags: deploy django
 
+#- name: migrate django application
+#  django_manage:
+#    command: migrate
+#    virtualenv: /opt/venv
+#    app_path: /opt/geodjango
+
+#- name: load django initial data
+#  django_manage:
+#    command: load_inital_voivodeships
+#    virtualenv: /opt/venv
+#    app_path: /opt/geodjango
+
+#- name: collect static files
+#  django_manage:
+#    command: collectstatic
+#    virtualenv: /opt/venv
+#    app_path: /opt/geodjango
+
 - name: Initialise Django - makemigrations and migrate, and create superuser
   shell: . /usr/local/bin/virtualenvwrapper.sh && workon {{ project_name }} &&
     ./manage.py collectstatic --noinput &&
